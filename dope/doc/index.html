@@ -1,0 +1,146 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+<head>
+<title>DOPE++ (=Distributed Object Programing Environment for C++)</title>
+</head>
+<body>
+<h1>DOPE++</h1>
+<h2>Purpose</h2>
+DOPE (=Distributed Object Programing Environment for C++) is a C++ Template library for pickling / programing in heterogenous network environments.
+
+<h2>General Introduction</h2>
+Programing in heterogenous network environments in C++ always raises the problem of serialization/deseriallization (reading/writeing objects - other terms: marshalling, pickling - unfortunately I did not find any definitions of those terms - any hints?). FIXME - this intro is nearly the same as the one from XTL perhaps just refer to it. (Importance: many different protocols/hardware/software(programing languages))
+
+<h2>Implementation and Design</h2>
+<h3>Review of concepts</h3>
+<h4>Concepts i tried</h4>
+<PRE>
+This is my Xth (X>3) aproach to integrate object serialization (externalization/marshalling/...) into C++.
+
+Review: (as far as I remember)
+1. TUD (a game) had to do it:
+each class had a handcrafted change method operating on my own stream/buffer classes
+(iostreams didn't really exist those days)
+
+This looked like:
+class foo
+{
+	int32 a;
+	string s;
+	foo2 f;
+	//iotype is the buffer, mode is an additional parameter always passed through
+	void change(iotype *ioptr,int8 mode) 
+	{
+	  // create a stream (cfgtype)
+	  cfgtype *cfgptr=choose_cfgtype(ioptr,mode);
+	  // read write members
+	  cfgptr->change_int32_check((int32 *)&a);
+	  cfgptr->change_string_check(&s);
+	  cfgptr->change(&f);
+	  if (ioptr->getmode()==IOTYPE_READ_MODE)
+	  {
+	  	// on read do something special
+		.....
+	    }
+	  // free stream
+	  delete cfgptr;
+	}
+}
+
+Design faults:
+* The class decides which stream to use
+* you must be able to add a member function (problematic with classes you didn't write)
+* virtual base classes where problematic
+* i never clearly seperated the tasks reading/producing
+
+ 
+2. DOPE (V1)
+this was my first try to write a parser generating the code automatically.
+It was completely iostream based and as such text based
+never finished this. It worked somehow but the parser was shit and i never
+used it in a real project.
+
+3? dodb - can't remember - this was a first templated approach i think
+never released
+
+4? xmlclassrw (with it i tried 3 different approaches)
+template based
+optional parser (using the debugger)
+was quite fllexible
+used this to try an meta object approach with the (de-)serialization based
+upon the generated extended runtime type information.
+....
+was too slow and memory consuming.
+never used in a real project - and got confused
+(parser is generated using itself - and i tried too many different things in one project)
+</PRE>
+<h4>Preprocessor - IDL - (language extensions)</h4>
+Perhaps: libqt and its mop? - corba ?
+<h4>XTL</h4>
+<PRE>
+Related projects i looked at/used:
+The best i have found:
+template based
+XTL (http://xtl.sourceforge.net)
+good concept - simple clean design
+</PRE>
+
+<h3>Conclusions</h3>
+<PRE>
+NOW DOPE (3 or 4 ? - i decided to start versioning back from 0) - back to the roots
+it is heavily based/inspired upon/by XTL.
+you can think of it as a rewrite of XTL with additional name information
+</PRE>
+<h2>Dependencies/Requirements</h2>
+<h3>Build dependencies if you got the tar-ball</h3>
+<UL>
+<LI>recent C++ compiler and std C++ library (f.e. g++ >=3)</LI>
+<LI>libsigc++-dev</LI>
+<LI>libxml-dev a.k.a. gnome-xml</LI>
+<LI>UNIX sockets</LI>
+</UL>
+<h3>if you checked out from CVS</h3>
+<UL>
+<LI>autoconf >= 2.5</LI>
+<LI>automake (I use 2.6.1)</LI>
+<LI>libtool (I use 1.4.2)</LI>
+<LI>doxygen to build the API docs</LI>
+</UL>
+<h2>License/Copyright</h2>
+<a href="COPYING">GPL</a> Copyright (C) 2002 Jens Thiele <jens.thiele@student.uni-tuebingen.de>
+<h2>Links</h2>
+<UL>
+<LI>
+<a href="doxygen/html/index.html">Reference manual</a> (only available if you generated them)
+</LI>
+</UL>
+<H2>The stream layers:</H2>
+<TABLE>
+<TR>
+<TD>Layer</TD><TD>description</TD><TD>examples / implementations</TD>
+</TR><TR>
+<TD>0</TD><TD>byte stream (using the STL streambuf concept => you can use them as underlying buffer)</TD>
+<TD>&lt;streambuf&gt;, sockets, strings, files<TD></TD>
+</TR><TR>
+<TD>1</TD><TD>Strongly typed data stream (only builtin types)</TD><TD>layer0 mapper, raw stream</TD>
+</TR><TR>
+<TD>2</TD><TD>Strongly typed structured data stream (any number of types) with complete typeinfo available
+</TD><TD>layer1 mapper, xml/scheme, debug</TD>
+</TR>
+</TABLE>
+BTW the naming convention stream is a bit restricted
+- you can do much more and use it as an class (forward) iterator (meta-classes)
+
+<H2>Further design explanations:</H2>
+<UL>
+<LI>dropped the support for const output streams because it does not fit into the one method approach</LI>
+<LI>member-names always must be suplied (not optionally as extension or another layer on top)</LI>
+</UL>
+    <hr>
+    <address><a href="mailto:jens.thiele@student.uni-tuebinhen.de">Jens Thiele</a></address>
+<!-- Created: Mon Aug  6 15:12:02 CEST 2001 -->
+<!-- hhmts start -->
+Last modified: Sun May 26 16:45:32 CEST 2002
+<!-- hhmts end -->
+</body>
+</html>
