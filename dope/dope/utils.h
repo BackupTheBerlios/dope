@@ -34,6 +34,8 @@
 #endif
 
 #include <string>
+#include "typenames.h"
+#include "dopeexcept.h"
 
 //! convert any type to a string which has operator<<
 template<typename X>
@@ -48,11 +50,13 @@ std::string anyToString(X z)
   // todo do this for float/double only and think about precision 
   // i don't want to loose any information but it should look good anyway
   // seems like this is a problem
-  // i once fixed it but can't remember
+  // i once fixed it but can't remember -> i will have to grep through all the sources
+  // i also have to take care about the locale
   o.setf(std::ios::fixed);
   o.precision(50);
   o.unsetf(std::ios::showpoint);
 #ifdef DOPE_HAVE_SSTREAM
+  o << z;
   return o.str();
 #else  
   o << z <<std::ends;
@@ -81,7 +85,7 @@ X &stringToAny(const std::string &s,X &x)
   std::istream ist(&buf);
   std::ostream ost(&buf);
   ost << s;
-  ist >> x;
+  if (!(ist >> x))  throw StringConversion(s,TypeNameTrait<X>::name());
   return x;
 };
 
