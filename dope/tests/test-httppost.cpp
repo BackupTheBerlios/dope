@@ -27,9 +27,9 @@
 
 
 #include <dope/minihttp.h>
-#include "streamtraits.h"
-#include "utils.h"
-#include "typenames.h"
+#include <dope/streamtraits.h>
+#include <dope/utils.h>
+#include <dope/typenames.h>
 
 
 void sigPipeHandler(int x){

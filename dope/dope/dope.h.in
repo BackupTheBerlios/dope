@@ -119,7 +119,7 @@ inline int fatal(const char *file,int line,const char *func, const char *msg)
   \def WARN(msg)
   \brief print a warning message
 */
-#define DOPE_WARN(msg) {std::cerr << "WARNING: " << __FILE__ << ":" << __LINE__ << ":" << DOPE_FUNCTIONNAME << ": " << msg << "(errno="<<errno<<":"<<strerror(errno)<<"\n";}
+#define DOPE_WARN(msg) {std::cerr << "WARNING: " << __FILE__ << ":" << __LINE__ << ":" << DOPE_FUNCTIONNAME << ": " << msg << "(errno="<<errno<<":"<<strerror(errno)<<")\n";}
 
 #endif // DOPE_DOPE_H
 

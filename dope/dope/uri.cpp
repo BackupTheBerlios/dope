@@ -17,7 +17,8 @@ URI::URI(const char *_uri)
       uri=uri.substr(2);
     }
   else
-    assert(0);
+    // todo
+    DOPE_CHECK(0);
   // extract userinfo@host:port
   // look for path seperator if not found use complete
   std::string path;
@@ -29,8 +30,8 @@ URI::URI(const char *_uri)
   if (!split(hostport,host,port,':'))
     {
       host=hostport;
-      std::cerr << "Using default port: "<<port<<std::endl;
       port="80";
+      //      std::cerr << "Using default port: "<<port<<std::endl;
     }
   unsigned pnum;
   stringToAny(port,pnum);
