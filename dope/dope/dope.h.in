@@ -49,16 +49,8 @@
   #define NDEBUG
 */
 
-//! smart pointer type to use - reference implementation is boost::shared_ptr
-/*!
-  this is a define because it is a template type
-  => you can't use a typedef - or is there somethin like this:
-  template <typename X>
-  typedef foo<X> bar<X>;
-  dope should use a namespace and then import shared_ptr into its namespace
-*/
-#define DOPE_SMARTPTR boost::shared_ptr
-
+//! define if you want to use boost:shared_ptr as DOPE_SMARTPTR (see also smartptr.h)
+#define DOPE_USE_BOOST_SHARED_PTR
 
 typedef const char * MemberName;
 

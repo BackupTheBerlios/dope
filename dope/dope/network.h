@@ -45,7 +45,7 @@
 // sigc++
 #include <sigc++/signal_system.h>
 // boost
-#include <boost/smart_ptr.hpp>
+#include "smartptr.h"
 
 // other dope includes
 #include "dopeexcept.h"

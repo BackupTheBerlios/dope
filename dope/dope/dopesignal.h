@@ -36,7 +36,7 @@
 
 // sigc++
 #include <sigc++/signal_system.h>
-#include <boost/smart_ptr.hpp>
+#include "smartptr.h"
 
 #define TYPE_NAME(x) TypeNameTrait<x>::name()
 

@@ -23,7 +23,8 @@ libdopeinclude_HEADERS = \
 	network.h \
 	socket.h \
 	bswap.h	\
-	nbostream.h
+	nbostream.h \
+	smartptr.h
 
 libdopearchincludedir = $(libdir)/@PACKAGE@-@VERSION@/@PACKAGE@
 libdopearchinclude_HEADERS = \

@@ -29,7 +29,6 @@
 #include <iterator>
 #include <stdexcept>
 #include <stack>
-#include <boost/smart_ptr.hpp>
 
 #include "streamtraits.h"
 #include "utils.h"
@@ -37,6 +36,7 @@
 #include "saxwrapper.h"
 #include "dopeexcept.h"
 #include "xml.h"
+#include "smartptr.h"
 
 #define TYPE_NAME(type) TypeNameTrait<type>::name()
 

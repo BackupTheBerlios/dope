@@ -26,7 +26,7 @@
 #define DOPE_MINIHTTP_H
 
 #include <iostream>
-#include <boost/smart_ptr.hpp>
+#include "smartptr.h"
 #include "uri.h"
 #include "streamtraits.h"
 
