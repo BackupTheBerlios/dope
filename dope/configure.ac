@@ -7,7 +7,7 @@ dnl
 dnl Source packaging numbers
 DOPE_MAJOR_VERSION=0
 DOPE_MINOR_VERSION=0
-DOPE_MICRO_VERSION=5
+DOPE_MICRO_VERSION=6
 DOPE_VERSION=$DOPE_MAJOR_VERSION.$DOPE_MINOR_VERSION.$DOPE_MICRO_VERSION
 AC_DEFINE_UNQUOTED(DOPE_MAJOR_VERSION, $DOPE_MAJOR_VERSION, [major version])
 AC_DEFINE_UNQUOTED(DOPE_MINOR_VERSION, $DOPE_MINOR_VERSION, [minor version])
@@ -48,9 +48,38 @@ AC_ARG_ENABLE([karmehack],
 dnl checks for libraries
 
 dnl added for SunOS
-AC_SEARCH_LIBS(bind, socket)
+dnl unfortunately we cannot use this to detect wsock32
+AC_SEARCH_LIBS(socket, [socket bsd], [found_socket=1])
 AC_SEARCH_LIBS(inet_pton, nsl)
 
+dnl if we have libwsock32 use it - this is not as nice as AC_SEARCH_LIBS
+dnl but it seems to be the only solution in the moment
+if test "x$found_socket" = "x"; then
+	AC_MSG_CHECKING([for socket in -lwsock32])
+	AC_LANG([C++])
+	LIBS_BACKUP="$LIBS"
+	LIBS="$LIBS -lwsock32"
+	AC_TRY_LINK([
+		#if defined(__WIN32__) || defined(WIN32)
+			#define __USE_W32_SOCKETS
+			#include <windows.h>
+		#endif
+		],
+		[
+			#ifndef WIN32
+				thisfunctiondoesnotexist();
+			#endif
+			int  handle = socket (PF_INET, SOCK_STREAM, 0);
+		],
+		[AC_MSG_RESULT([yes])],
+		[
+			AC_MSG_RESULT([no])
+		        LIBS="$LIBS_BACKUP"
+		]
+	)
+fi
+
+AC_LANG([C])
 AM_PATH_XML2(2.4.0, , [AC_MSG_ERROR([libxml required])])
 AM_PATH_SIGC(1.0.0, , [AC_MSG_ERROR([libsigc++ required])])
 
@@ -68,7 +97,7 @@ AC_FUNC_SELECT_ARGTYPES
 
 dnl variable substitutions
 dnl note order is important because of libtool
-DOPE_LDADD="$SIGC_LIBS $XML_LIBS"
+DOPE_LDADD="$SIGC_LIBS $XML_LIBS $LIBS"
 TEST_LDADD=$DOPE_LDADD
 DOPE_LIBS=$DOPE_LDADD
 

@@ -1,3 +1,14 @@
+ich will dope mit mingw compilieren:
+- es geht schon halbwegs
+  zumindest test-rpc 
+  das problem bei test-rpc ist dass er nach dem dritten client connect
+  ständig vom select zurückkehrt
+
+- teste mal ob überhaupt ein prg. geht !!!
+  bei ADIC taucht nämlich das problem mit main auf
+  aber vermutlich weil SDL_types.h included wird und das #define main SDL_main macht
+
+
 - think about non-blocking I/O with timeouts especially for network streams
   or multi-threading
 - check for needed std c++ features and the bug which caused me to switch to gcc3

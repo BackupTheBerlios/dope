@@ -67,7 +67,9 @@ int main(int argc,char *argv[])
     URI uri("http://schlumpf/dope/test.php3");
     HTTPStreamBuf layer0(uri);
     URLEncodeStream<HTTPStreamBuf> out(layer0);
+#ifndef WIN32
     signal(SIGPIPE,sigPipeHandler);
+#endif
     form f;
     f.foo="hey this is foo";
     f.bar="hey this is bar";

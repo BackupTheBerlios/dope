@@ -14,18 +14,21 @@ libdopeinclude_HEADERS = \
 	debug.h minihttp.h xmldominstream.h \
 	minixml.h xmldomoutstream.h \
 	dom.h namemanip.h \
-	dope.h network.h \
+	dope.h \
 	objectfactory.h \
 	dopeexcept.h raw.h xmlsaxinstream.h \
 	dopestl.h saxwrapper.h xslstream.h \
 	dopesignal.h \
 	typenames.h streamtraits.h \
 	argvparser.h \
-	timestamp.h
+	timestamp.h \
+	network.h \
+	socket.h
+
 
 lib_LTLIBRARIES = libdope.la
 libdope_la_SOURCES = $(libdopeinclude_HEADERS) $(noinstheaders) \
-	dom.cpp network.cpp dope.cpp timestamp.cpp
+	dom.cpp network.cpp socket.cpp dope.cpp timestamp.cpp
 
 libdope_la_LDFLAGS = -version-info @DOPE_LTVERSION@ @DOPE_LDADD@
 

@@ -2,6 +2,15 @@
 #include <sys/time.h> // timeval
 #include <unistd.h>
 
+#if defined(__WIN32__) || defined(WIN32)
+
+// need timeval
+
+#define __USE_W32_SOCKETS
+#include <windows.h>
+
+#endif
+
 TimeStamp::TimeStamp(float sec)
 {
   m_sec=int(sec);
@@ -11,10 +20,17 @@ TimeStamp::TimeStamp(float sec)
 
 void TimeStamp::now()
 {
+#ifdef HAVE_GETTIMEOFDAY
   timeval s;
   gettimeofday(&s,NULL);
   m_sec=s.tv_sec;
   m_usec=s.tv_usec;
+#elsif defined (__WIN32__) || defined(WIN32)
+  unsigned long n=GetTickCount();
+  m_sec=n/1000;
+  n-=m_sec*1000;
+  m_usec=n*1000;
+#endif
 }
 
 TimeStamp TimeStamp::operator-(const TimeStamp &o) const

@@ -25,7 +25,9 @@ void sigPipeHandler(int x){
 int main(int argc,char *argv[])
 {
   try {
+#ifndef WIN32
     signal(SIGPIPE,sigPipeHandler);
+#endif
     foo f;
     f.setSome();
     HTTPStreamBuf layer0("http://schlumpf/dope/test.php3");

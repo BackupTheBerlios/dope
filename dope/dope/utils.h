@@ -156,7 +156,7 @@ inline bool split(const std::string &s, std::string &first, std::string &second,
       if (p+1<s.size())
 	second=s.substr(p+1);
       else
-	second.clear();
+	second=""; // mingw does not have second.clear();
       return true;
     }
   //    else

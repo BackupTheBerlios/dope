@@ -1,43 +1,31 @@
-// ---------------------------------------------------------------------------
-// 'lib-netstream++' is a library that helps you to build networked 
-//  applications with c++ or to be a base to build further abstract
-//  coomunication libraries
-//  it provides two classes: inetstream and onetstream that should
-//  behave like any other standard istream/ostream
-//
-//  Mainly it is a wrapper around a subset of libc system calls related
-//  to sockets (see also info libc sockets) 
-//  TODO:
-//  * only tested with linux
-//  Current restrictions:
-//  * only IP4
-//  * no internationilzation support
-//  * only SOCK_STREAM sockets are supported (no plans to change this)
-//  * only internet namespace socket adresses are supported (no named sockets)
-//
-//  Copyright (C) Jens Thiele <karme@unforgettable.com>
-//
-//  This library is free software; you can redistribute it and/or
-//  modify it under the terms of the GNU Library General Public
-//  License as published by the Free Software Foundation; either
-//  version 2 of the License, or (at your option) any later version.
-//
-//  This library is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-//  Library General Public License for more details.
-//
-//  You should have received a copy of the GNU Library General Public
-//  License along with this library; if not, write to the Free
-//  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//
-// ---------------------------------------------------------------------------
-
 #ifndef DOPE_NETWORK_H
 #define DOPE_NETWORK_H
 
-// define IPPORT_RESERVED and IPPORT_USERRESERVED
-// and internet addresses
+/*
+ * Copyright (C) 2002 Jens Thiele <karme@berlios.de>
+ * 
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+/*!
+   \file dope/network.h
+   \brief socket wrapper
+   \author Jens Thiele
+*/
+
+
 #include "dope.h"
 
 // standard c++ includes
@@ -54,201 +42,30 @@
 #include <stdexcept>
 
 
-// "unix" includes
-// for htons
-#include <netinet/in.h>
-/*
-  attention on SunOS this makes a #define connect __xnet_connect
-  if _XPG4_2 is defined which is defined (at least with gcc >=3)
-  s.a.:
-  http://gcc.gnu.org/cgi-bin/gnatsweb.pl?cmd=view%20audit-trail&database=gcc&pr=5440
-*/
-#include <sys/socket.h>
-#if defined(connect)
-// this assumes that if connect is defined it is defined to be __xnet_connect !!
-#define DOPE_RESTORE_CONNECT __xnet_connect
-#undef connect
-#endif
-
-/*
-#include <sys/types.h>
-#include <unistd.h>
-*/
-
 // sigc++
 #include <sigc++/signal_system.h>
 
 // other dope includes
 #include "dopeexcept.h"
 #include "timestamp.h"
+#include "socket.h"
 
-// uncomment this one if you don't want to use exceptions
-//#define LIB_NET_NO_EXCEPTIONS
 
-/** class representing a port
-   * @author Jens Thiele <karme@unforgettable.com>
-   * May 31 2000 
-   */
-class Port{
-public:
-  Port(unsigned short int _port_no,bool host_byte_order=true)
-  {
-    if (host_byte_order)
-      libc_portno=htons(_port_no);
-  }
-  //  Port(){}
-  
-  unsigned short int get_hportno() const 
-  {return ntohs(libc_portno);}
-  unsigned short int get_nportno() const 
-  {return libc_portno;}
-  bool operator=(const Port &op) const 
-  {return get_nportno()==op.get_nportno();}
-private:
-  unsigned short int libc_portno;
-};
+#if defined(__WIN32__) || defined(WIN32)
 
-/** class representing an internet host address
-   * @author Jens Thiele <karme@unforgettable.com>
-   * May 31 2000 
-   * \todo make ipv6 work
-   */
-class HostAddress{
-public:
-  /* get address of host named by name 
-   * uses set_from_name
-   * Attention read comments to set_from name (it may throw an exception!)
-   */
-  HostAddress(const char *name);
-  // create pseudo address for listening on incoming connections
-  HostAddress() 
-  {set_accept_connections();}
-  // just take network byte order address as unsigned long int
-  HostAddress(unsigned long int _host_address) : host_address(_host_address)
-  {}
-  void set_accept_connections()
-  {host_address=INADDR_ANY;}
-  bool get_accept_connections()
-  {return host_address==INADDR_ANY;}
-  void set_loopback()
-  {host_address=INADDR_LOOPBACK;}
-  void set_broadcast()
-  {host_address=INADDR_BROADCAST;}
+// need fd_set
 
-  /**
-     This method sets the Internet host address from the
-     standard numbers-and-dots notation.
-     If the address isn't valid it throws an exception / returns false
-  */
-  bool set_from_number_and_dot(const char *name);
-  /**
-     This method sets the Internet host address from it's
-     domainname or standard numbers-and-dots notation.
-     Attention:
-     This may need a name lookup which blocks for a long time
-     especially in case of name server or network problems 
-     On any error: this method throws an exception / returns false
-  */
-  bool set_from_name(const char *name);
-  in_addr get_host_address() const;
-private:
-  unsigned long int host_address;
-};
+#define __USE_W32_SOCKETS
+#include <windows.h>
 
-struct sockaddr;
+#endif
 
-/** class representing an internet address (specialized address)
-   * @author Jens Thiele <karme@unforgettable.com>
-   * May 31 2000 
-   */
-class InternetAddress {
-public:
-  InternetAddress(const HostAddress &_in_host_addr,const Port &_port);
-  //  InternetAddress(){}
-  
-  sockaddr *get_socket_address();
-  bool get_accept_connections() 
-  {return in_host_addr.get_accept_connections();}
-private:
-  sockaddr_in sock_addr_in;
-  HostAddress in_host_addr;
-  Port port;
-};
-
-/** class representing a socket
-   * @author Jens Thiele <karme@unforgettable.com>
-   * May 31 2000 
-   */
-class Socket{
-public:
-  // create "client socket object"
-  Socket(const InternetAddress &_internet_address, bool runInit=false);
-  // create "server socket object"
-  Socket(const Port &_port, bool runInit=false);
-  // use ready system socket
-  Socket(const InternetAddress &_internet_address,int _socket_handle, bool runInit=false);
-
-  /** create system socket
-      if it is a "client socket":
-      connect to internet address
-      if it is a "server socket":
-      bind socket to address and listen
-  */
-  bool init();
-  bool reuse_socket();
-  bool bind_socket();
-  bool listen_socket();
-  bool connect_socket();
-  int get_handle() const
-  {
-    return socket_handle;
-  }
-  bool get_close_on_delete()
-  {
-    return close_on_delete;
-  }
-  void set_close_on_delete(bool _c)
-  {
-    close_on_delete=_c;
-  }
-  ~Socket();
-
-  //! set socket to blocking or non-blocking mode - default is blocking
-  void setBlocking(bool block);
-
-  //! test for input
-  /*!
-    \param timeout from man 2 select: upper bound on the amount of time elapsed
-    before select returns. It may be zero, causing  select  to
-    return  immediately.  If  timeout  is  NULL  (no timeout),
-    select can block indefinitely.
-
-    \return true if data is available otherwise false
-  */
-  bool inAvail(const TimeStamp* timeout=NULL);
-
-  //! see man read
-  ssize_t read(void *buf, size_t count);
-  //! see man write
-  ssize_t write(const void *buf, size_t count);
-private:
-  bool close_on_delete;
-  int socket_handle;
-  InternetAddress internet_address;
-};
-
-//! basic netstreambuffer class
-/*! 
-  todo:
-  the constructors may throw exceptions which aren't correctly handled yet
-  replace _M_* specific to gnu stdc++ lib? with corresponding functions
-*/
 
 template <typename _CharT, typename _Traits = std::char_traits<_CharT> >
 class BasicNetStreamBuf : public std::basic_streambuf<_CharT, _Traits>
 {
 protected:
-Socket sock;
+  Socket sock;
 
 public:
   typedef _CharT 					char_type;
@@ -309,8 +126,8 @@ protected:
     int bsize=1024;
     char_type * newBuf=new char_type[bsize];
     setg(newBuf,newBuf,newBuf+bsize);
-    ssize_t res;
-    ssize_t toread=sizeof(char_type)*bsize;
+    int res;
+    int toread=sizeof(char_type)*bsize;
     res=sock.read((void *)gptr(),toread);
     if (res>0) {
       if (res!=toread) {
@@ -327,37 +144,37 @@ protected:
   }
 
   /*
-  std::streamsize 
-  xsgetn(char_type* s, std::streamsize n)
-  {
+    std::streamsize 
+    xsgetn(char_type* s, std::streamsize n)
+    {
     std::streamsize __ret = 0;
     while (__ret < n)
-      {
-	size_t __buf_len = in_avail();
-	if (__buf_len > 0)
-	    {
-	      // consume chars in buffer
-	      size_t __remaining = n - __ret;
-	      size_t __len = std::min(__buf_len, __remaining);
-	      traits_type::copy(s, gptr(), __len);
-	      __ret += __len;
-	      s += __len;
-	      setg(eback(),gptr()+__len,egptr());
-	      _M_in_cur_move(__len);
-	    }
-	  if (__ret < n)
-	    {
-	      // read from net
-	      size_t remaining = n - __ret;
-	      int got=read(sock.get_handle(),(void *)s,remaining);
-	      if (got>0) {
-		return __ret+got;
-	      }
-	      return __ret;
-	    }
-	}
-      return __ret;
-      }*/
+    {
+    size_t __buf_len = in_avail();
+    if (__buf_len > 0)
+    {
+    // consume chars in buffer
+    size_t __remaining = n - __ret;
+    size_t __len = std::min(__buf_len, __remaining);
+    traits_type::copy(s, gptr(), __len);
+    __ret += __len;
+    s += __len;
+    setg(eback(),gptr()+__len,egptr());
+    _M_in_cur_move(__len);
+    }
+    if (__ret < n)
+    {
+    // read from net
+    size_t remaining = n - __ret;
+    int got=read(sock.get_handle(),(void *)s,remaining);
+    if (got>0) {
+    return __ret+got;
+    }
+    return __ret;
+    }
+    }
+    return __ret;
+    }*/
   
   //! 
   /*! 
@@ -374,10 +191,10 @@ protected:
   {
     // todo - eof should close ?
     DOPE_CHECK(pbase());
-    ssize_t towrite=((char *)pptr())-((char *)pbase());
-    ssize_t written=0;
+    int towrite=((char *)pptr())-((char *)pbase());
+    int written=0;
     do {
-      ssize_t res=sock.write((void *)((char *)pbase()+written),towrite-written);
+      int res=sock.write((void *)((char *)pbase()+written),towrite-written);
       if (res<0)
 	return traits_type::eof();
       written+=res;

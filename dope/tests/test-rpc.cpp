@@ -140,8 +140,12 @@ public:
     streamServer.newConnection.connect(SigC::slot(*this,&Server::handleNewConnection));
     streamServer.dataAvailable.connect(SigC::slot(*this,&Server::handleDataAvailable));
     streamServer.connectionClosed.connect(SigC::slot(*this,&Server::handleConnectionClosed));
-    while (msgs<5)
+    std::cout << "Server started\n";
+    while (msgs<5) {
       streamServer.select();
+      std::cout << "Got data (select returned)\n";
+    }
+    std::cout << "Exiting\n";
     connections.clear();
     return 0;
   }
@@ -156,9 +160,13 @@ protected:
 int main(int argc,char *argv[])
 {
   try {
+#ifndef WIN32
     signal(SIGPIPE,sigPipeHandler);
-
-    NetStreamBufServer server(10000);
+#endif
+    Port p=10000;
+    if (argc>=3)
+      stringToAny(argv[2],p);
+    NetStreamBufServer server(p);
     try{
       Server server;
       server.main(argc,argv);
@@ -169,7 +177,9 @@ int main(int argc,char *argv[])
       std::cerr << error << std::endl;
     }
     std::cerr << "can't create server => create client"<< std::endl;
-    InternetAddress adr(HostAddress("localhost"),10000);
+    std::string shost("localhost");
+    if (argc>=2) shost=argv[1];
+    InternetAddress adr(shost,p);
     NetStreamBuf layer0(adr);
     OutProto l2(layer0);
     SignalOutAdapter<OutProto> s(l2);

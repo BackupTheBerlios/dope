@@ -36,6 +36,13 @@ test_xmlrpc_SOURCES = test-xmlrpc.cpp $(common)
 test_argvparser_SOURCES = test-argvparser.cpp $(common)
 test_httppost_SOURCES = test-httppost.cpp
 test_streambuf_SOURCES = test-streambuf.cpp
+
+
+# todo make check on cross compiles to mingw has problems
+# the check programs are build fine with .exe
+# then the tests should be run (which will not work anyway) but because they depend
+# on the programs (without .exe) they are tried to be build a second time
+
 TESTS = $(automatictests)
 
 

@@ -1,48 +1,48 @@
 <!doctype html public "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
 <html>
-<head>
-<title>DOPE++ (=Distributed Object Programing Environment for C++)</title>
-<META NAME="Description" CONTENT="DOPE++ llibdope home-page C++ serialization pickling">
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-</head>
-<body>
-<h1>DOPE++</h1>
-<h2>Purpose</h2>
-DOPE++ (=Distributed Object Programing Environment for C++) is a C++ Template library for pickling / programing in heterogenous network environments.
+  <head>
+    <title>DOPE++ (=Distributed Object Programing Environment for C++)</title>
+    <META NAME="Description" CONTENT="DOPE++ llibdope home-page C++ serialization pickling">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  </head>
+  <body>
+    <h1>DOPE++</h1>
+    <h2>Purpose</h2>
+    DOPE++ (=Distributed Object Programing Environment for C++) is a C++ Template library for pickling / programing in heterogenous network environments.
 
-<h2>General Introduction</h2>
-This library is similar to <a href="http://xtl.sourceforge.net/">XTL</a>. Perhaps you want to read about <a href="http://xtl.sourceforge.net/">XTL</a> first. Differences between <a href="http://xtl.sourceforge.net/">XTL</a> and DOPE++:
-<UL>
-<LI>DOPE++ does not try to be portable to non-standard C++ compilers - at least I will not add any ugly code for some specific compiler (main development uses <a href="http://gcc.gnu.org/">GCC</a> >=3)</LI>
-<LI>DOPE++ uses additional information about class names and member names</LI>
-<LI>DOPE++ uses std::streambuf as underlying byte stream</LI>
-<LI>Additional I/O formats: <a href="http://www.w3.org/TR/REC-xml">XML</a>, raw (platform dependant), command line parser</LI>
-<LI>I think <a href="http://xtl.sourceforge.net/">XTL</a> weights performance higher than DOPE++. DOPE++ is intended to be a bridge between the fast world of C++ and the slow interpreter world. (I intend to also write some "streams" which allow to pass data directly to interpreters (JAVA, Scheme, Python). And of course <a href="http://www.w3.org/TR/REC-xml">XML</a> based protocols like <a href="http://www.xmlrpc.com/">XML-RPC</a> and <a href="http://www.w3.org/2000/xp/Group/">SOAP</a> are slow by concept</LI>
-</UL>
-I do NOT claim that DOPE++ is better than <a href="http://xtl.sourceforge.net/">XTL</a>:
-<UL>
-<LI><a href="http://xtl.sourceforge.net/">XTL</a> is stable and DOPE++ is not</LI>
-<LI>DOPE++ is still missing some features of <a href="http://xtl.sourceforge.net/">XTL</a> ("intelligent" pointer handling)</LI>
-</UL>
-Of course I hope it will get better than <a href="http://xtl.sourceforge.net/">XTL</a> ;-). But for now there is perhaps no reason to switch to DOPE++ if you want portability now and don't need the class and member names.
-<h2><a name="requirements">Dependencies/Requirements</a></h2>
-<h3>Build dependencies if you got the tar-ball</h3>
-<UL>
-<LI>recent C++ compiler and std C++ library (f.e. <a href="http://gcc.gnu.org/">GCC</a> >=3) (tested with: 3.0.3,3.0.4,3.1.0)</LI>
-<LI><a href="http://libsigc.sourceforge.net/">libsigc++</a> (I use 1.0.4) Attention: you must compile all C++ libraries with compilers having compatible ABIs. F.e. gcc 2.95.x and gcc 3.x will not work together</LI>
-<LI><a href="http://www.libxml.org">libxml-dev a.k.a. gnome-xml >=2?</a> (I use 2.4.12)</LI>
-<LI><a href="http://www.boost.org">boost</a> (I use 1.21.2?) - only the headers are used</LI>
-<LI>UNIX sockets</LI>
-</UL>
-<h3>if you checked out from CVS</h3>
-<UL>
-<LI><a href="http://www.gnu.org/software/autoconf/autoconf.html">autoconf</a> >= 2.5</LI>
-<LI><a href="http://www.gnu.org/software/automake/">automake</a> (tested with: 1.6.1 and 1.4)</LI>
-<LI><a href="http://www.gnu.org/software/libtool/libtool.html">libtool</a> (I use 1.4.2a)</LI>
-<LI><a href="http://www.doxygen.org">doxygen</a> (tested with: 1.2.11.1, 1.2.15) to build the <a href="http://dope.berlios.de/doxygen/html/index.html">API docs</a></LI>
-</UL>
-<h3>Compilation</h3>
-<pre>
+    <h2>General Introduction</h2>
+    This library is similar to <a href="http://xtl.sourceforge.net/">XTL</a>. Perhaps you want to read about <a href="http://xtl.sourceforge.net/">XTL</a> first. Differences between <a href="http://xtl.sourceforge.net/">XTL</a> and DOPE++:
+    <UL>
+      <LI>DOPE++ does not try to be portable to non-standard C++ compilers - at least I will not add any ugly code for some specific compiler (main development uses <a href="http://gcc.gnu.org/">GCC</a> >=3)</LI>
+      <LI>DOPE++ uses additional information about class names and member names</LI>
+      <LI>DOPE++ uses std::streambuf as underlying byte stream</LI>
+      <LI>Additional I/O formats: <a href="http://www.w3.org/TR/REC-xml">XML</a>, raw (platform dependant), command line parser</LI>
+      <LI>I think <a href="http://xtl.sourceforge.net/">XTL</a> weights performance higher than DOPE++. DOPE++ is intended to be a bridge between the fast world of C++ and the slow interpreter world. (I intend to also write some "streams" which allow to pass data directly to interpreters (JAVA, Scheme, Python). And of course <a href="http://www.w3.org/TR/REC-xml">XML</a> based protocols like <a href="http://www.xmlrpc.com/">XML-RPC</a> and <a href="http://www.w3.org/2000/xp/Group/">SOAP</a> are slow by concept</LI>
+    </UL>
+    I do NOT claim that DOPE++ is better than <a href="http://xtl.sourceforge.net/">XTL</a>:
+    <UL>
+      <LI><a href="http://xtl.sourceforge.net/">XTL</a> is stable and DOPE++ is not</LI>
+      <LI>DOPE++ is still missing some features of <a href="http://xtl.sourceforge.net/">XTL</a> ("intelligent" pointer handling)</LI>
+    </UL>
+    Of course I hope it will get better than <a href="http://xtl.sourceforge.net/">XTL</a> ;-). But for now there is perhaps no reason to switch to DOPE++ if you want portability now and don't need the class and member names.
+    <h2><a name="requirements">Dependencies/Requirements</a></h2>
+    <h3>Build dependencies if you got the tar-ball</h3>
+    <UL>
+      <LI>recent C++ compiler and std C++ library (f.e. <a href="http://gcc.gnu.org/">GCC</a> >=3) (tested with: 3.0.3,3.0.4,3.1.0)</LI>
+      <LI><a href="http://libsigc.sourceforge.net/">libsigc++</a> (I use 1.0.4) Attention: you must compile all C++ libraries with compilers having compatible ABIs. F.e. gcc 2.95.x and gcc 3.x will not work together</LI>
+      <LI><a href="http://www.libxml.org">libxml-dev a.k.a. gnome-xml >=2?</a> (I use 2.4.12)</LI>
+      <LI><a href="http://www.boost.org">boost</a> (I use 1.21.2?) - only the headers are used</LI>
+      <LI>UNIX sockets</LI>
+    </UL>
+    <h3>if you checked out from CVS</h3>
+    <UL>
+      <LI><a href="http://www.gnu.org/software/autoconf/autoconf.html">autoconf</a> >= 2.5</LI>
+      <LI><a href="http://www.gnu.org/software/automake/">automake</a> (tested with: 1.6.1 and 1.4)</LI>
+      <LI><a href="http://www.gnu.org/software/libtool/libtool.html">libtool</a> (I use 1.4.2a)</LI>
+      <LI><a href="http://www.doxygen.org">doxygen</a> (tested with: 1.2.11.1, 1.2.15) to build the <a href="http://dope.berlios.de/doxygen/html/index.html">API docs</a></LI>
+    </UL>
+    <h3>Compilation</h3>
+    <pre>
 #exec bash
 # only needed if you checked out from cvs
 # ./bootstrap.sh
@@ -53,34 +53,42 @@ Of course I hope it will get better than <a href="http://xtl.sourceforge.net/">X
 ./configure
 make
 make install
-</pre>
-<h2>License/Copyright</h2>
-<a href="COPYING">GPL</a> Copyright (C) 2002 Jens Thiele &lt;jens.thiele@student.uni-tuebingen.de&gt;
-<h2>Links</h2>
-<UL>
-<LI><a href="http://dope.berlios.de/doxygen/html/index.html">Reference manual</a></LI>
-<LI><a href="doxygen/html/index.html">local Reference manual</a> (only available if you generated it)</LI>
-</UL>
-<H2>The stream layers:</H2>
-<TABLE>
-<TR>
-<TD>Layer</TD><TD>description</TD><TD>examples / implementations</TD>
-</TR><TR>
-<TD>0</TD><TD>byte stream (using the STL streambuf concept => you can use them as underlying buffer)</TD>
-<TD>&lt;streambuf&gt;, sockets, strings, files<TD></TD>
-</TR><TR>
-<TD>1</TD><TD>Strongly typed data stream (only builtin types)</TD><TD>layer0 mapper, raw stream</TD>
-</TR><TR>
-<TD>2</TD><TD>Strongly typed structured data stream (any number of types) with complete typeinfo available
-</TD><TD>layer1 mapper, <a href="http://www.w3.org/TR/REC-xml">XML</a>, debug</TD>
-</TR>
-</TABLE>
-BTW the naming convention stream is a bit restricted
-- you can do much more and use it as an class (forward) iterator (meta-classes), or for example as a command line parser
-<h2>Implementation and Design</h2>
-<h3>Review of concepts</h3>
-<h4>Concepts i tried</h4>
-<PRE>
+    </pre>
+    <h3>Tested platforms</h3>
+    Please send me a <a href"mailto:karme@berlios.de">mail</a> if you compiled dope on another platform.
+    <table>
+	<tr><td>OS</td><td>compiler</td><td>comments</td></tr>
+	<tr><td>linux</td><td>gcc 3.0.X</td><td></td></tr>
+	<tr><td>linux</td><td>gcc 3.1.X</td><td></td></tr>
+	<tr><td>win98</td><td>mingw32 cross-compiler (running on linux) based on gcc 3.1</td><td>experimental</td></tr>
+    </table>
+    <h2>License/Copyright</h2>
+    <a href="COPYING">GPL</a> Copyright (C) 2002 Jens Thiele &lt;jens.thiele@student.uni-tuebingen.de&gt;
+    <h2>Links</h2>
+    <UL>
+      <LI><a href="http://dope.berlios.de/doxygen/html/index.html">Reference manual</a></LI>
+      <LI><a href="doxygen/html/index.html">local Reference manual</a> (only available if you generated it)</LI>
+    </UL>
+    <H2>The stream layers:</H2>
+    <TABLE>
+	<TR>
+	  <TD>Layer</TD><TD>description</TD><TD>examples / implementations</TD>
+	</TR><TR>
+	  <TD>0</TD><TD>byte stream (using the STL streambuf concept => you can use them as underlying buffer)</TD>
+	  <TD>&lt;streambuf&gt;, sockets, strings, files<TD></TD>
+	</TR><TR>
+	  <TD>1</TD><TD>Strongly typed data stream (only builtin types)</TD><TD>layer0 mapper, raw stream</TD>
+	</TR><TR>
+	  <TD>2</TD><TD>Strongly typed structured data stream (any number of types) with complete typeinfo available
+	  </TD><TD>layer1 mapper, <a href="http://www.w3.org/TR/REC-xml">XML</a>, debug</TD>
+	</TR>
+    </TABLE>
+    BTW the naming convention stream is a bit restricted
+    - you can do much more and use it as an class (forward) iterator (meta-classes), or for example as a command line parser
+    <h2>Implementation and Design</h2>
+    <h3>Review of concepts</h3>
+    <h4>Concepts i tried</h4>
+    <PRE>
 This is my Xth (X>3) aproach to integrate object serialization (externalization/marshalling/...) into C++.
 
 Review: (as far as I remember)
@@ -139,39 +147,39 @@ upon the generated extended runtime type information.
 was too slow and memory consuming.
 never used in a real project - and got confused
 (parser is generated using itself - and i tried too many different things in one project)
-</PRE>
-<h4>Preprocessor - IDL - (language extensions)</h4>
-Perhaps: libqt and its mop? - corba ?
-<h4><a href="http://xtl.sourceforge.net/">XTL</a></h4>
-<PRE>
+    </PRE>
+    <h4>Preprocessor - IDL - (language extensions)</h4>
+    Perhaps: libqt and its mop? - corba ?
+    <h4><a href="http://xtl.sourceforge.net/">XTL</a></h4>
+    <PRE>
 Related projects i looked at/used:
 The best i have found:
 template based
 XTL (<a href="http://xtl.sourceforge.net/">http://xtl.sourceforge.net</a>)
 good concept - simple clean design
-</PRE>
+    </PRE>
 
-<h3>Conclusions</h3>
-<PRE>
+    <h3>Conclusions</h3>
+    <PRE>
 NOW DOPE (3 or 4 ? - i decided to start versioning back from 0) - back to the roots
 it is heavily based/inspired upon/by <a href="http://xtl.sourceforge.net/">XTL</a>.
 you can think of it as a rewrite of <a href="http://xtl.sourceforge.net/">XTL</a> with additional name information
-</PRE>
-<H2>Further design explanations:</H2>
-<UL>
-<LI>dropped the support for const output streams because it does not fit into the one method approach</LI>
-<LI>member-names always must be suplied (not optionally as extension or another layer on top)</LI>
-</UL>
+    </PRE>
+    <H2>Further design explanations:</H2>
+    <UL>
+      <LI>dropped the support for const output streams because it does not fit into the one method approach</LI>
+      <LI>member-names always must be suplied (not optionally as extension or another layer on top)</LI>
+    </UL>
     <hr>
     <address><a href="mailto:jens.thiele@student.uni-tuebinhen.de">Jens Thiele</a></address>
-<!-- Created: Mon Aug  6 15:12:02 CEST 2001 -->
-<!-- hhmts start -->
-Last modified: Thu Aug 15 15:52:25 CEST 2002
+    <!-- Created: Mon Aug  6 15:12:02 CEST 2001 -->
+    <!-- hhmts start -->
+Last modified: Sun Aug 18 15:26:14 CEST 2002
 <!-- hhmts end -->
-  <p>
-    <a href="http://validator.w3.org/check/referer"><img border="0"
-        src="http://www.w3.org/Icons/valid-html40"
-        alt="Valid HTML 4.0!" height="31" width="88"></a>
-  </p>
-</body>
+    <p>
+      <a href="http://validator.w3.org/check/referer"><img border="0"
+							   src="http://www.w3.org/Icons/valid-html40"
+							   alt="Valid HTML 4.0!" height="31" width="88"></a>
+    </p>
+  </body>
 </html>
