@@ -6,6 +6,8 @@ PREFIX=/tmp/usr
 export CXX=g++-3.2
 export CXXFLAGS="-Wall -ansi -pedantic -Wno-long-long -Os -DNDEBUG"
 PACKAGE=dope
+SETUPCROSS=~/develop/cross/config
+DOPE_CROSS_CONFIGURE_OPTIONS="--with-sigc-prefix=/home/jens/develop/cross --with-xml-prefix=/home/jens/develop/cross --prefix=/home/jens/develop/cross --disable-shared"
 #end of configuration
 
 set -e
@@ -42,6 +44,37 @@ if test -e $DIR; then
 	rm -rf $DIR
 fi
 tar xzvf $PACKAGE/$DISTFILE
+
+#build in seperate directory
+mkdir -f build
+cd build
+
+#native arch
+mkdir -f arch-native
+cd arch-native
+if test -e $DIR; then
+	echo Warning $DIR directory already exists - abort or I will remove it
+	read
+	rm -rf $DIR
+fi
 cd $DIR
-./configure --disable-shared --prefix=$PREFIX
+$BUILDDIR/$DIR/configure --disable-shared --prefix=$PREFIX
 make install
+
+#cross compile
+if test -e $SETUPCROSS; then
+    source $SETUPCROSS
+    cd $BUILDDIR/build
+    mkdir -f arch-cross
+    cd arch-cross
+    if test -e $DIR; then
+	echo Warning $DIR directory already exists - abort or I will remove it
+	read
+	rm -rf $DIR
+    fi
+    cd $DIR
+    $BUILDDIR/$DIR/configure $CROSS_CONFIGURE_OPTIONS $DOPE_CROSS_CONFIGURE_OPTIONS --prefix=$PREFIX/cross
+    make install
+else
+    echo cross compiler config script not found
+fi

@@ -220,7 +220,7 @@ fi
 if test "@libdir@" != /usr/lib ; then
   libs="-L@libdir@"
 fi
-af_cflags="$af_cflags -I@includedir@/@PACKAGE@-@VERSION@ @DOPE_CFLAGS@"
+af_cflags="$af_cflags -I@includedir@/@PACKAGE@-@VERSION@ -I@libdir@/@PACKAGE@-@VERSION@ @DOPE_CFLAGS@"
 af_libs="$libs -ldope @DOPE_LIBS@ $af_libs"
 af_ltlibs="$prefix/lib/libdope.la @DOPE_LTLIBS@"
 

@@ -30,6 +30,9 @@
 #include "dopeexcept.h"
 #include "bswap.h"
 
+// DOPE_BYTE_ORDER
+#include <dope/arch.h>
+
 //! simple network byte order (raw) layer 1 input stream
 /*
   \note longs are stored as long longs
@@ -68,7 +71,7 @@ public:
     return in(static_cast<char>(c));
   }
 
-#if (__BYTE_ORDER == __LITTLE_ENDIAN)
+#if (DOPE_BYTE_ORDER == DOPE_LITTLE_ENDIAN)
 #define DOPE_IN(T) \
 L1NBOInStream &in(T &d) {\
     if (layer0.sgetn((char *)&d,sizeof(T))!=sizeof(T)) \
@@ -188,7 +191,7 @@ public:
     layer0.sputc(c);return *this;
   }
 
-#if (__BYTE_ORDER == __LITTLE_ENDIAN)
+#if (DOPE_BYTE_ORDER == DOPE_LITTLE_ENDIAN)
 #define DOPE_OUT(T) \
 L1NBOOutStream &out(T d) {\
     bswap(d); \

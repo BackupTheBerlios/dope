@@ -27,78 +27,14 @@
  * Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
  * MA 02111-1307, USA
  *
- * $Id: bswap.h,v 1.2 2003/04/29 22:09:10 karme Exp $
+ * $Id: bswap.h,v 1.3 2003/05/07 08:24:45 karme Exp $
  */
 
 #ifndef DOPE_BSWAP_H
 #define DOPE_BSWAP_H
 
-#if defined(__GNUC__) 
-#	if __GNUC__ >2 || ( __GNUC__ == 2 && __GNUC_MINOR__ >=95 ) // >= G++ 2.95
-#		define XTL_CONFIG_SIMPLE_CONTAINERS
-#	endif
-
-	typedef long long longlong;
-	typedef unsigned long long unsignedlonglong;
-
-#elif defined (__DECCXX)
-#      	define XTL_CONFIG_SIMPLE_CONTAINERS
-
-	typedef long long int longlong;
-	typedef unsigned long long int unsignedlonglong;
-
-#elif defined (__sgi)
-#      	define XTL_CONFIG_SIMPLE_CONTAINERS
-
-	typedef long long int longlong;
-	typedef unsigned long long int unsignedlonglong;
-
-#elif defined (_WIN32)
-
-#	define XTL_CONFIG_COMPOSITE_BUG
-#	define XTL_CONFIG_LACK_ENDIAN_H
-
-	typedef __int64  longlong;
-	typedef unsigned __int64  unsignedlonglong;
-
-	// Disable some stupid warnings
-#	pragma warning(disable:4127 4786 4800)
-
-	// Work around for broken for-scoping with Visual C++ 6.0
-#	define for if(0);else for
-
-	// Enable a bunch of useful warnings
-#	pragma warning(3:4019 4032 4057 4061 4125 4130 4152 4189 4201 4706)
-
-#else
-#if HAVE_LONG_LONG
-	typedef long long longlong;
-	typedef unsigned long long unsignedlonglong;
-#endif
-#endif
-
-// Establish __BYTE_ORDER
-#ifdef __linux__
-#	include <endian.h>
-#else
-#	define __LITTLE_ENDIAN 1234
-#	define __BIG_ENDIAN    4321
-#endif
-
-#if defined(__alpha) || defined(__alpha__)
-#	ifndef __BYTE_ORDER
-#		define __BYTE_ORDER __LITTLE_ENDIAN
-#	endif
-                                            
-#elif defined __sgi
-#	ifndef __BYTE_ORDER
-#		define __BYTE_ORDER __BIG_ENDIAN
-#	endif
-#endif
-
-#if ((__BYTE_ORDER != __LITTLE_ENDIAN) && (__BYTE_ORDER != __BIG_ENDIAN))
-#	error "Architecture not supported."
-#endif
+typedef long long longlong;
+typedef unsigned long long unsignedlonglong;
 
 // Don't use byteswap.h on Alpha machines because its buggy
 #if defined(__linux__) && !(defined(__alpha) || defined(__alpha__))

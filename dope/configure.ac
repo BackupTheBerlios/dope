@@ -23,11 +23,25 @@ AC_SUBST(DOPE_LTVERSION)
 
 AC_CONFIG_AUX_DIR(config)
 AM_INIT_AUTOMAKE($PACKAGE, $VERSION)
+dnl the configuration file - this is architecture dependant - does not get installed
+dnl and must not be included from files getting installed
+dnl if it should be installed at some time then it should be installed in /usr/lib
+dnl and not in /usr/include (why? the fhs does not say this - hmm I always thought
+dnl /usr/include should only contain architecture independent ..)
 AM_CONFIG_HEADER(dope/dopeconfig.h)
 AC_PROG_MAKE_SET
 AC_PROG_LIBTOOL
 AC_PROG_CC
 AC_PROG_CPP
+
+dnl byte order - todo: we need this in the header bswap.h (problem see above)
+DOPE_BYTE_ORDER=DOPE_LITTLE_ENDIAN
+AC_C_BIGENDIAN(
+	[
+		DOPE_BYTE_ORDER=DOPE_BIG_ENDIAN
+	])
+AC_SUBST(DOPE_BYTE_ORDER)
+
 dnl this sets GXX to yes if we use g++
 AC_PROG_CXX
 AC_PROG_CXXCPP
@@ -185,6 +199,6 @@ AC_SUBST(DOPE_LTLIBS)
 AC_SUBST(TEST_LDADD)
 
 dnl output files
-AC_CONFIG_FILES([Makefile doc/Makefile doc/Doxyfile config/Makefile config/m4/Makefile boost/Makefile boost/type_traits/Makefile scripts/Makefile scripts/dope-config dope/Makefile dope/dope.h tests/Makefile])
+AC_CONFIG_FILES([Makefile doc/Makefile doc/Doxyfile config/Makefile config/m4/Makefile boost/Makefile boost/type_traits/Makefile scripts/Makefile scripts/dope-config dope/Makefile dope/dope.h dope/arch.h tests/Makefile])
 AC_OUTPUT
 

@@ -160,5 +160,19 @@ inline int fatal(const char *file,int line,const char *func, const char *msg)
 */
 #define DOPE_WARN(msg) DOPE_MSG("WARNING: ",msg)
 
+//! DOPE_BYTE_ORDER is equal to DOPE_LITTLE_ENDIAN on little endian architectures
+/*!
+  \note the DOPE_BYTE_ORDER macro is defined in <dope/arch.h> which is created from
+  arch.h.in by autoconf and gets installed in /usr/lib/dope-?.?.?/dope/arch.h
+*/
+#define DOPE_LITTLE_ENDIAN 1234
+
+//! DOPE_BYTE_ORDER is equal to DOPE_BIG_ENDIAN on big endian architectures
+/*!
+  \note the DOPE_BYTE_ORDER macro is defined in <dope/arch.h> which is created from
+  arch.h.in by autoconf and gets installed in /usr/lib/dope-?.?.?/dope/arch.h
+*/
+#define DOPE_BIG_ENDIAN 4321
+
 #endif // DOPE_DOPE_H
 
