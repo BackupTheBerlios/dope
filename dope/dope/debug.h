@@ -59,6 +59,7 @@ DOPE_INLINE DebugOutStream &simple(T data, MemberName mname) \
 
   DOPE_SIMPLE(bool);
   DOPE_SIMPLE(char);
+  DOPE_SIMPLE(signed char);
   DOPE_SIMPLE(unsigned char);
   DOPE_SIMPLE(short);
   DOPE_SIMPLE(unsigned short);

@@ -31,6 +31,7 @@ DOPE_INLINE Layer2InAdapter &simple(type &data) \
 
   DOPE_SIMPLE(bool);
   DOPE_SIMPLE(char);
+  DOPE_SIMPLE(signed char);
   DOPE_SIMPLE(unsigned char);
   DOPE_SIMPLE(short);
   DOPE_SIMPLE(unsigned short);
@@ -178,6 +179,7 @@ DOPE_INLINE Layer2OutAdapter &simple(type data) \
 
   DOPE_SIMPLE(bool);
   DOPE_SIMPLE(char);
+  DOPE_SIMPLE(signed char);
   DOPE_SIMPLE(unsigned char);
   DOPE_SIMPLE(short);
   DOPE_SIMPLE(unsigned short);
