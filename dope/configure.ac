@@ -28,8 +28,31 @@ AC_PROG_MAKE_SET
 AC_PROG_LIBTOOL
 AC_PROG_CC
 AC_PROG_CPP
+dnl this sets GXX to yes if we use g++
 AC_PROG_CXX
 AC_PROG_CXXCPP
+
+dnl test for old gcc (<3) - we need >=3
+if test "x$GXX" = "xyes"; then
+	AC_LANG([C++])
+	AC_MSG_CHECKING([for gcc version >=3.x])
+	AC_TRY_COMPILE(, [
+		#if defined (__GNUC__)
+			#if (__GNUC__ == 2)
+				#error "Compiler too old"
+			#else
+				#if (__GNUC__ == 3)
+					// bene
+				#else
+					#error "Unknown gcc compiler version"
+				#endif
+			#endif
+		#else
+			// no gcc
+		#endif
+	], [AC_MSG_RESULT([yes])], [AC_MSG_ERROR([gcc is too old - we need gcc >=3])])
+	AC_LANG([C])
+fi
 
 
 dnl build options
