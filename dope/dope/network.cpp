@@ -60,13 +60,25 @@ bool NetStreamBufServer::select(const TimeStamp *timeout){
     ctimeout.tv_sec=timeout->getSec();
     ctimeout.tv_usec=timeout->getUSec();
   }
-  while (::select (FD_SETSIZE, &read_fd_set, NULL, NULL, (timeout) ? (&ctimeout) : NULL) < 0)
+  // Find the largest file descriptor
+  // todo - this should not be done on each select
+  int maxfd;
+  if (client_sockets.empty())
+    maxfd=server_socket.getHandle();
+  else {
+    // client_sockets is a map => sorted 
+    maxfd=client_sockets.rbegin()->first;
+    // does the std require a map to be sorted ascending ?
+    assert(maxfd>=client_sockets.begin()->first);
+  }
+  
+  while (::select (++maxfd, &read_fd_set, NULL, NULL, (timeout) ? (&ctimeout) : NULL) < 0)
     {
       if (errno!=EINTR)
 	DOPE_FATAL("select failed");
     }
   // which sockets have input pending ?
-  for (int i = 0; i < FD_SETSIZE; ++i)
+  for (int i = 0; i < maxfd; ++i)
     if (FD_ISSET (i, &read_fd_set))
       {
 	if (i == server_socket.getHandle())
