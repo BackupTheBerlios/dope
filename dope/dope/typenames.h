@@ -106,40 +106,44 @@ struct TypeNameTrait<X[]>
   }
 };
 
-//! declare TypeNameTrait for a simple type
-#define DOPE_DEF_SIMPLETYPE(type) \
+//! declare TypeNameTrait for a builtin type
+#define DOPE_TYPE(type) \
 struct TypeNameTrait<type> \
 { \
   static DOPE_INLINE TypeNameType name() DOPE_FCONST \
   { \
     return #type; \
   } \
-};
+}
 
-//! declare TypeNameTrait for a simple class (no templates)
-#define DOPE_DEF_SIMPLECLASS(type) \
+//! declare TypeNameTrait for a class (without templates)
+#define DOPE_CLASS(type) \
 struct TypeNameTrait<type> \
 { \
   static DOPE_INLINE TypeNameType name() DOPE_FCONST \
   { \
     return #type; \
   } \
-};
+}
 
-DOPE_DEF_SIMPLETYPE(char)
-DOPE_DEF_SIMPLETYPE(unsigned char)
-DOPE_DEF_SIMPLETYPE(short)
-DOPE_DEF_SIMPLETYPE(unsigned short)
-DOPE_DEF_SIMPLETYPE(int)
-DOPE_DEF_SIMPLETYPE(unsigned int)
-DOPE_DEF_SIMPLETYPE(long)
-DOPE_DEF_SIMPLETYPE(unsigned long)
-DOPE_DEF_SIMPLETYPE(float)
-DOPE_DEF_SIMPLETYPE(double)
-DOPE_DEF_SIMPLETYPE(bool)
-DOPE_DEF_SIMPLECLASS(std::string)
+DOPE_TYPE(char);
+DOPE_TYPE(unsigned char);
+DOPE_TYPE(short);
+DOPE_TYPE(unsigned short);
+DOPE_TYPE(int);
+DOPE_TYPE(unsigned int);
+DOPE_TYPE(long);
+DOPE_TYPE(unsigned long);
+DOPE_TYPE(float);
+DOPE_TYPE(double);
+DOPE_TYPE(bool);
+DOPE_CLASS(std::string);
 
-#define TEMPLATE1TYPE(type) \
+//! declare TypeNameTrait for a class with one template argument
+/*!
+  \note the template argument must have a TypeNameTrait, too
+*/
+#define DOPE_CLASS_T1(type) \
 template <typename T> \
 struct TypeNameTrait<type<T> > \
 { \
@@ -147,12 +151,16 @@ struct TypeNameTrait<type<T> > \
   { \
     return TypeNameType(#type)+LT+TypeNameTrait<T>::name()+GT; \
   } \
-};
+}
 
-TEMPLATE1TYPE(std::list)
-TEMPLATE1TYPE(std::vector)
+DOPE_CLASS_T1(std::list);
+DOPE_CLASS_T1(std::vector);
 
-#define TEMPLATE2TYPE(type) \
+//! declare TypeNameTrait for a class with two template arguments
+/*!
+  \note the template arguments each must have a TypeNameTrait, too
+*/
+#define DOPE_CLASS_T2(type) \
 template <typename K, typename V> \
 struct TypeNameTrait<type<K,V> > \
 { \
@@ -160,10 +168,45 @@ struct TypeNameTrait<type<K,V> > \
   { \
     return TypeNameType(#type)+LT+TypeNameTrait<K>::name()+SEP+TypeNameTrait<V>::name()+GT; \
   } \
-};
+}
 
-TEMPLATE2TYPE(std::pair)
-TEMPLATE2TYPE(std::map)
+DOPE_CLASS_T2(std::pair);
+DOPE_CLASS_T2(std::map);
+
+//! declare TypeNameTrait for a class with 3 template arguments
+/*!
+  \note the template arguments each must have a TypeNameTrait, too
+*/
+#define DOPE_CLASS_T3(type) \
+template <typename T1, typename T2, typename T3> \
+struct TypeNameTrait<type<T1,T2,T3> > \
+{ \
+  static DOPE_INLINE TypeNameType name() DOPE_FCONST \
+  { \
+    return TypeNameType(#type)+LT +TypeNameTrait<T1>::name() \
+                              +SEP+TypeNameTrait<T2>::name() \
+                              +SEP+TypeNameTrait<T3>::name() \
+                              +GT; \
+  } \
+}
+
+//! declare TypeNameTrait for a class with 4 template arguments
+/*!
+  \note the template arguments each must have a TypeNameTrait, too
+*/
+#define DOPE_CLASS_T4(type) \
+template <typename T1, typename T2, typename T3,typename T4> \
+struct TypeNameTrait<type<T1,T2,T3,T4> > \
+{ \
+  static DOPE_INLINE TypeNameType name() DOPE_FCONST \
+  { \
+    return TypeNameType(#type)+LT +TypeNameTrait<T1>::name() \
+                              +SEP+TypeNameTrait<T2>::name() \
+                              +SEP+TypeNameTrait<T3>::name() \
+                              +SEP+TypeNameTrait<T4>::name() \
+                              +GT; \
+  } \
+}
 
 #undef LT
 #undef GT
