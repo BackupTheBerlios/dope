@@ -72,6 +72,14 @@ inline std::string anyToString(std::string s)
 {
   return s;
 }
+inline std::string anyToString(unsigned char ui8)
+{
+  return anyToString(static_cast<unsigned int>(ui8));
+}
+inline std::string anyToString(signed char i8)
+{
+  return anyToString(static_cast<int>(i8));
+}
 
 //! convert string to any type which has operator>>
 template<typename X>
@@ -96,6 +104,20 @@ X &stringToAny(const std::string &s,X &x)
 inline std::string &stringToAny(const std::string &s,std::string &res)
 {
   return (res=s);
+}
+inline unsigned char &stringToAny(const std::string &s,unsigned char &res)
+{
+  unsigned ui;
+  stringToAny(s,ui);
+  res=static_cast<unsigned char>(ui);
+  return res;
+}
+inline signed char &stringToAny(const std::string &s,signed char &res)
+{
+  int ui;
+  stringToAny(s,ui);
+  res=static_cast<signed char>(ui);
+  return res;
 }
 
 #endif

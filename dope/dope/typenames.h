@@ -127,6 +127,7 @@ struct TypeNameTrait<type> \
 }
 
 DOPE_TYPE(char);
+DOPE_TYPE(signed char);
 DOPE_TYPE(unsigned char);
 DOPE_TYPE(short);
 DOPE_TYPE(unsigned short);
