@@ -15,7 +15,8 @@ manualtests = \
 	test-rpc \
 	test-saxwrapper \
 	test-xmlrpc \
-	test-argvparser
+	test-argvparser \
+	test-httppost
 
 check_PROGRAMS= \
 	$(automatictests) \
@@ -32,7 +33,7 @@ test_signal_SOURCES = test-signal.cpp $(common)
 test_xml_SOURCES = test-xml.cpp $(common)
 test_xmlrpc_SOURCES = test-xmlrpc.cpp $(common)
 test_argvparser_SOURCES = test-argvparser.cpp $(common)
-
+test_httppost_SOURCES = test-httppost.cpp
 TESTS = $(automatictests)
 
 

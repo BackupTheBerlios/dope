@@ -37,46 +37,7 @@
 class URI
 {
 public:
-  URI(const char *_uri)
-  {
-    assert(_uri);
-    std::string uri(_uri);
-    // extract scheme part scheme:
-    std::string scheme;
-    split(uri,scheme,uri,':');
-    if (scheme=="http")
-      {
-	// skip "//"
-	uri=uri.substr(2);
-      }
-    else
-      assert(0);
-    // extract userinfo@host:port
-    // look for path seperator if not found use complete
-    std::string hostpart;
-    std::string path;
-    split(uri,hostpart,path,'/');
-    std::string user,hostport;
-    if (!split(hostpart,user,hostport,'@'))
-      hostport=user;
-    std::string host,port;
-    if (!split(hostport,host,port,':'))
-      {
-	host=hostport;
-	std::cerr << "Using default port: "<<port<<std::endl;
-	port="80";
-      }
-    unsigned pnum;
-    stringToAny(port,pnum);
-    adr=DOPE_SMARTPTR<InternetAddress>(new InternetAddress(HostAddress(host.c_str()),Port(pnum)));
-    relpart=std::string("/")+path;
-  }
-
-  /*  URI(const InternetAddress &_adr,const char *_relpart) : adr(_adr)
-      {
-      assert(_relpart);
-      relpart=_relpart;
-      }*/
+  URI(const char *_uri);
 
   const InternetAddress &getAddress() const
   {
@@ -87,6 +48,15 @@ public:
   {
     return relpart;
   }
+
+  static std::string urlEncode(const std::string in) 
+  {
+    std::string res;
+    urlEncode(in,res);
+    return res;
+  }
+  static void urlEncode(const std::string in, std::string &out);
+  static void urlDecode(const std::string in, std::string &out);
   
 protected:
   DOPE_SMARTPTR<InternetAddress> adr;

@@ -251,9 +251,9 @@ protected:
 Socket sock;
 
 public:
-  typedef std::basic_streambuf<_CharT, _Traits>::char_type char_type;
-  typedef std::basic_streambuf<_CharT, _Traits>::traits_type traits_type;
-  typedef std::basic_streambuf<_CharT, _Traits>::int_type int_type;
+  typedef _CharT 					char_type;
+  typedef _Traits 					traits_type;
+  typedef typename traits_type::int_type 		int_type;
 
   BasicNetStreamBuf(const InternetAddress &in_address) 
     : sock(in_address,true)

@@ -48,7 +48,7 @@ public:
   typedef typename Layer0::traits_type traits_type;
   typedef typename Layer0::int_type int_type;
 
-  HTTProtocol(Layer0 &_layer0, const char *uri, const char* myhostname) : layer0(_layer0), flushed(false)
+  HTTProtocol(Layer0 &_layer0, const char *uri) : layer0(_layer0), flushed(false)
   {
     _M_mode=std::ios_base::in|std::ios_base::out;
     _M_buf_unified = false;
@@ -56,7 +56,7 @@ public:
     std::ostream o(&layer0);
     o << "POST "<<uri<<" HTTP/1.0\n";
     o << "User-Agent: DOPE\n";
-    o << "Content-Type: text/xml\n";
+    o << "Content-Type: application/x-www-form-urlencoded\n";
     o << "Content-Length: ";
     /*
     // we are only interested in finding the start of the document - which is marked by 3 empty lines
@@ -130,20 +130,22 @@ public:
   typedef _Traits 					traits_type;
   typedef typename traits_type::int_type 		int_type;
   
-  BasicHTTPStreamBuf(const URI &_uri, const std::string &_myhostname) : uri(_uri), myhostname(_myhostname)
+  BasicHTTPStreamBuf(const URI &_uri) : uri(_uri)
   {
   }  
 
+  /*
   int_type sputc(char_type c)
   {
     assert(0);
-  }
+    }*/
 
+  /*
   std::streamsize 
   sputn(const char_type* __s, std::streamsize __n)
   { 
     assert(0);
-  }
+    }*/
 
   int_type overflow(int_type i = traits_type::eof())
   {
@@ -180,7 +182,6 @@ protected:
   typedef DOPE_SMARTPTR<N> NPtr;
 
   URI uri;
-  std::string myhostname;
   NPtr nptr;
   PPtr pptr;
   
@@ -192,7 +193,7 @@ protected:
 	return pptr;
       }
     nptr=NPtr(new N(uri.getAddress()));
-    pptr=PPtr(new P(*(nptr.get()),uri.getPath().c_str(),myhostname.c_str()));
+    pptr=PPtr(new P(*(nptr.get()),uri.getPath().c_str()));
     return pptr;
   }
   void disconnect()

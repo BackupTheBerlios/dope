@@ -28,7 +28,7 @@ int main(int argc,char *argv[])
     signal(SIGPIPE,sigPipeHandler);
     foo f;
     f.setSome();
-    HTTPStreamBuf layer0("http://schlumpf/dope/test.php3","localhost");
+    HTTPStreamBuf layer0("http://schlumpf/dope/test.php3");
     XMLOutStream<HTTPStreamBuf> l3(layer0);
     SignalOutAdapter<XMLOutStream<HTTPStreamBuf> > o(l3);
     o.emit(f);
