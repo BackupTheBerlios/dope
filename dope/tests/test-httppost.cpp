@@ -43,11 +43,12 @@ struct form
 {
   std::string foo;
   std::string bar;
+  unsigned short int i;
 
   template <typename Layer2>
   inline void composite(Layer2 &layer2)
   {
-    layer2.SIMPLE(foo).SIMPLE(bar);
+    layer2.SIMPLE(foo).SIMPLE(bar).SIMPLE(i);
   }
 };
 
@@ -70,6 +71,7 @@ int main(int argc,char *argv[])
     form f;
     f.foo="hey this is foo";
     f.bar="hey this is bar";
+    f.i=40700;
     out.simple(f,NULL);
     layer0.sync();
     char c;

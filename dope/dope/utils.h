@@ -72,10 +72,24 @@ inline std::string anyToString(std::string s)
 {
   return s;
 }
+inline std::string anyToString(const char *c)
+{
+  if (!c) {
+    DOPE_WARN("NULL pointer");
+    return "";
+  }
+  return c;
+}
+/*! 
+  \note since unsigned char != signed char != char we assume only char should be encoded as character
+*/
 inline std::string anyToString(unsigned char ui8)
 {
   return anyToString(static_cast<unsigned int>(ui8));
 }
+/*! 
+  \note since unsigned char != signed char != char we assume only char should be encoded as character
+*/
 inline std::string anyToString(signed char i8)
 {
   return anyToString(static_cast<int>(i8));

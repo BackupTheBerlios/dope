@@ -53,16 +53,11 @@ public:
     return hostpart;
   }
   
-  static std::string urlEncode(const std::string in) 
-  {
-    std::string res;
-    urlEncode(in,res);
-    return res;
-  }
-  static void urlEncode(const std::string in, std::string &out);
-  static void urlDecode(const std::string in, std::string &out);
-  
+  static std::string urlEncode(const std::string &in);
 protected:
+  static char *curl_escape(const char *string, int length);
+  static char *curl_unescape(const char *string, int length);
+
   DOPE_SMARTPTR<InternetAddress> adr;
   std::string hostpart;
   std::string relpart;

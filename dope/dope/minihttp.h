@@ -274,7 +274,15 @@ protected:
       l+=(*it)+'.';
       ++it;
     }
-    l+=(URI::urlEncode(mname)+"="+URI::urlEncode(anyToString(data)));
+    // here was a problem when compiling with -O2 (and -O1 ?)
+    // either the bug is still there or it is a compiler bug
+    // l+=URI::urlEncode(mname)+"="+URI::urlEncode(anyToString(data));
+    // todo: check if it is a compiler bug (gcc 3.0.4) or if other compilers
+    // produce the same problem
+    l+=URI::urlEncode(mname);
+    l+='=';
+    std::string dstring(anyToString(data));
+    l+=URI::urlEncode(dstring);
     l0.sputn(l.c_str(),l.size());
     return *this;
   }

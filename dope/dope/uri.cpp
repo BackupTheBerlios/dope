@@ -1,6 +1,9 @@
 #include "uri.h"
 #include "utils.h"
 
+#include <stdio.h>
+#include <stdlib.h>
+
 URI::URI(const char *_uri)
 {
   assert(_uri);
@@ -35,19 +38,21 @@ URI::URI(const char *_uri)
   relpart=std::string("/")+path;
 }
 
-void
-URI::urlEncode(const std::string ins, std::string &ns)
+
+char *
+URI::curl_escape(const char *string, int length)
 {
-  /* this is the c++ version of curl_escape http://curl.sourceforge.net */
-  int alloc = ins.size()+1;
-  ns.resize(alloc);
+  int alloc = (length?length:(int)strlen(string))+1;  
+  char *ns = (char *)malloc(alloc);
+  DOPE_CHECK(ns);
+  
   unsigned char in;
   int newlen = alloc;
   int index=0;
-  int co=0;
-  int length = alloc-1;
+
+  length = alloc-1;
   while(length--) {
-    in = ins[co];
+    in = *string;
     if(' ' == in)
       ns[index++] = '+';
     else if(!(in >= 'a' && in <= 'z') &&
@@ -57,23 +62,68 @@ URI::urlEncode(const std::string ins, std::string &ns)
       newlen += 2; /* the size grows with two, since this'll become a %XX */
       if(newlen > alloc) {
         alloc *= 2;
-        ns.resize(alloc);
+        ns = (char *)realloc(ns, alloc);
+        if(!ns)
+          return NULL;
       }
       sprintf(&ns[index], "%%%02X", in);
+
       index+=3;
     }
     else {
       /* just copy this */
       ns[index++]=in;
     }
-    ++co;
+    string++;
   }
-  ns.resize(index);
+  ns[index]=0; /* terminate it */
+  return ns;
 }
 
-void
-URI::urlDecode(const std::string in, std::string &out)
+char *
+URI::curl_unescape(const char *cstring, int length)
 {
-  /* this is the c++ version of curl_unescape http://curl.sourceforge.net */
-  assert(0);
+  int alloc = (length?length:(int)strlen(cstring))+1;
+  char *ns = (char *)malloc(alloc);
+  DOPE_CHECK(ns);
+
+  unsigned char in;
+  int index=0;
+  unsigned int hex;
+  char querypart=0; /* everything to the right of a '?' letter is
+                           the "query part" where '+' should become ' '.
+                           RFC 2316, section 3.10 */
+  
+  while(--alloc > 0) {
+    in = *cstring;
+    if(querypart && ('+' == in))
+      in = ' ';
+    else if(!querypart && ('?' == in)) {
+      /* we have "walked in" to the query part */
+      querypart=1;
+    }
+    else if('%' == in) {
+      /* encoded part */
+      if(sscanf(cstring+1, "%02X", &hex)) {
+        in = hex;
+        cstring+=2;
+        alloc-=2;
+      }
+    }
+    
+    ns[index++] = in;
+    cstring++;
+  }
+  ns[index]=0; /* terminate it */
+  return ns;
+  
+}
+
+std::string 
+URI::urlEncode(const std::string &in) 
+{
+  char *n=curl_escape(in.c_str(),in.size());
+  std::string res(n);
+  free(n);
+  return res;
 }
