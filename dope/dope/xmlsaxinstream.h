@@ -199,11 +199,6 @@ protected:
     typename C::value_type x;
 
   public:
-    /*
-      \note this produces a warning about implicit typenames - but unfortunately the fix proposed
-      by William Robinson (just adding typename => explicit typename does not work with g++ 3.2
-      => we keep the warning until this stream is rewritten completely anyway
-     */
     ContainerElem(typename ContainerElemBase::S& _s, C& _c) 
       : ContainerElemBase(_s), c(_c)
     {
