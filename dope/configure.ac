@@ -1,4 +1,4 @@
-dnl process this file with autoconf to produce a configure script
+0dnl process this file with autoconf to produce a configure script
 AC_PREREQ(2.53)
 AC_INIT
 AC_CONFIG_SRCDIR([dope/dope.cpp])
@@ -7,7 +7,7 @@ dnl
 dnl Source packaging numbers
 DOPE_MAJOR_VERSION=0
 DOPE_MINOR_VERSION=0
-DOPE_MICRO_VERSION=6
+DOPE_MICRO_VERSION=7
 DOPE_VERSION=$DOPE_MAJOR_VERSION.$DOPE_MINOR_VERSION.$DOPE_MICRO_VERSION
 AC_DEFINE_UNQUOTED(DOPE_MAJOR_VERSION, $DOPE_MAJOR_VERSION, [major version])
 AC_DEFINE_UNQUOTED(DOPE_MINOR_VERSION, $DOPE_MINOR_VERSION, [minor version])
