@@ -48,7 +48,11 @@ public:
   {
     return relpart;
   }
-
+  const std::string &getHost() const
+  {
+    return hostpart;
+  }
+  
   static std::string urlEncode(const std::string in) 
   {
     std::string res;
@@ -60,6 +64,7 @@ public:
   
 protected:
   DOPE_SMARTPTR<InternetAddress> adr;
+  std::string hostpart;
   std::string relpart;
 
   bool split(const std::string &s, std::string &first, std::string &second, char c)

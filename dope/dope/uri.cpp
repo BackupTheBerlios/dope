@@ -17,7 +17,6 @@ URI::URI(const char *_uri)
     assert(0);
   // extract userinfo@host:port
   // look for path seperator if not found use complete
-  std::string hostpart;
   std::string path;
   split(uri,hostpart,path,'/');
   std::string user,hostport;

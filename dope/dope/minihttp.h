@@ -42,6 +42,7 @@ class HTTProtocol : public std::basic_streambuf<typename _Layer0::char_type, typ
 protected:
   typedef _Layer0 Layer0;
   Layer0 &layer0;
+  URI &uri;
   bool flushed;
   bool gotheader;
   unsigned contentLength;
@@ -50,12 +51,14 @@ public:
   typedef typename Layer0::traits_type traits_type;
   typedef typename Layer0::int_type int_type;
 
-  HTTProtocol(Layer0 &_layer0, const char *uri) 
-    : layer0(_layer0), flushed(false), gotheader(false), contentLength(0)
+  HTTProtocol(Layer0 &_layer0, URI &_uri) 
+    : layer0(_layer0), uri(_uri), flushed(false), gotheader(false), contentLength(0)
   {
     std::ostream o(&layer0);
-    o << "POST "<<uri<<" HTTP/1.0\n";
+    //    std::cerr << "POST "<<uri<<" HTTP/1.0\n";
+    o << "POST "<< uri.getPath().c_str() <<" HTTP/1.0\n";
     o << "User-Agent: DOPE\n";
+    o << "Host: " << uri.getHost() << "\n";
     o << "Content-Type: application/x-www-form-urlencoded\n";
     o << "Content-Length: ";
   }
@@ -231,7 +234,7 @@ protected:
     if (isConnected())
       return pptr;
     nptr=NPtr(new N(uri.getAddress()));
-    pptr=PPtr(new P(*(nptr.get()),uri.getPath().c_str()));
+    pptr=PPtr(new P(*(nptr.get()),uri));
     return pptr;
   }
   void disconnect()
