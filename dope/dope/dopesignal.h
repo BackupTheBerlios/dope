@@ -34,11 +34,14 @@
 #include "typenames.h"
 #include "objectfactory.h"
 
+// sigc++
+#include <sigc++/signal_system.h>
+
 #define TYPE_NAME(x) TypeNameTrait<x>::name()
 
 //! stream wrapper giving a libsigc++ like interface
 template <typename L2>
-class SignalOutAdapter
+class SignalOutAdapter : public SigC::Object
 {
 public:
   typedef L2 Layer2;
@@ -52,6 +55,12 @@ public:
     std::string tname(TYPE_NAME(X));
     layer2.simple(tname,NULL).simple(x,NULL).flush();
   }
+  /*
+  template <typename X>
+  void constemit(const X &x)
+  {
+    emit(DOPE_REMOVE_CONST_CAST<X &>(x));
+    }*/
 protected:
   Layer2 &layer2;
 };
