@@ -1,3 +1,16 @@
+- add (generic) package oriented protocols (package vs. stream)
+  package oriented:
+	+ error recovery
+	+ xml easier
+	- copy overhead
+	- complete msg must fit in memory
+
+- containers should be cleared on read?
+ (well the idea is to have default values - in the case of containers one could think of
+  reading the first element as overwriting the default value)
+ on the other hand if the streams clear the container the user can't do anything about it
+ if they are not cleared the user can state it in his composite method (if xmlsaxinstream is fixed ;-)
+
 floats and doubles can be "nan" = not a number
 but stringToAny will fail in this case 
 
@@ -149,6 +162,10 @@ dann muß xslt integriert werden
   my current solution is that i know my write is const (or i hope) and then use const_cast
   to fake the const.
 
+  i should categorize the streams into streams altering the objects and streams which don't
+  (just like read and write but the term read and write do not fit always - as the term stream
+  does not fit always either)
+
 * error reporting with streambuf (layer0)
   especially the saxwrapper must report errors to the sax parser
   should work now - but needs a review
@@ -190,7 +207,8 @@ dann muß xslt integriert werden
 performance problems with c++ streams
 my own streams do not implement sputn sgetn => read write with one byte - i will change this
 unfortunately it seems g++ (3.0.3) streambufs write also only 1 byte? - strace showed this? (can't believe
-that it will stay/is like this - i think it was only to stdout or something like that)
+that it will stay/is like this - i think it was only to stdout or something like that to meet the std 
+requrement that the c streams and c++ streams must work together)
 
 i18n (localization)
 
