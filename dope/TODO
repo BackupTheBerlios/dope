@@ -1,17 +1,28 @@
-ich will dope mit mingw compilieren:
-- es geht schon halbwegs
-  timestamp ist dreck GetTickCount ist viel zu ungenau
-  mach es so wie SDL
-
-
-- teste mal ob überhaupt ein prg. geht !!!
-  bei ADIC taucht nämlich das problem mit main auf
-  aber vermutlich weil SDL_types.h included wird und das #define main SDL_main macht
-
-
+GENERAL:
+- how to backup macros ?
+- use namespace
+- all global macros start with DOPE_ ?
 - think about non-blocking I/O with timeouts especially for network streams
   or multi-threading
+- use boost concept checks
+- leak tracing - currently i have problems to get LeakTracer to work with
+  gcc-3.0 but perhaps the std c++ lib "leaks"
+
+BUILD process:
 - check for needed std c++ features and the bug which caused me to switch to gcc3
+
+DOPE on MINGW/win32:
+- timestamp is bad - GetTickCount is bad => take a look at the SDL timer stuff
+
+
+BUGS:
+- floats and doubles can be "nan" = not a number
+  but stringToAny will fail in this case 
+- xmlsaxinstream is crap - and should either be removed or rewritten
+
+
+
+UNSORTED:
 - ein diff protocol waere genial
 - add (generic) package oriented protocols (package vs. stream)
   package oriented:
@@ -26,8 +37,6 @@ ich will dope mit mingw compilieren:
  on the other hand if the streams clear the container the user can't do anything about it
  if they are not cleared the user can state it in his composite method (if xmlsaxinstream is fixed ;-)
 
-floats and doubles can be "nan" = not a number
-but stringToAny will fail in this case 
 
 habe das problem einigermassen geloesst
 ist aber pfusch - und man braucht ein rel. aktuelle libxml
@@ -68,7 +77,6 @@ dass der grow aufgerufen wird obwohl noch bytes im puffer sind
 
 - TRANSLATE this file to English ;-)
 
-use boost concept checks
 
 wollte das mit den exceptions richtig machen
 
@@ -156,8 +164,6 @@ und xmlrpc
 dann muß xslt integriert werden
 
 
-* leak tracing - currently i have problems to get LeakTracer to work with
-  gcc-3.0 but perhaps the std c++ lib "leaks"
 
 * const correctness
   search for const_cast !! const_cast removes const => no const guarantee

@@ -60,7 +60,7 @@ struct TypeNameTrait
     return typeid(X).name();
 #else
     DOPE_FATAL("type is not registered");
-    //    #warning Type has no registered type name
+    // todo issue a warning at compile time #warning will not work - take a look at boost concept checks
     return "unknown";
 #endif
   }

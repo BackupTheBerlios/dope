@@ -14,7 +14,7 @@
 
 #define __USE_W32_SOCKETS
 #include <windows.h>
-
+#define WINDOOF
 #endif
 
 TimeStamp::TimeStamp(float sec)
@@ -41,7 +41,7 @@ void TimeStamp::now()
   n-=m_sec*1000;
   m_usec=n*1000;
 #else
-#error you must implement this
+#error "you must implement this"
 #endif
 #endif
 
@@ -96,11 +96,35 @@ TimeStamp &TimeStamp::operator+=(const TimeStamp &o)
 
 void TimeStamp::sleep() const
 {
+#ifndef WINDOOF
+  fd_set z;
+  FD_ZERO(&z);
   timeval s;
   s.tv_sec=m_sec;
   s.tv_usec=m_usec;
-  // todo: on linux we could use the timeout paramter if select was interrupted by a signal
-  if ((select(0,0,0,0,&s)<0)&&(errno!=EINTR))
-    DOPE_FATAL("select failed");
+  // todo: 
+  // could be interrupted by a signal !!
+  // on linux we could use the timeout paramter if select was interrupted by a signal
+  int ret;
+  if (((ret=select(1,&z,&z,&z,&s))==-1)&&(errno!=EINTR)) {
+    switch (errno) {
+    case EBADF:
+      DOPE_FATAL("select failed: invalid fd");
+      break;
+    case EINVAL:
+      DOPE_FATAL("select failed: impossible");
+      break;
+    case ENOMEM:
+      DOPE_FATAL("select failed: out of memory");
+      break;
+    default:
+      DOPE_WARN("select failed with unknown reason");
+    }
+  }
+#else
+  unsigned msec=m_sec*1000;
+  msec+=m_usec/1000;
+  Sleep(msec);
+#endif  
 }
 

@@ -9,7 +9,8 @@
 #ifndef SOCKET_NO_EXCEPTIONS
 #define DOPE_SERROR(msg) throw SocketError(msg)
 #else
-#define DOPE_SERROR(msg) {DOPE_WARN(msg);return false;}
+#error "todo: this will not work out of the box anymore"
+#define DOPE_SERROR(msg) do{DOPE_WARN(msg);return false;}while(0)
 #endif
 
 #if defined(__WIN32__) || defined(WIN32)
@@ -228,11 +229,16 @@ Socket::connect(){
   SocketAddress saddr(haddr,iaddr.second);
   std::string hstring(saddr.toString());
   std::cerr << "Connecting to: "<<hstring<<std::endl;
-  
-  if (::connect(handle, saddr.getSockAddr(), saddr.getSize())== -1) {
-    close();
-    DOPE_SERROR(std::string("Can't connect to ")+hstring);
-  }
+
+#ifndef DOPE_RESTORECONNECT  
+  if (::connect(handle, saddr.getSockAddr(), saddr.getSize())== -1)
+#else
+  if (DOPE_RESTORECONNECT(handle, saddr.getSockAddr(), saddr.getSize())== -1)
+#endif
+    {
+      close();
+      DOPE_SERROR(std::string("Can't connect to ")+hstring);
+    }
   return true;
 }
 

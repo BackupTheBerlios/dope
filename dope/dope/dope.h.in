@@ -65,7 +65,7 @@
 #define DOPE_SMARTPTR boost::shared_ptr
 
 #else
-#error you do not want to use boost => you have to replace boost::remove_const and boost::shared_ptr
+#error "you do not want to use boost => you have to replace boost::remove_const and boost::shared_ptr"
 #endif // @DOPE_USE_BOOST@
 
 typedef const char * MemberName;
@@ -88,6 +88,20 @@ extern int dope_major_version;
 #endif
 
 /*
+  \def DOPE_HERE
+
+  \brief std::cout << DOPE_HERE << std::endl; will print the current file, line number and function name
+*/
+#define DOPE_HERE __FILE__ << ":" << __LINE__ << ":" << DOPE_FUNCTIONNAME
+
+/*
+  \def DOPE_ERRORSTR
+
+  \brief std::cout << DOPE_ERRORSTR << std::endl; will print the current errno value and its string
+*/
+#define DOPE_ERRORSTR "errno="<<errno<<":"<<strerror(errno)
+
+/*
   \def DOPE_CHECK(expr)
   \brief DOPE_CHECK is like assert but takes also effect when NDEBUG is defined
 
@@ -100,7 +114,7 @@ extern int dope_major_version;
 #else
 inline int fatal(const char *file,int line,const char *func, const char *msg) 
 {
-  std::cerr << "FATAL: " << file << ":" << line << ":" << func << ": " << msg << "(errno="<<errno<<":"<<strerror(errno)<<"\n";
+  std::cerr << "FATAL: " << file << ":" << line << ":" << func << ": " << msg << "(" << DOPE_ERRORSTR <<")\n";
   std::terminate();
   return 0;
 }
@@ -109,17 +123,24 @@ inline int fatal(const char *file,int line,const char *func, const char *msg)
 	   fatal(__FILE__, __LINE__, DOPE_FUNCTIONNAME, "assertion failed: "__STRING(expr))))
 #endif // NDEBUG
 
+
+/*!
+  \def DOPE_MSG(dopeLevelP, dopeMsgP)
+  \brief will print a message - for debugging
+*/
+#define DOPE_MSG(dopeLevelP, dopeMsgP) do{std::cerr << dopeLevelP << DOPE_HERE << ": " << dopeMsgP << "(" << DOPE_ERRORSTR << ")\n";}while(0)
+
 /*!
   \def DOPE_FATAL(msg)
   \brief fatal error - exit with a short message
 */
-#define DOPE_FATAL(msg) {std::cerr << "FATAL: " << __FILE__ << ":" << __LINE__ << ":" << DOPE_FUNCTIONNAME << ": " << msg << "(errno="<<errno<<":"<<strerror(errno)<<"\n";std::terminate();}
+#define DOPE_FATAL(msg) do{DOPE_MSG("FATAL: ",msg);std::terminate();}while(0)
 
 /*! 
   \def WARN(msg)
   \brief print a warning message
 */
-#define DOPE_WARN(msg) {std::cerr << "WARNING: " << __FILE__ << ":" << __LINE__ << ":" << DOPE_FUNCTIONNAME << ": " << msg << "(errno="<<errno<<":"<<strerror(errno)<<")\n";}
+#define DOPE_WARN(msg) DOPE_MSG("WARNING: ",msg)
 
 #endif // DOPE_DOPE_H
 
