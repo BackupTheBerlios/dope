@@ -3,6 +3,13 @@
 
 #include <unistd.h>
 #include <fcntl.h>
+#include <arpa/inet.h> // inet_pton
+#include <netdb.h> // hostent
+#include <sys/time.h> // timeval
+
+#if defined(DOPE_RESTORE_CONNECT)
+#define connect DOPE_RESTORE_CONNECT
+#endif
 
 // ---------------------------------------------------------------------------
 // 'lib-netstream++' is a library that helps you to build networked 
@@ -37,8 +44,6 @@
 //
 // ---------------------------------------------------------------------------
 
-
-/// This namespace contains a network stream class corresponding to the iostream and fstream classes of the standard C++ library and some helper classes related to network programing
 HostAddress::HostAddress(const char *name)
 {
   set_from_name(name);
@@ -46,7 +51,7 @@ HostAddress::HostAddress(const char *name)
   
 bool HostAddress::set_from_number_and_dot(const char *name){
   struct in_addr addr_in_struct;
-  if (!inet_aton (name, &addr_in_struct))
+  if (inet_pton (AF_INET, name, &addr_in_struct)!=1)
     {
 #ifndef LIB_NET_NO_EXCEPTIONS
       throw "set_from_number_and_dot: address not valid";
@@ -197,6 +202,26 @@ Socket::~Socket(){
       DOPE_WARN("close failed");
 }
 
+bool
+Socket::inAvail(const TimeStamp* timeout)
+{
+  fd_set read_fd_set;
+  FD_ZERO(&read_fd_set);
+  int fd=get_handle();
+  FD_SET(fd,&read_fd_set);
+  timeval ctimeout;
+  if (timeout) {
+    ctimeout.tv_sec=timeout->getSec();
+    ctimeout.tv_usec=timeout->getUSec();
+  }
+  int av=0;
+  while ((av=::select (fd+1, &read_fd_set, NULL, NULL, (timeout) ? (&ctimeout) : NULL))<0) {
+    if (errno!=EINTR) 
+      DOPE_FATAL("select failed");
+  }
+  return av>0;
+}
+
 //! set socket to blocking or non-blocking mode - default is blocking
 void 
 Socket::setBlocking(bool block)
@@ -211,6 +236,18 @@ Socket::setBlocking(bool block)
   else oldflags &= ~O_NONBLOCK;
   // Store modified flag word in the descriptor. 
   DOPE_CHECK(fcntl (desc, F_SETFL, oldflags)==0);
+}
+
+ssize_t
+Socket::read(void *buf, size_t count)
+{
+  return ::read(get_handle(),buf,count);
+}
+
+ssize_t
+Socket::write(const void *buf, size_t count)
+{
+  return ::write(get_handle(),buf,count);
 }
 
 bool NetStreamBufServer::init(){

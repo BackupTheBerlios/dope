@@ -52,7 +52,7 @@ public:
       throw ReadError(std::string(__PRETTY_FUNCTION__));
     return *this;
   }
-  DOPE_INLINE L1RawInStream & in(char *data, size_t size)
+  DOPE_INLINE L1RawInStream & in(char *data, std::streamsize size)
   {
     if (layer0.sgetn(data,size)!=size)
       throw ReadError(std::string(__PRETTY_FUNCTION__));

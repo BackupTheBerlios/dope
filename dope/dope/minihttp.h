@@ -178,6 +178,11 @@ protected:
   typedef DOPE_SMARTPTR<P> PPtr;
   typedef BasicNetStreamBuf<char_type,traits_type> N;
   typedef DOPE_SMARTPTR<N> NPtr;
+
+  URI uri;
+  std::string myhostname;
+  NPtr nptr;
+  PPtr pptr;
   
   PPtr &connect()
   {
@@ -192,14 +197,10 @@ protected:
   }
   void disconnect()
   {
-    pptr=PPtr(NULL);
-    nptr=NPtr(NULL);
+    pptr=PPtr();
+    nptr=NPtr();
   }
   
-  URI uri;
-  std::string myhostname;
-  NPtr nptr;
-  PPtr pptr;
 };
 
 typedef BasicHTTPStreamBuf<char> HTTPStreamBuf;

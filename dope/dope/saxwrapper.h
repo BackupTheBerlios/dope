@@ -25,7 +25,9 @@
 #ifndef DOPE_SAXWRAPPER_H
 #define DOPE_SAXWRAPPER_H
 
+#include <libxml/SAX.h>
 #include <libxml/parser.h>
+#include <libxml/xmlerror.h>
 #include <cstring>
 #include <string>
 #include "dope.h"

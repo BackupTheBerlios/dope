@@ -53,14 +53,27 @@
 #include <map>
 #include <stdexcept>
 
+
 // "unix" includes
-#include <sys/socket.h>
+// for htons
 #include <netinet/in.h>
-#include <arpa/inet.h>
-#include <netdb.h>
-#include <sys/time.h> // timeval
+/*
+  attention on SunOS this makes a #define connect __xnet_connect
+  if _XPG4_2 is defined which is defined (at least with gcc >=3)
+  s.a.:
+  http://gcc.gnu.org/cgi-bin/gnatsweb.pl?cmd=view%20audit-trail&database=gcc&pr=5440
+*/
+#include <sys/socket.h>
+#if defined(connect)
+// this assumes that if connect is defined it is defined to be __xnet_connect !!
+#define DOPE_RESTORE_CONNECT __xnet_connect
+#undef connect
+#endif
+
+/*
 #include <sys/types.h>
 #include <unistd.h>
+*/
 
 // sigc++
 #include <sigc++/signal_system.h>
@@ -78,9 +91,6 @@
    */
 class Port{
 public:
-  static Port get_reserved(){return Port(IPPORT_RESERVED);}
-  static Port get_user_reserved(){return Port(IPPORT_USERRESERVED);}
-
   Port(unsigned short int _port_no,bool host_byte_order=true)
   {
     if (host_byte_order)
@@ -101,6 +111,7 @@ private:
 /** class representing an internet host address
    * @author Jens Thiele <karme@unforgettable.com>
    * May 31 2000 
+   * \todo make ipv6 work
    */
 class HostAddress{
 public:
@@ -143,6 +154,8 @@ public:
 private:
   unsigned long int host_address;
 };
+
+struct sockaddr;
 
 /** class representing an internet address (specialized address)
    * @author Jens Thiele <karme@unforgettable.com>
@@ -202,7 +215,22 @@ public:
 
   //! set socket to blocking or non-blocking mode - default is blocking
   void setBlocking(bool block);
-  
+
+  //! test for input
+  /*!
+    \param timeout from man 2 select: upper bound on the amount of time elapsed
+    before select returns. It may be zero, causing  select  to
+    return  immediately.  If  timeout  is  NULL  (no timeout),
+    select can block indefinitely.
+
+    \return true if data is available otherwise false
+  */
+  bool inAvail(const TimeStamp* timeout=NULL);
+
+  //! see man read
+  ssize_t read(void *buf, size_t count);
+  //! see man write
+  ssize_t write(const void *buf, size_t count);
 private:
   bool close_on_delete;
   int socket_handle;
@@ -252,22 +280,7 @@ public:
   {
     if (in_avail()>0)
       return true;
-    bool ret=false;
-    fd_set read_fd_set;
-    FD_ZERO(&read_fd_set);
-    int fd=get_handle();
-    FD_SET(fd,&read_fd_set);
-    timeval ctimeout;
-    if (timeout) {
-      ctimeout.tv_sec=timeout->getSec();
-      ctimeout.tv_usec=timeout->getUSec();
-    }
-    int av=0;
-    while ((av=::select (fd+1, &read_fd_set, NULL, NULL, (timeout) ? (&ctimeout) : NULL))<0) {
-      if (errno!=EINTR) 
-	DOPE_FATAL("select failed");
-    }
-    return av>0;
+    return sock.inAvail(timeout);
   }
 
   //! return corresponding file handle / descriptor
@@ -298,7 +311,7 @@ protected:
     setg(newBuf,newBuf,newBuf+bsize);
     ssize_t res;
     ssize_t toread=sizeof(char_type)*bsize;
-    res=read(sock.get_handle(),(void *)gptr(),toread);
+    res=sock.read((void *)gptr(),toread);
     if (res>0) {
       if (res!=toread) {
 	DOPE_CHECK(toread>res);
@@ -364,7 +377,7 @@ protected:
     ssize_t towrite=((char *)pptr())-((char *)pbase());
     ssize_t written=0;
     do {
-      ssize_t res=write(sock.get_handle(),(void *)((char *)pbase()+written),towrite-written);
+      ssize_t res=sock.write((void *)((char *)pbase()+written),towrite-written);
       if (res<0)
 	return traits_type::eof();
       written+=res;

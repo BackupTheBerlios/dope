@@ -1,5 +1,5 @@
 dnl process this file with autoconf to produce a configure script
-
+AC_PREREQ(2.53)
 AC_INIT
 AC_CONFIG_SRCDIR([dope/dope.h])
 
@@ -7,7 +7,7 @@ dnl
 dnl Source packaging numbers
 DOPE_MAJOR_VERSION=0
 DOPE_MINOR_VERSION=0
-DOPE_MICRO_VERSION=3
+DOPE_MICRO_VERSION=4
 DOPE_VERSION=$DOPE_MAJOR_VERSION.$DOPE_MINOR_VERSION.$DOPE_MICRO_VERSION
 AC_DEFINE_UNQUOTED(DOPE_MAJOR_VERSION, $DOPE_MAJOR_VERSION, [major version])
 AC_DEFINE_UNQUOTED(DOPE_MINOR_VERSION, $DOPE_MINOR_VERSION, [minor version])
@@ -35,6 +35,11 @@ dnl build options
 AC_ARG_ENABLE(ilibdep, [  --enable-inter-libdep            enable inter-library dependencies [default=no]], , enable_interlibdep=no)
 
 dnl checks for libraries
+
+dnl added for SunOS
+AC_SEARCH_LIBS(bind, socket)
+AC_SEARCH_LIBS(inet_pton, nsl)
+
 AM_PATH_XML2(2.4.0, , [AC_MSG_ERROR([libxml required])])
 AM_PATH_SIGC(1.0.0, , [AC_MSG_ERROR([libsigc++ required])])
 
@@ -43,6 +48,12 @@ AC_LANG([C++])
 DOPE_USE_BOOST=0
 AC_CHECK_HEADER(boost/smart_ptr.hpp, DOPE_USE_BOOST=1 , [AC_MSG_ERROR([boost::shared_ptr required - either install boost or write a replacement])])
 AC_SUBST(DOPE_USE_BOOST)
+
+dnl checks for library functions
+AC_LANG([C])
+dnl todo: abort if any of them is missing
+AC_CHECK_FUNCS(gettimeofday inet_pton select strerror)
+AC_FUNC_SELECT_ARGTYPES
 
 dnl variable substitutions
 DOPE_LDADD="$XML_LIBS $SIGC_LIBS"
