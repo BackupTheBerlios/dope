@@ -1,3 +1,4 @@
+- ein diff protocol waere genial
 - add (generic) package oriented protocols (package vs. stream)
   package oriented:
 	+ error recovery

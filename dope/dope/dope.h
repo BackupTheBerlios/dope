@@ -95,8 +95,17 @@ extern int dope_major_version;
 #else
 # define DOPE_CHECK(expr)							      \
   ((void) ((expr) ? 0 :							      \
-	   (DOPE_FATAL("assertion failed"__STRING(expr)))))
+	   fatal(__FILE__,__FILE__,__PRETTY_FUNCTION__,"assertion failed"__STRING(expr))))
 #endif // NDEBUG
+
+#ifdef NDEBUG
+inline void fatal(const char *file,int line,const char *func, const char *msg) 
+{
+  std::cerr << "FATAL: " << file << ":" << line << ":" << func << ": " << msg << "(errno="<<errno<<":"<<strerror(errno)<<"\n";
+  terminate();
+}
+#endif
+
 
 /*!
   \def DOPE_FATAL(msg)
