@@ -29,13 +29,14 @@
 #include "utils.h"
 #include "typenames.h"
 #include <iterator>
-#include <boost/type_traits.hpp>
 
 #define TYPE_NAME(type) TypeNameTrait<type>::name()
 
 //! Layer 2 output stream for debugging purposes
 /*!
   produces output similar to a debugger
+
+  \todo make constructor fit into layer2 concept
 */
 class DebugOutStream
 {
