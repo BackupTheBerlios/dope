@@ -1,3 +1,17 @@
+habe jetzt xsgetn implementiert
+das ist aber eiegtnlich dumm
+
+besser ist ich muss den saxwarpper besser machen
+die idee muss sein versuche immer mindestens 1 byte zu lesen solange der enddtag noch nicht
+gefunden wurde
+also socket ist/kann non-block sein aber saxwrapper ist blocking bis zum endtag
+das problem dabei ist z.bsp eine xml datei die einfach keinen endtag hat
+oder eine vevrbindung die abbricht oder schmarrn schickt
+=> timeout einstellbar beim saxwrapper
+der saxwrapper hat (ohne exceptions) eben keine moeglichkeit zu unterscheiden zw. einem eof
+oder wenn grad noch keine daten auf dem socket verfuegbar sind
+
+
 - implement xsgetn - this will solve the retry problem in the netstreambuf
 
 
