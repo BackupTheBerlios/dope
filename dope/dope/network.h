@@ -288,6 +288,8 @@ public:
   ~BasicNetStreamBuf()
   {
     freeBuf();
+    if (pbase())
+      delete [] pbase();
   }
 
   
@@ -295,7 +297,7 @@ protected:
   int_type underflow()
   {
     freeBuf();
-    int bsize=512;
+    int bsize=1024;
     char_type * newBuf=new char_type[bsize];
     setg(newBuf,newBuf,newBuf+bsize);
     ssize_t res;
@@ -362,15 +364,24 @@ protected:
   int_type overflow(int_type i = traits_type::eof())
   {
     // todo - eof should close ?
-    char_type c(traits_type::to_char_type(i));
-    ssize_t res=write(sock.get_handle(),(void *)&c,sizeof(c));
-    if (res==sizeof(c))
-      return i; // todo ?
-    if (res==0)
-      assert(0); // ?
-    // if (res<0)
-    // error
-    return traits_type::eof();
+    DOPE_CHECK(pbase());
+    ssize_t towrite=((char *)pptr())-((char *)pbase());
+    ssize_t written=0;
+    do {
+      ssize_t res=write(sock.get_handle(),(void *)((char *)pbase()+written),towrite-written);
+      if (res<0)
+	return traits_type::eof();
+      written+=res;
+    }while(written<towrite);
+    pbump(-towrite/sizeof(char_type));
+    if (i!=traits_type::eof())
+      sputc(i);
+    return 0;
+  }
+
+  int_type sync()
+  {
+    return overflow();
   }
   
   //! put back one character
@@ -410,6 +421,9 @@ protected:
     _M_mode = std::ios_base::in | std::ios_base::out; // sockets are always read/write ?
     _M_buf_unified = false; // we want to use different buffers for input/output
     setg(NULL,NULL,NULL);
+    int bsize=1024;
+    char_type *buf=new char_type[bsize];
+    setp(buf,buf+bsize);
   }
 
   void freeBuf()
