@@ -26,6 +26,7 @@ dope_backtrace()
     std::cerr << strings[i] << std::endl;
   
   free (strings);
+#undef MAXSTACK
 }
 #else
 void 

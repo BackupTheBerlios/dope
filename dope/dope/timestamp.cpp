@@ -21,27 +21,25 @@ static int initialized=0;
 #endif
 
 TimeStamp::TimeStamp() 
-  : m_sec(0), m_usec(0) 
+  : m_stamp(0)
 {
   init();
 }
 
 TimeStamp::TimeStamp(int sec, int usec)
-  : m_sec(sec), m_usec(usec) 
 {
+  m_stamp=1000000LL*sec+usec;
   init();
 }
 
 TimeStamp::TimeStamp(float sec)
 {
-  m_sec=int(sec);
-  sec-=float(m_sec);
-  m_usec=int(sec*1000000);
+  m_stamp=(sec*1000000);
   init();
 }
 
 TimeStamp::TimeStamp(const TimeStamp &o)
-  : m_sec(o.m_sec), m_usec(o.m_usec)
+  : m_stamp(o.m_stamp)
 {
   init();
 }
@@ -75,11 +73,12 @@ TimeStamp::deinit()
 
 void TimeStamp::now()
 {
+  // todo use stdint.h and int64_t conforming to C99
+  typedef long long d_int64_t;
 #if defined(HAVE_GETTIMEOFDAY)
   timeval s;
   gettimeofday(&s,NULL);
-  m_sec=s.tv_sec;
-  m_usec=s.tv_usec;
+  m_stamp=d_int64_t(s.tv_sec)*1000000LL+s.tv_usec;
 #else
 #if defined (__WIN32__) || defined(WIN32)
   // todo GetTickCount has bad resoultion
@@ -87,9 +86,7 @@ void TimeStamp::now()
   // do it like SDL does
   //  unsigned long n=GetTickCount();
   unsigned long n=timeGetTime();
-  m_sec=n/1000;
-  n-=m_sec*1000;
-  m_usec=n*1000;
+  m_stamp=d_int64_t(n)*1000LL;
 #else
 #error "you must implement this"
 #endif
@@ -105,28 +102,7 @@ TimeStamp TimeStamp::operator-(const TimeStamp &o) const
 
 TimeStamp &TimeStamp::operator-=(const TimeStamp &o)
 {
-  // modified version of timeval_subtract from info libc
-  // \todo is this really good ?
-  timeval x,y;
-  x.tv_sec=m_sec;
-  x.tv_usec=m_usec;
-  y.tv_sec=o.m_sec;
-  y.tv_usec=o.m_usec;
-  
-  if (x.tv_usec < y.tv_usec) {
-    int nsec = (y.tv_usec - x.tv_usec) / 1000000 + 1;
-    y.tv_usec -= 1000000 * nsec;
-    y.tv_sec += nsec;
-  }
-  if (x.tv_usec - y.tv_usec > 1000000) {
-    int nsec = (x.tv_usec - y.tv_usec) / 1000000;
-    y.tv_usec += 1000000 * nsec;
-    y.tv_sec -= nsec;
-  }
-
-  assert(x.tv_sec>=y.tv_sec);  
-  m_sec = x.tv_sec - y.tv_sec;
-  m_usec = x.tv_usec - y.tv_usec;
+  m_stamp-=o.m_stamp;
   return *this;
 }
 
@@ -138,20 +114,19 @@ TimeStamp TimeStamp::operator+(const TimeStamp &o) const
 
 TimeStamp &TimeStamp::operator+=(const TimeStamp &o)
 {
-  int usec=m_usec+o.m_usec;
-  m_usec=usec%1000000;
-  m_sec+=(usec-m_usec)/1000000+o.m_sec;
+  m_stamp+=o.m_stamp;
   return *this;
 }
 
 void TimeStamp::sleep() const
 {
+  if (m_stamp<=0) return;
 #ifndef WINDOOF
   fd_set z;
   FD_ZERO(&z);
   timeval s;
-  s.tv_sec=m_sec;
-  s.tv_usec=m_usec;
+  s.tv_sec=getSec();
+  s.tv_usec=getUSec();
   // todo: 
   // could be interrupted by a signal !!
   // on linux we could use the timeout paramter if select was interrupted by a signal
@@ -172,8 +147,7 @@ void TimeStamp::sleep() const
     }
   }
 #else
-  unsigned msec=m_sec*1000;
-  msec+=m_usec/1000;
+  unsigned msec=m_stamp/1000;
   Sleep(msec);
 #endif  
 }

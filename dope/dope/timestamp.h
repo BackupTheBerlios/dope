@@ -58,37 +58,45 @@ public:
   //! sleep
   void sleep() const;
 
-  //! get seconds
-  int getSec() const 
-  {
-    return m_sec;
-  }
-  //! get micro-seconds
-  int getUSec() const
-  {
-    return m_usec;
-  }
-
   bool operator<(const TimeStamp &o) const
   {
-    if (m_sec==o.m_sec) return (m_usec<o.m_usec);
-    else if (m_sec<o.m_sec) return true;
-    return false;
+    return m_stamp<o.m_stamp;
+  }
+  bool operator==(const TimeStamp &o) const
+  {
+    return m_stamp==o.m_stamp;
+  }
+  bool operator>(const TimeStamp &o) const
+  {
+    return m_stamp>o.m_stamp;
   }
   
   template <typename Layer2>
   inline void composite(Layer2 &layer2)
   {
-    layer2.simple(m_sec,"sec").simple(m_usec,"usec");
+    layer2.simple(m_stamp,"stamp");
+  }
+
+  //! get seconds - suitable to fill a signed timeval struct
+  int getSec() const 
+  {
+    // todo check if it fits
+    return m_stamp/1000000LL;
+  }
+  //! get micro-seconds - suitable to fill a signed timeval struct
+  int getUSec() const
+  {
+    return m_stamp%1000000LL;
   }
 protected:
   void init();
   void deinit();
   
-  //! seconds
-  int m_sec;
-  //! microseconds
-  int m_usec;
+  //! the stamp
+  /*!
+    \todo use stdint.h and int64_t conforming to C99
+  */
+  long long m_stamp;
 };
 DOPE_CLASS(TimeStamp);
 

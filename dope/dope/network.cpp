@@ -57,6 +57,7 @@ bool NetStreamBufServer::select(const TimeStamp *timeout){
   fd_set read_fd_set = active_fd_set;
   timeval ctimeout;
   if (timeout) {
+    // todo what about negative values and unsigned timeval structs
     ctimeout.tv_sec=timeout->getSec();
     ctimeout.tv_usec=timeout->getUSec();
   }

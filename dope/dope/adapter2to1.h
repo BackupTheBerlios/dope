@@ -39,6 +39,8 @@ DOPE_INLINE Layer2InAdapter &simple(type &data) \
   DOPE_SIMPLE(unsigned int);
   DOPE_SIMPLE(long);
   DOPE_SIMPLE(unsigned long);
+  DOPE_SIMPLE(long long int);
+  DOPE_SIMPLE(long long unsigned);
   DOPE_SIMPLE(float);
   DOPE_SIMPLE(double);
 
@@ -187,6 +189,8 @@ DOPE_INLINE Layer2OutAdapter &simple(type data) \
   DOPE_SIMPLE(unsigned int);
   DOPE_SIMPLE(long);
   DOPE_SIMPLE(unsigned long);
+  DOPE_SIMPLE(long long int);
+  DOPE_SIMPLE(long long unsigned);
   DOPE_SIMPLE(float);
   DOPE_SIMPLE(double);
 
