@@ -81,6 +81,12 @@ public:
   void setCloseOnDelete(bool _c)
   {closeOnDelete=_c;}
 
+  //! Enable/disable Nagle's algorithm
+  /*
+    \return true on success otherwise false
+  */
+  bool setTcpNoDelay(bool on);
+
   ~Socket();
 
   //! set socket to blocking or non-blocking mode - default is blocking

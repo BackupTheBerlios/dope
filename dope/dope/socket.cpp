@@ -48,9 +48,11 @@
 #undef connect
 #endif
 
-#include <arpa/inet.h> // inet_pton
-#include <netdb.h> // hostent
-#include <fcntl.h>
+#include <arpa/inet.h>   // inet_pton
+#include <netdb.h>       // hostent
+#include <fcntl.h>       // fcntl
+#include <sys/types.h>   // setsockopt
+#include <netinet/tcp.h> // TCP_NODELAY
 
 #define closesocket	::close
 
@@ -186,12 +188,11 @@ Socket::init() {
 void
 Socket::reuse()
 {
-#ifndef WINDOOF
   int reuser=1;
   int len=sizeof(reuser);
-  if (setsockopt(handle,SOL_SOCKET,SO_REUSEADDR,(void *)&reuser,len)<0) // (void *) cause of solaris
+  // (void *) cause of solaris
+  if (setsockopt(handle,SOL_SOCKET,SO_REUSEADDR,(void *)&reuser,len)<0) 
     DOPE_WARN("reuse failed");
-#endif
 };
 
 bool
@@ -286,6 +287,14 @@ Socket::setBlocking(bool block)
 #else
   DOPE_WARN("not yet implemented on WIN32");
 #endif
+}
+
+bool
+Socket::setTcpNoDelay(bool on)
+{
+  int flag = on;
+  // (void *) cause of solaris
+  return !setsockopt(getHandle(), IPPROTO_TCP, TCP_NODELAY, (void *) &flag, sizeof(int));
 }
 
 int

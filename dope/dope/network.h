@@ -114,6 +114,11 @@ public:
   {
     sock.setBlocking(block);
   }
+
+  bool setTcpNoDelay(bool on=true)
+  {
+    return sock.setTcpNoDelay(on);
+  }
   
   ~BasicNetStreamBuf()
   {
@@ -191,26 +196,29 @@ protected:
   }
   
   //! write to socket 
+  /*!
+    \note it seems i==eof means only to flush/sync
+   */
   int_type overflow(int_type i = traits_type::eof())
   {
-    // todo - eof should close ?
     DOPE_CHECK(pbase());
     int towrite=((char *)pptr())-((char *)pbase());
     int written=0;
-    do {
+    while (written<towrite){
       int res=sock.write((void *)((char *)pbase()+written),towrite-written);
       if (res<0)
+	// error occured - todo should we bump the written characters ?
 	return traits_type::eof();
       written+=res;
-    }while(written<towrite);
+    }
     pbump(-towrite/sizeof(char_type));
-    if (i!=traits_type::eof())
+    if (i!=traits_type::eof()) 
       sputc(i);
-    return 0;
+    return traits_type::not_eof(i);
   }
 
   /*!
-    \return 0 or EOF
+    \return EOF on error
   */
   int sync()
   {
@@ -254,7 +262,9 @@ protected:
     _M_mode = std::ios_base::in | std::ios_base::out; // sockets are always read/write ?
     _M_buf_unified = false; // we want to use different buffers for input/output
     setg(NULL,NULL,NULL);
-    int bsize=1024;
+    // todo should be at least the MTU of the underlying interface
+    // or otherwise a fixed size member array (=> no new and delete)
+    int bsize=1500; 
     char_type *buf=new char_type[bsize];
     setp(buf,buf+bsize);
   }
