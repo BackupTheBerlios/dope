@@ -40,27 +40,32 @@
 // and internet addresses
 #include "dope.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <netdb.h>
+// standard c++ includes
+#include <cstdio>
+#include <cstdlib>
 #include <string>
 #include <iostream>
 #include <streambuf>
 #include <list>
 #include <algorithm>
-#include <sys/time.h>
-#include <sys/types.h>
-#include <unistd.h>
-#include <errno.h>
+#include <cerrno>
 #include <ios>
-
-#include <sigc++/signal_system.h>
 #include <map>
 #include <stdexcept>
 
+// "unix" includes
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <netdb.h>
+#include <sys/time.h> // timeval
+#include <sys/types.h>
+#include <unistd.h>
+
+// sigc++
+#include <sigc++/signal_system.h>
+
+// other dope includes
 #include "dopeexcept.h"
 #include "timestamp.h"
 
@@ -194,6 +199,10 @@ public:
     close_on_delete=_c;
   }
   ~Socket();
+
+  //! set socket to blocking or non-blocking mode - default is blocking
+  void setBlocking(bool block);
+  
 private:
   bool close_on_delete;
   int socket_handle;
@@ -230,49 +239,100 @@ public:
     init();
   }
 
+  //! test for input
+  /*!
+    \param timeout from man 2 select: upper bound on the amount of time elapsed
+    before select returns. It may be zero, causing  select  to
+    return  immediately.  If  timeout  is  NULL  (no timeout),
+    select can block indefinitely.
+
+    \return true if data is available otherwise false
+  */
+  bool select(const TimeStamp* timeout=NULL)
+  {
+    bool ret=false;
+    fd_set read_fd_set;
+    FD_ZERO(&read_fd_set);
+    int fd=get_handle();
+    FD_SET(fd,&read_fd_set);
+    timeval ctimeout;
+    if (timeout) {
+      ctimeout.tv_sec=timeout->getSec();
+      ctimeout.tv_usec=timeout->getUSec();
+    }
+    int av=::select (fd+1, &read_fd_set, NULL, NULL, (timeout) ? (&ctimeout) : NULL);
+    if (av < 0)
+      {
+#ifndef LIB_NET_NO_EXCEPTIONS
+	throw std::logic_error(__PRETTY_FUNCTION__);
+#endif
+	DOPE_FATAL("select");
+	return false;
+      }
+    return av>0;
+  }
+
+  //! return corresponding file handle / descriptor
   int get_handle(){
     return sock.get_handle();
   }
 
+  //! set socket to blocking or non-blocking mode - default is blocking
+  void setBlocking(bool block)
+  {
+    sock.setBlocking(block);
+  }
+  
   ~BasicNetStreamBuf()
   {
     freeBuf();
   }
+
   
 protected:
   int_type underflow()
   {
-    if (_M_in_beg)
+    if (eback())
       {
-	delete [] _M_in_beg;
-	_M_in_beg=_M_in_cur=_M_in_end=NULL;
+	// why do I kill my putback buffer now ?
+	delete [] eback();
+	setg(NULL,NULL,NULL);
       }
     char_type c;
-    ssize_t res=read(sock.get_handle(),(void *)&c,sizeof(c));
-    if (res==sizeof(c))
-      return traits_type::to_int_type(c);
-    
-    if (res>0)
-      // todo - we got some chars but not all
-      assert(0);
-    ;
-    if (res<0) {
-      // man 2 read
-      // todo
-      return 0;
+    ssize_t res;
+    int retry=10;
+    while(retry) {
+      res=read(sock.get_handle(),(void *)&c,sizeof(c));
+      if (res==sizeof(c))
+	return traits_type::to_int_type(c);
+      if (res>0)
+	// we got more chars than we requested
+	DOPE_FATAL("Should not happen");
+      if (res<0) {
+	if ((errno==EINTR)||(errno==EAGAIN))
+	  {
+	    --retry;
+	    continue;
+	  }
+	// todo
+	DOPE_FATAL("todo");
+      }
+      assert(res==0);
+      return  traits_type::eof();
     }
-    assert(res==0);
-    return  traits_type::eof();
   }
 
+  //! 
+  /*! 
+    \todo - why did i do this ?
+  */
   int_type uflow()
   {
     int_type c = underflow();
     return c;
   }
-
   
-  
+  //! write to socket 
   int_type overflow(int_type i = traits_type::eof())
   {
     // todo - eof should close ?
@@ -292,27 +352,30 @@ protected:
     two possible cases:
     there was no space left to put back characters
     the character simply must be stored
+
+    \todo what should I do if I am called with eof ?
   */
   int_type pbackfail(int_type c  = traits_type::eof())
   { 
     // inspired from gcc std c++ lib streambuf.tcc
-    bool haveSpace = _M_in_cur && _M_in_beg < _M_in_cur;
+    bool haveSpace = gptr() && eback() < gptr();
     if (!haveSpace)
       {
 	// acquire new space - if current pos != end pos we have to copy the chars
-        assert(_M_in_end-_M_in_beg>=0);
-	int_type oldSize=_M_in_end-_M_in_beg;
+        assert(egptr()-eback()>=0);
+	int_type oldSize=egptr()-eback();
 	int_type pbSize=1000;
         int_type newSize=oldSize+pbSize;
 	char_type* newBuf=new char_type[newSize];
-	assert(_M_in_beg==_M_in_cur);
-	traits_type::copy(newBuf+pbSize,_M_in_cur,oldSize);
+	assert(eback()==gptr());
+	traits_type::copy(newBuf+pbSize,gptr(),oldSize);
 	freeBuf();
-	_M_in_beg=newBuf;
-	_M_in_cur=_M_in_beg+pbSize;
-	_M_in_end=_M_in_beg+newSize;
+	setg(newBuf,newBuf+pbSize,newBuf+newSize);
       }
-    *(--_M_in_cur)=traits_type::to_char_type(c);
+    //    sputbackc(traits_type::to_char_type(c)); calls pbackfail ? - i thought it only calls pbackfail if no space is available ?
+    // todo there must be a better way to do this
+    setg(eback(),gptr()-1,egptr());
+    *gptr()=traits_type::to_char_type(c);
     return c;
   }
 
@@ -332,12 +395,13 @@ protected:
   {
     _M_mode = std::ios_base::in | std::ios_base::out; // sockets are always read/write ?
     _M_buf_unified = false; // we want to use different buffers for input/output
+    setg(NULL,NULL,NULL);
   }
 
   void freeBuf()
   {
-    if (_M_in_beg)
-      delete [] _M_in_beg;
+    if (eback())
+      delete [] eback();
   }
 };
 
@@ -361,7 +425,7 @@ public:
     return  immediately.  If  timeout  is  NULL  (no timeout),
     select can block indefinitely.
 
-    \return true on success false otherwise
+    \return true if data is available otherwise false
   */
   bool select(const TimeStamp* timeout=NULL);
 
