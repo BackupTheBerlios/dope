@@ -79,6 +79,28 @@ extern int dope_major_version;
 #define DOPE_FUNCTIONNAME __func__
 #endif
 
+//! print stack / backtrace if possible
+/*!
+  Currently only works with gnu libc backtrace function in header execinfo.h
+  if the the header is not available this funtion simply does nothing
+
+  \note certain compiler optimizations may interfere with
+  obtaining a valid backtrace.  Function inlining causes the inlined
+  function to not have a stack frame; tail call optimization
+  replaces one stack frame with another; frame pointer elimination
+  will stop `backtrace' from interpreting the stack contents
+  correctly.
+
+  \note Currently, the function name and offset only be obtained on
+  systems that use the ELF binary format for programs and libraries.
+  On other systems, only the hexadecimal return address will be
+  present.  Also, you may need to pass additional flags to the
+  linker to make the function names available to the program.  (For
+  example, on systems using GNU ld, you must pass (`-rdynamic'.)
+*/
+void 
+dope_backtrace();
+
 /*
   \def DOPE_HERE
 
@@ -93,28 +115,6 @@ extern int dope_major_version;
 */
 #define DOPE_ERRORSTR "errno="<<errno<<":"<<strerror(errno)
 
-/*
-  \def DOPE_CHECK(expr)
-  \brief DOPE_CHECK is like assert but takes also effect when NDEBUG is defined
-
-  it seems there is no assert which is not disabled by a \#define NDEBUG 
-
-*/
-#ifndef NDEBUG
-#include <cassert>
-#define DOPE_CHECK(expr) assert(expr);
-#else
-inline int fatal(const char *file,int line,const char *func, const char *msg) 
-{
-  std::cerr << "FATAL: " << file << ":" << line << ":" << func << ": " << msg << "(" << DOPE_ERRORSTR <<")\n";
-  std::terminate();
-  return 0;
-}
-# define DOPE_CHECK(expr)							      \
-  ((void) ((expr) ? 0 :							      \
-	   fatal(__FILE__, __LINE__, DOPE_FUNCTIONNAME, "assertion failed: "__STRING(expr))))
-#endif // NDEBUG
-
 
 /*!
   \def DOPE_MSG(dopeLevelP, dopeMsgP)
@@ -122,11 +122,37 @@ inline int fatal(const char *file,int line,const char *func, const char *msg)
 */
 #define DOPE_MSG(dopeLevelP, dopeMsgP) do{std::cerr << dopeLevelP << DOPE_HERE << ": " << dopeMsgP << "(" << DOPE_ERRORSTR << ")\n";}while(0)
 
+/*
+  \def DOPE_CHECK(expr)
+  \brief DOPE_CHECK is like assert but takes also effect when NDEBUG is defined
+
+  it seems there is no assert which is not disabled by a \#define NDEBUG 
+
+*/
+inline int fatal(const char *file,int line,const char *func, const char *msg) 
+{
+  std::cerr << "FATAL: " << file << ":" << line << ":" << func << ": " << msg << "(" << DOPE_ERRORSTR <<")\n";
+  dope_backtrace();
+  std::terminate();
+  return 0;
+}
+
+/*
+  \def DOPE_STR(s)
+  \brief DOPE_STR converts the macro argument to a string constant
+*/
+#define DOPE_STR(s) #s
+
+#define DOPE_CHECK(expr)							      \
+  ((void) ((expr) ? 0 :							      \
+	   fatal(__FILE__, __LINE__, DOPE_FUNCTIONNAME, "assertion failed: " DOPE_STR(expr))))
+
+
 /*!
   \def DOPE_FATAL(msg)
   \brief fatal error - exit with a short message
 */
-#define DOPE_FATAL(msg) do{DOPE_MSG("FATAL: ",msg);std::terminate();}while(0)
+#define DOPE_FATAL(msg) do{DOPE_MSG("FATAL: ",msg);dope_backtrace();std::terminate();}while(0)
 
 /*! 
   \def WARN(msg)
