@@ -155,7 +155,7 @@ public:
 
   int_type underflow()
   {
-    int_type i=connect()->sgetc();
+    int_type i=connect()->sbumpc();
     if (i==traits_type::eof())
       disconnect();
     return i;
