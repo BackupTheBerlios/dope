@@ -1,7 +1,8 @@
-wollte das mit den exceptions richtig machen
+- TRANSLATE this file to English ;-)
 
-der debug out stream hat was komisches ausgegeben
-anstelle von X in a string
+use boost concept checks
+
+wollte das mit den exceptions richtig machen
 
 habe nochmal das mit dem operator| probiert
 in experiments/pipe.cpp
@@ -14,21 +15,17 @@ wieder einmal das config.h problem
 soll es installiert werden ?
 soll es anders heißen
 wer soll es includen und wie <> vs ""
-
+nochwas zu dem pfadproblem
+es ist dumm wenn dope-config --cflags einen include pfad wir -I/usr/local/include ausgibt,
+da man den evtl. nicht will (z.bsp merhere compiler installiert)
+besser waere also wenn dope in zbsp. /usr/local/include/dope-version/dope installiert wird
+das würde es auch ermöglichen mehrere versionen der headers zu installieren - abgesehen vom
+dope-config :-(
 
 entferne name extension
 und mache als beispiel einer extension eine comment extension
 und denke erst nochmal ueber extensions nach und verknüpfe traits irgendwie
 mit der extension klasse
-
-
-build process:
-think about inter-library dependencies again
-in fact I think dope-config should be used for this and not libtool
-=> perhaps remove configuration option again
-but then dope-config should check if the library it depends upon are still there ?
-or at least AM_PATH_DOPE should do this
-find a example how to do this
 
 
 mir fehlt das konzept von anfang und ende
@@ -41,16 +38,14 @@ lsg.:
 user benutzt nicht direkt simple sondern was anderes
 oder ich mache dass ein stream immer nur ein objekt lesen/schreiben kann
 aber das waere doof ?
+das ist unsinn der stream kann die schachteltiefe mitzählen => brauche ich nicht
+allerdings fällt mir dazu ein dass einfache typen bestimmt bei dem einen oder anderem stream
+probleme haben
 
-
-also 
-scheiße
-mit den manipulatoren
 
 das mit den traits richtig gut machen
 evtl. noch mal darüber nachdenken wie sich das mit vererbung bei streams
 vertreagt
-die operator overload geschichte soll nicht aufgezwungen werden
 nochmal ueber das problem der rueckgabewerte nachdenken (im zusammenhang mit ableiten z.bsp rawoutstream)
 
 
@@ -66,6 +61,7 @@ stream &info(X)
 }
 oder evtl. ext(X)
 
+<VERALTET>
 so koennte ich auch die name() geschichte machen und dann würde es reichen bei
 XTL eben die default impl hinzuzufügen
 bei XML koennte man da die namespace geschichten mit machen (und DTD - ACHTUNG DTD und 
@@ -75,6 +71,7 @@ v.a. reicht der typ bei fixen sachen und somit kann der compiler mehr optimieren
 aber strings sind keine template prarameter oder ?
 und das def_gettypename zeugs koennte verschwinden
 sollte auf jedenfall umbenannt werden in REGISTER_TYPE oder so
+</VERALTET>
 
 das problem mit der methode ist natuerlich dass kein compile-time check mehr
 existiert ob alle notwendige information geg. ist => runtime-fehler
@@ -91,8 +88,6 @@ und xmlrpc
 dann muß xslt integriert werden
 
 
-
-
 * leak tracing - currently i have problems to get LeakTracer to work with
   gcc-3.0 but perhaps the std c++ lib "leaks"
 
@@ -105,7 +100,7 @@ dann muß xslt integriert werden
   => I will not forget it
   the main problem is perhaps std::map
 
-  my problem is a don't want to have the user to write the same method twice
+  my problem is I don't want to have the user to write the same method twice
   the const and non-const variant => i need some template trick but the const attribute of a method
   can not be templated ?
   how to solve this ?
@@ -117,16 +112,11 @@ dann muß xslt integriert werden
   especially the saxwrapper must report errors to the sax parser
   should work now - but needs a review
 
-* the type -> typename mapping is still ugly
-  add a template parameter to make it flexible
-
 * w_char support - UNICODE ?
 
 * documentation
 
 * examples
-
-* automatic testsuite
 
 * xmlrpc
   xmlrpc is quite stupid
@@ -148,20 +138,17 @@ dann muß xslt integriert werden
   can't find a simple docu how to pass a message to corba
   seems I have to learn more about corba first - unfortunately I don't like corba
 
-* libsigc++
-  works
-
 * allow xslt tansformations
   the problem is I can't find a xslt processor which doesn't build a DOM of the document to transform
   => memory usage linear to document size
   => only suitable for small objects/documents
   since xmlsaxinstream is very slow i wanted to add a xmldominstream anyway
-  => add a xmlsaxdomoutstream, too
+  => add a xmldomoutstream, too (xmldomoutstream is done)
   those streams would then be the right choice for small objects
 
 performance problems with c++ streams
 my own streams do not implement sputn sgetn => read write with one byte - i will change this
-unfortunately it seems g++ (3.0.3) streambufs write also only 1 byte - strace shows this (can't believe
-that it will stay like this)
+unfortunately it seems g++ (3.0.3) streambufs write also only 1 byte? - strace showed this? (can't believe
+that it will stay/is like this - i think it was only to stdout or something like that)
 
 i18n (localization)

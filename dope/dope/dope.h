@@ -100,12 +100,12 @@ extern int dope_major_version;
   \def DOPE_FATAL(msg)
   \brief fatal error - exit with a short message
 */
-#define DOPE_FATAL(msg) {std::cerr << "FATAL: " << __FILE__ << ":" << __LINE__ << ":" << __PRETTY_FUNCTION__ << msg << std::endl;exit(1);}
+#define DOPE_FATAL(msg) {std::cerr << "FATAL: " << __FILE__ << ":" << __LINE__ << ":" << __PRETTY_FUNCTION__ << ": " << msg << std::endl;exit(1);}
 /*! 
   \def DOPE_WARN(msg)
   \brief print a warning message
 */
-#define DOPE_WARN(msg) {std::cerr << "WARN: " << __FILE__ << ":" << __LINE__ << msg;}
+#define DOPE_WARN(msg) {std::cerr << "WARN: " << __FILE__ << ":" << __LINE__ << ":" << __PRETTY_FUNCTION__ << ": " << msg << std::endl;}
 
 #endif // DOPE_DOPE_H
 

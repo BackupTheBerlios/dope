@@ -76,11 +76,8 @@ int main(int argc,char *argv[])
     ArgvParser parser(argc,argv);
     Arguments args;
     parser.SIMPLE(args);
-    // exit if parser printed the help message
-    if (parser.gotHelpArg()) return 1;
-    // now write configuration to stdout
-    XMLDOMOutStream<std::streambuf> d(*std::cout.rdbuf());
-    d.simple(args,NULL);
+    // exit if parser wants us to
+    if (parser.shouldExit()) return 1;
     return 0;
   }
   catch (const std::exception &error){

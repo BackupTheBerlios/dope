@@ -20,11 +20,12 @@ libdopeinclude_HEADERS = \
 	dopesignal.h \
 	typenames.h streamtraits.h \
 	dope.h \
-	argvparser.h
+	argvparser.h \
+	timestamp.h
 
 lib_LTLIBRARIES = libdope.la
 libdope_la_SOURCES = $(libdopeinclude_HEADERS) $(noinstheaders) \
-	dom.cpp network.cpp dope.cpp
+	dom.cpp network.cpp dope.cpp timestamp.cpp
 
 libdope_la_LDFLAGS = -version-info @DOPE_LTVERSION@ @DOPE_LDADD@
 
