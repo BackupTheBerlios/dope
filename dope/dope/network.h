@@ -56,7 +56,9 @@
 // need fd_set
 
 #define __USE_W32_SOCKETS
+#define NOMINMAX
 #include <windows.h>
+#undef NOMINMAX
 
 #endif
 
