@@ -93,6 +93,14 @@ DOPE_INLINE ArgvParserDescription &simple(T data, MemberName mname) \
     ::composite(*this,data);
     return *this;
   }
+
+  //! types conforming to the STL container concept
+  template <class C>
+  DOPE_INLINE ArgvParserDescription& container(C &data)
+  {
+    // todo - is there a good way to pass a container on the command line ?
+    return *this;
+  }
 protected:
   static std::string upcase(const std::string &s)
   {
@@ -218,11 +226,19 @@ DOPE_INLINE ArgvParserT &simple(T &data, MemberName mname) \
 	::composite(*this,data);
 	--m_depth;
       }
-    if (m_dumpConfig) {
+    if ((!m_depth)&&m_dumpConfig) {
       // dump config
       L2OUT d(l0);
       d.simple(data,mname);
     }
+    return *this;
+  }
+
+  //! types conforming to the STL container concept
+  template <class C>
+  DOPE_INLINE ArgvParserT& container(C &data)
+  {
+    // todo - is there a good way to pass a container on the command line ?
     return *this;
   }
 
