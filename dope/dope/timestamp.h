@@ -34,6 +34,8 @@ public:
   //! set time
   TimeStamp(int sec, int usec) : m_sec(sec), m_usec(usec) 
   {}
+  //! set from seconds
+  TimeStamp(float sec);
   
   //! set to current time
   void now();
@@ -44,7 +46,11 @@ public:
     \todo think about it
   */
   TimeStamp operator-(const TimeStamp &o) const;
+  TimeStamp &operator-=(const TimeStamp &o);
 
+  TimeStamp operator+(const TimeStamp &o) const;
+  TimeStamp &operator+=(const TimeStamp &o);
+  
   //! sleep
   void sleep() const;
 
@@ -69,7 +75,7 @@ public:
   template <typename Layer2>
   inline void composite(Layer2 &layer2)
   {
-    layer2.SIMPLE(m_sec).SIMPLE(m_usec);
+    layer2.simple(m_sec,"sec").simple(m_usec,"usec");
   }
 protected:
   //! seconds
