@@ -35,6 +35,8 @@ public:
     i=7;
     b=false;
     c='A';
+    sc=-10;
+    uc=200;
     cppstr="hello world !&<\">;:-";
     p.first='Z';
     p.second=true;
@@ -70,6 +72,8 @@ public:
     i=-1;
     b=true;
     c='L';
+    uc=10;
+    sc=12;
     p.first='L';
     fixedCVector[0]=666;
     fixedCVector[1]=666;
@@ -97,7 +101,7 @@ public:
   template <typename Layer2>
   inline void composite(Layer2 &layer2)
   {
-    layer2.SIMPLE(i).SIMPLE(b).SIMPLE(c)
+    layer2.SIMPLE(i).SIMPLE(b).SIMPLE(c).SIMPLE(sc).SIMPLE(uc)
       .dynCVector(dynCVec1,dynCVec1Size,"dynCVec1")
       .dynCVector(dynCVec2,dynCVec2Size,"dynCVec2")
       .fixedCVector(fixedCVector,2,"fixedCVector")
@@ -108,6 +112,8 @@ public:
   int i;
   bool b;
   char c;
+  signed char sc;
+  unsigned char uc;
 
   // dynamic c vectors - created with new[] and destroyed with delete[]
   size_t dynCVec1Size;
@@ -178,6 +184,8 @@ public:
 	f.setSome();
 	OutStream o(buf);
 	o.SIMPLE(f);
+	if (dump)
+	  std::cout << buf.str() << "\n";
       }
       {
 	// read foo
@@ -191,7 +199,7 @@ public:
 	// compare both external representations
 	// \todo compare both internal representations too
 	if (dump)
-	  std::cout << buf.str() << "\n----\n" << buf2.str() << std::flush;
+	  std::cout << "----\n" << buf2.str() << std::flush;
 	if (buf.str()==buf2.str())
 	  return 0;
       }
