@@ -1,7 +1,8 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<!doctype html public "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
 <html>
 <head>
 <title>DOPE++ (=Distributed Object Programing Environment for C++)</title>
+<META NAME="Description" CONTENT="DOPE++ llibdope home-page C++ serialization pickling">
 </head>
 <body>
 <h1>DOPE++</h1>
@@ -34,9 +35,9 @@ class foo
 	  // create a stream (cfgtype)
 	  cfgtype *cfgptr=choose_cfgtype(ioptr,mode);
 	  // read write members
-	  cfgptr->change_int32_check((int32 *)&a);
-	  cfgptr->change_string_check(&s);
-	  cfgptr->change(&f);
+	  cfgptr->change_int32_check((int32 *)&amp;a);
+	  cfgptr->change_string_check(&amp;s);
+	  cfgptr->change(&amp;f);
 	  if (ioptr->getmode()==IOTYPE_READ_MODE)
 	  {
 	  	// on read do something special
@@ -139,7 +140,7 @@ BTW the naming convention stream is a bit restricted
     <address><a href="mailto:jens.thiele@student.uni-tuebinhen.de">Jens Thiele</a></address>
 <!-- Created: Mon Aug  6 15:12:02 CEST 2001 -->
 <!-- hhmts start -->
-Last modified: Tue May 28 11:30:25 CEST 2002
+Last modified: Tue May 28 11:36:22 CEST 2002
 <!-- hhmts end -->
   <p>
     <a href="http://validator.w3.org/check/referer"><img border="0"
