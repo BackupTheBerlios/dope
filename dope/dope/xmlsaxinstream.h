@@ -167,7 +167,7 @@ protected:
   class ContainerElemBase
   {
   public:
-    typedef XMLSAXInStream<L> S;
+    typedef XMLSAXInStream<Layer0> S;
     
     ContainerElemBase(S &_s) : s(_s), insertit(false)
     {}
