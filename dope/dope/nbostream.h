@@ -30,6 +30,9 @@
 #include "dopeexcept.h"
 #include "bswap.h"
 
+TODO: not yet ready
+
+
 /*! network byte order (raw) layer1 stream */
 //! simple network byte order (raw) layer 1 input stream
 /*
@@ -43,16 +46,68 @@ protected:
 public:
   L1NBOInStream(Layer0 &_layer0) : layer0(_layer0)
   {}
-  template <typename Data>
-  DOPE_INLINE L1NBOInStream & in(Data &data)
+
+  DOPE_INLINE L1NBOInStream &in(bool &d)
   {
-    std::streamsize s=sizeof(Data);
-    if (layer0.sgetn((char *)&data,s)!=s)
-      throw ReadError(std::string(__PRETTY_FUNCTION__));
-#if (__BYTE_ORDER == __BIG_ENDIAN)
-    data=bswap(data);
-#endif
+    char c;
+    in(c);
+    d=(c!=0);
     return *this;
+  }
+
+  DOPE_INLINE L1NBOInStream &in(char &c)
+  {
+    if (layer0.sgetn(&c,sizeof(char))!=sizeof(char))
+      throw ReadError(std::string(__PRETTY_FUNCTION__));
+    return *this;
+  }
+
+  DOPE_INLINE L1NBOInStream &in(signed char &c)
+  {
+    in(layer0.sputc(c);return *this;
+  }
+
+  DOPE_INLINE L1NBOInStream &in(unsigned char &c)
+  {
+    layer0.sputc(c);return *this;
+  }
+
+#if (__BYTE_ORDER == __LITTLE_ENDIAN)
+#define DOPE_IN(T) \
+L1NBOInStream &in(T d) {\
+    bswap(d); \
+    layer0.sputn((char *)&d,sizeof(T)); \
+    return *this; \
+  }
+#else
+#define DOPE_IN(T) \
+L1NBOInStream &in(T d) {\
+    layer0.sputn((char *)&d,sizeof(T)); \
+    return *this; \
+  }
+#endif
+
+  DOPE_IN(short);
+  DOPE_IN(unsigned short);
+  DOPE_IN(int);
+  DOPE_IN(unsigned int);
+  DOPE_IN(long long int);
+  DOPE_IN(long long unsigned);
+#undef DOPE_OUT
+
+/* TODO: long could be 32 or 64 bit
+  DOPE_IN(long);
+  DOPE_IN(unsigned long);
+*/
+
+  DOPE_INLINE L1NBOInStream &in(float d)
+  {
+    return in(*reinterpret_cast<int *>(&d));
+  }
+
+  DOPE_INLINE L1NBOInStream &in(double d)
+  {
+    return in(*reinterpret_cast<long long *>(&d));
   }
 
   DOPE_INLINE L1NBOInStream & in(char *data, std::streamsize size)
@@ -104,16 +159,65 @@ public:
   {
     layer0.pubsync();
   }
-  
-  template <typename Data>
-  DOPE_INLINE L1NBOOutStream &out(Data data)
+
+  DOPE_INLINE L1NBOOutStream &out(bool d)
   {
-#if (__BYTE_ORDER == __BIG_ENDIAN)
-    data=bswap(data);
-#endif
-    layer0.sputn((char *)&data,sizeof(Data));
-    return *this;
+    return out(char(d?1:0));
   }
+
+  DOPE_INLINE L1NBOOutStream &out(char c)
+  {
+    layer0.sputc(c);return *this;
+  }
+
+  DOPE_INLINE L1NBOOutStream &out(signed char c)
+  {
+    layer0.sputc(c);return *this;
+  }
+
+  DOPE_INLINE L1NBOOutStream &out(unsigned char c)
+  {
+    layer0.sputc(c);return *this;
+  }
+
+#if (__BYTE_ORDER == __LITTLE_ENDIAN)
+#define DOPE_OUT(T) \
+L1NBOOutStream &out(T d) {\
+    bswap(d); \
+    layer0.sputn((char *)&d,sizeof(T)); \
+    return *this; \
+  }
+#else
+#define DOPE_OUT(T) \
+L1NBOOutStream &out(T d) {\
+    layer0.sputn((char *)&d,sizeof(T)); \
+    return *this; \
+  }
+#endif
+
+  DOPE_OUT(short);
+  DOPE_OUT(unsigned short);
+  DOPE_OUT(int);
+  DOPE_OUT(unsigned int);
+  DOPE_OUT(long long int);
+  DOPE_OUT(long long unsigned);
+#undef DOPE_OUT
+
+/* TODO: long could be 32 or 64 bit
+  DOPE_OUT(long);
+  DOPE_OUT(unsigned long);
+*/
+
+  DOPE_INLINE L1NBOOutStream &out(float d)
+  {
+    return out(*reinterpret_cast<int *>(&d));
+  }
+
+  DOPE_INLINE L1NBOOutStream &out(double d)
+  {
+    return out(*reinterpret_cast<long long *>(&d));
+  }
+
   DOPE_INLINE L1NBOOutStream &out(const char * const data, size_t size)
   {
     layer0.sputn(data,size);

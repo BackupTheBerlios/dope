@@ -27,7 +27,7 @@
  * Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
  * MA 02111-1307, USA
  *
- * $Id: bswap.h,v 1.1 2003/04/29 18:11:14 karme Exp $
+ * $Id: bswap.h,v 1.2 2003/04/29 22:09:10 karme Exp $
  */
 
 #ifndef DOPE_BSWAP_H
@@ -125,7 +125,7 @@ inline unsignedlonglong bswap_64(unsignedlonglong b) {
 }
 #endif
 
-#define _DOPE_BSWAP(T,S) inline T bswap(T x){return bswap_##S(x);}
+#define _DOPE_BSWAP(T,S) inline T& bswap(T &x){x=bswap_##S(x);return x;}
 _DOPE_BSWAP(short,16)
 _DOPE_BSWAP(unsigned short,16)
 _DOPE_BSWAP(int,32)
@@ -133,5 +133,4 @@ _DOPE_BSWAP(unsigned int,32)
 _DOPE_BSWAP(longlong,64)
 _DOPE_BSWAP(unsignedlonglong,64)
 #undef _DOPE_BSWAP
-
 #endif

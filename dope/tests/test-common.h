@@ -32,7 +32,7 @@ public:
   //! set some values
   void setSome()
   {
-    i=7;
+    i=0x04030201;
     b=false;
     c='A';
     sc=-10;
