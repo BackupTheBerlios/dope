@@ -12,7 +12,7 @@ This is still too much work:
 	- cross-compile win32 binary static library
  4. test (if test fails goto 0)
 
- 5. cvs tag
+ 5. cvs tag (f.e. cvs tag adic-0-0-8)
  6. upload packages to berlios
 	- changelog again !
  7. upload source code documentation
