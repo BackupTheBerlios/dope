@@ -13,6 +13,47 @@ DOPE (=Distributed Object Programing Environment for C++) is a C++ Template libr
 <h2>General Introduction</h2>
 Programing in heterogenous network environments in C++ always raises the problem of serialization/deseriallization (reading/writeing objects - other terms: marshalling, pickling - unfortunately I did not find any definitions of those terms - any hints?). FIXME - this intro is nearly the same as the one from XTL perhaps just refer to it. (Importance: many different protocols/hardware/software(programing languages))
 
+<a name="requirements"><h2>Dependencies/Requirements</h2></a>
+<h3>Build dependencies if you got the tar-ball</h3>
+<UL>
+<LI>recent C++ compiler and std C++ library (f.e. g++ >=3)</LI>
+<LI><a href="http://libsigc.sourceforge.net/">libsigc++</a></LI>
+<LI><a href="http://www.libxml.org">libxml-dev a.k.a. gnome-xml</a></LI>
+<LI><a href="http://www.boost.org">boost</a></LI>
+<LI>UNIX sockets</LI>
+</UL>
+<h3>if you checked out from CVS</h3>
+<UL>
+<LI>autoconf >= 2.5</LI>
+<LI>automake (I use 2.6.1)</LI>
+<LI>libtool (I use 1.4.2)</LI>
+<LI>doxygen to build the API docs</LI>
+</UL>
+<h2>License/Copyright</h2>
+<a href="COPYING">GPL</a> Copyright (C) 2002 Jens Thiele &lt;jens.thiele@student.uni-tuebingen.de&gt;
+<h2>Links</h2>
+<UL>
+<LI><a href="http://dope.berlios.de/doxygen/html/index.html">Reference manual</a></LI>
+<LI><a href="doxygen/html/index.html">local Reference manual</a> (only available if you generated it)</LI>
+</UL>
+<H2>The stream layers:</H2>
+<TABLE>
+<TR>
+<TD>Layer</TD><TD>description</TD><TD>examples / implementations</TD>
+</TR><TR>
+<TD>0</TD><TD>byte stream (using the STL streambuf concept => you can use them as underlying buffer)</TD>
+<TD>&lt;streambuf&gt;, sockets, strings, files<TD></TD>
+</TR><TR>
+<TD>1</TD><TD>Strongly typed data stream (only builtin types)</TD><TD>layer0 mapper, raw stream</TD>
+</TR><TR>
+<TD>2</TD><TD>Strongly typed structured data stream (any number of types) with complete typeinfo available
+</TD><TD>layer1 mapper, xml/scheme, debug</TD>
+</TR>
+</TABLE>
+BTW the naming convention stream is a bit restricted
+- you can do much more and use it as an class (forward) iterator (meta-classes)
+
+
 <h2>Implementation and Design</h2>
 <h3>Review of concepts</h3>
 <h4>Concepts i tried</h4>
@@ -93,46 +134,6 @@ NOW DOPE (3 or 4 ? - i decided to start versioning back from 0) - back to the ro
 it is heavily based/inspired upon/by XTL.
 you can think of it as a rewrite of XTL with additional name information
 </PRE>
-<a name="requirements"><h2>Dependencies/Requirements</h2></a>
-<h3>Build dependencies if you got the tar-ball</h3>
-<UL>
-<LI>recent C++ compiler and std C++ library (f.e. g++ >=3)</LI>
-<LI><a href="http://libsigc.sourceforge.net/">libsigc++</a></LI>
-<LI><a href="http://www.libxml.org">libxml-dev a.k.a. gnome-xml</a></LI>
-<LI><a href="http://www.boost.org">boost</a></LI>
-<LI>UNIX sockets</LI>
-</UL>
-<h3>if you checked out from CVS</h3>
-<UL>
-<LI>autoconf >= 2.5</LI>
-<LI>automake (I use 2.6.1)</LI>
-<LI>libtool (I use 1.4.2)</LI>
-<LI>doxygen to build the API docs</LI>
-</UL>
-<h2>License/Copyright</h2>
-<a href="COPYING">GPL</a> Copyright (C) 2002 Jens Thiele &lt;jens.thiele@student.uni-tuebingen.de&gt;
-<h2>Links</h2>
-<UL>
-<LI><a href="http://dope.berlios.de/doxygen/html/index.html">Reference manual</a></LI>
-<LI><a href="doxygen/html/index.html">local Reference manual</a> (only available if you generated it)</LI>
-</UL>
-<H2>The stream layers:</H2>
-<TABLE>
-<TR>
-<TD>Layer</TD><TD>description</TD><TD>examples / implementations</TD>
-</TR><TR>
-<TD>0</TD><TD>byte stream (using the STL streambuf concept => you can use them as underlying buffer)</TD>
-<TD>&lt;streambuf&gt;, sockets, strings, files<TD></TD>
-</TR><TR>
-<TD>1</TD><TD>Strongly typed data stream (only builtin types)</TD><TD>layer0 mapper, raw stream</TD>
-</TR><TR>
-<TD>2</TD><TD>Strongly typed structured data stream (any number of types) with complete typeinfo available
-</TD><TD>layer1 mapper, xml/scheme, debug</TD>
-</TR>
-</TABLE>
-BTW the naming convention stream is a bit restricted
-- you can do much more and use it as an class (forward) iterator (meta-classes)
-
 <H2>Further design explanations:</H2>
 <UL>
 <LI>dropped the support for const output streams because it does not fit into the one method approach</LI>
@@ -142,7 +143,7 @@ BTW the naming convention stream is a bit restricted
     <address><a href="mailto:jens.thiele@student.uni-tuebinhen.de">Jens Thiele</a></address>
 <!-- Created: Mon Aug  6 15:12:02 CEST 2001 -->
 <!-- hhmts start -->
-Last modified: Sat Jul  6 13:55:01 CEST 2002
+Last modified: Sun Jul  7 11:51:27 CEST 2002
 <!-- hhmts end -->
   <p>
     <a href="http://validator.w3.org/check/referer"><img border="0"
