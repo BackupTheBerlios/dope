@@ -231,9 +231,9 @@ protected:
   */
   void xmlEndElement(const xmlString &tname, bool indentit=true)
   {
-    assert(domPtr.get());
+    DOPE_ASSERT(domPtr.get());
     domPtr->nodeUp();
-    assert(!encodeStack.empty());
+    DOPE_ASSERT(!encodeStack.empty());
     encodeAttributes=encodeStack.top();
     encodeStack.pop();
     if (encodeStack.empty())
@@ -250,9 +250,9 @@ protected:
   {
     xmlStartElement(tname,mname," ",false);
     xmlAttribute(key,value);
-    assert(domPtr.get());
+    DOPE_ASSERT(domPtr.get());
     domPtr->nodeUp();
-    assert(!encodeStack.empty());
+    DOPE_ASSERT(!encodeStack.empty());
     encodeAttributes=encodeStack.top();
     encodeStack.pop();
   }
@@ -260,7 +260,7 @@ protected:
 
   void xmlAttribute(const xmlString &key, const char * value, const char* nextLine=NULL,bool indentit=true)
   {
-    assert(domPtr.get());
+    DOPE_ASSERT(domPtr.get());
     domPtr->setProp(key.c_str(),value);
   }
   

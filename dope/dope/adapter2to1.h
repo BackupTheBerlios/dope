@@ -52,7 +52,7 @@ DOPE_INLINE Layer2InAdapter &simple(type &data) \
     // todo think about a solution without copy overhead - is there a (std::) way to pass a pointer to std::string ?
     char *str=NULL;
     dynCString(str);
-    assert(str);
+    DOPE_ASSERT(str);
     data=str;
     delete [] str;
     return *this;
@@ -82,7 +82,7 @@ DOPE_INLINE Layer2InAdapter &simple(type &data) \
   {
     size_t s;
     simple(s);
-    assert(s<10000); // todo remove this again
+    DOPE_ASSERT(s<10000); // todo remove this again
     data=new char[s+1];
     layer1.in(data,s);
     data[s]=0;
@@ -266,7 +266,7 @@ DOPE_INLINE Layer2OutAdapter &simple(type data) \
 protected:  
   DOPE_INLINE Layer2OutAdapter &CString(const char *data)
   {
-    assert(data);
+    DOPE_ASSERT(data);
     size_t s=std::strlen(data);
     simple(s);
     layer1.out(data,s);

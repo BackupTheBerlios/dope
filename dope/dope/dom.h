@@ -82,7 +82,7 @@ public:
   //! get namespace of current node
   xmlNsPtr getcns(){return cns;}
   //! set current node in document
-  xmlNodePtr setcnode(xmlNodePtr n) {assert(n);return (cnode=n);}
+  xmlNodePtr setcnode(xmlNodePtr n) {DOPE_ASSERT(n);return (cnode=n);}
   //! go to next node (returns NULL if there is none - and doesn't change current node then)
   xmlNodePtr nextNode() {if (cnode->next) return (cnode=cnode->next);return NULL;}
   //! go to previous node (returns NULL if there is none - and doesn't change current node then)
@@ -99,12 +99,12 @@ public:
   //! create new child for current node - and go to this node
   void NewChild(const char * tagname, const char * thisname=NULL);
   //! set property for current node
-  void setProp(const char *attr, const char *value) {assert(attr);assert(value);assert(cnode);xmlSetProp(cnode,(xmlChar *)attr,(xmlChar *)value);}
+  void setProp(const char *attr, const char *value) {DOPE_ASSERT(attr);DOPE_ASSERT(value);DOPE_ASSERT(cnode);xmlSetProp(cnode,(xmlChar *)attr,(xmlChar *)value);}
   //! check for property
   bool hasProp(const char *attr) {return xmlGetProp(cnode,(xmlChar *)attr)!=NULL;}
   //! get property for current node (returns NULL if attribute doesn't exist)
   std::string getProp(const char *attr) {
-    assert(attr);assert(cnode);
+    DOPE_ASSERT(attr);DOPE_ASSERT(cnode);
     char* prop=(char *)xmlGetProp(cnode,(xmlChar *)attr);
     if (!prop)
       throw std::string("There is no property with name: \"")+attr+"\"";
@@ -114,7 +114,7 @@ public:
   }
   //! get content of current node
   std::string getContent() const {
-    assert(cnode);
+    DOPE_ASSERT(cnode);
     std::string c;
     char *t=(char *)xmlNodeGetContent(cnode);
     if (t) {
@@ -125,9 +125,9 @@ public:
     return c;
   }
   //! get node name
-  std::string getNodeName() const {assert(cnode); assert(cnode->name); return (const char *)cnode->name;}
+  std::string getNodeName() const {DOPE_ASSERT(cnode); DOPE_ASSERT(cnode->name); return (const char *)cnode->name;}
   //! set content of current node
-  void setContent(const std::string &c) {assert(cnode);xmlNodeSetContentLen(cnode,(const xmlChar *)c.c_str(),c.size());}
+  void setContent(const std::string &c) {DOPE_ASSERT(cnode);xmlNodeSetContentLen(cnode,(const xmlChar *)c.c_str(),c.size());}
   //! get number of children for the current node
   unsigned numChilds() 
   {

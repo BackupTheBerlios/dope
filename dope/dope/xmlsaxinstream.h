@@ -248,18 +248,18 @@ protected:
     }
     ContainerElemBase* getCallback(size_t e)
     {
-      assert(e<s.size());
+      DOPE_ASSERT(e<s.size());
       return s[e].second;
     }
     void setCallback(ContainerElemBase* cb)
     {
-      assert(!s.empty());
+      DOPE_ASSERT(!s.empty());
       s.back().second=cb;
     }
     
     unsigned pop()
     {
-      assert(!s.empty());
+      DOPE_ASSERT(!s.empty());
       lp=s.back();
       s.pop_back();
       if (lp.second) {
@@ -281,7 +281,7 @@ protected:
     }
     unsigned operator[](size_t i)
     {
-      assert(i<s.size());
+      DOPE_ASSERT(i<s.size());
       return s[i].first;
     }
     size_t size()
@@ -341,7 +341,7 @@ public:
 	  {
 	    // special case when simple value is encoded as tag and not as attribut
 	    ++currentDepth;
-	    assert(qualifier.value);
+	    DOPE_ASSERT(qualifier.value);
 	    stringToAny(qualifier.value,data);
 	    matched();
 	    return *this;
@@ -360,7 +360,7 @@ public:
 	    matched();
 	    return *this;
 	  }
-	assert(qualifier.value);
+	DOPE_ASSERT(qualifier.value);
 	stringToAny(qualifier.value,data);
 	matched();
 	return *this;
@@ -465,8 +465,8 @@ DOPE_INLINE XMLSAXInStream &simple(type &data, MemberName mname) \
 	    memberNo=0;
 	    ++currentDepth;
 	    if (currentDepth<selectedMemberStack.size()){
-	      assert(selectedMemberStack[currentDepth]<size);
-	      assert(data);
+	      DOPE_ASSERT(selectedMemberStack[currentDepth]<size);
+	      DOPE_ASSERT(data);
 	      memberNo=selectedMemberStack[currentDepth];
 	      return simple(data[memberNo],NULL);
 	    }else{
@@ -518,14 +518,14 @@ DOPE_INLINE XMLSAXInStream &simple(type &data, MemberName mname) \
 	    memberNo=0;
 	    ++currentDepth;
 	    if (currentDepth<selectedMemberStack.size()){
-	      assert(selectedMemberStack[currentDepth]<size);
-	      assert(data);
+	      DOPE_ASSERT(selectedMemberStack[currentDepth]<size);
+	      DOPE_ASSERT(data);
 	      memberNo=selectedMemberStack[currentDepth];
 	      return simple(data[memberNo],NULL);
 	    }else{
 	      // select next elem (needs hack below to work)
 	      memberNo=selectedMemberStack.lastPopped()+1;
-	      assert(memberNo<size);
+	      DOPE_ASSERT(memberNo<size);
 	      return simple(data[memberNo],NULL);
 	    }
 	  }
@@ -556,7 +556,7 @@ DOPE_INLINE XMLSAXInStream &simple(type &data, MemberName mname) \
   DOPE_INLINE XMLSAXInStream& container(C &data)
   {
     if (currentDepth<selectedMemberStack.size()){
-      assert(selectedMemberStack.getCallback(currentDepth));
+      DOPE_ASSERT(selectedMemberStack.getCallback(currentDepth));
       return selectedMemberStack.getCallback(currentDepth)->simple();
     }else{
       // create new elem
@@ -590,7 +590,7 @@ DOPE_INLINE XMLSAXInStream &simple(type &data, MemberName mname) \
     const char *value=NULL;
     if (atts) {
       for (int i=0;atts[i]!=NULL;i+=2){
-	assert(atts[i+1]!=NULL);
+	DOPE_ASSERT(atts[i+1]!=NULL);
 	std::string s(atts[i]);
 	if (s=="this.name")
 	  mname=atts[i+1];
@@ -598,7 +598,7 @@ DOPE_INLINE XMLSAXInStream &simple(type &data, MemberName mname) \
 	  value=atts[i+1];
       }
     }
-    assert(name);
+    DOPE_ASSERT(name);
     qualifier=Qualifier(name,mname,value);
     restartRead();
     if (failed())
@@ -611,7 +611,7 @@ DOPE_INLINE XMLSAXInStream &simple(type &data, MemberName mname) \
       {
 	if (atts) {
 	  for (int i=0;atts[i]!=NULL;i+=2){
-	    assert(atts[i+1]!=NULL);
+	    DOPE_ASSERT(atts[i+1]!=NULL);
 	    if (std::string(atts[i])=="this.name")
 	      continue;
 	    qualifier=Qualifier(NULL,atts[i],atts[i+1]);
@@ -631,7 +631,7 @@ DOPE_INLINE XMLSAXInStream &simple(type &data, MemberName mname) \
 	--endElementsNeeded;
 	return;
       }
-    assert(!selectedMemberStack.empty());
+    DOPE_ASSERT(!selectedMemberStack.empty());
     selectedMemberStack.pop();
   }
   
@@ -671,7 +671,7 @@ protected:
   void restartRead()
   {
     prepareRestart();
-    assert(readerPtr);
+    DOPE_ASSERT(readerPtr);
     readerPtr->restart();
   }
   

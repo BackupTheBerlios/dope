@@ -41,7 +41,7 @@ public:
 
   const InternetAddress &getAddress() const
   {
-    assert(adr.get());
+    DOPE_ASSERT(adr.get());
     return *(adr.get());
   }
   const std::string &getPath() const

@@ -161,7 +161,7 @@ Socket::globalInit()
 bool
 Socket::globalDeinit()
 {
-  assert(initCount);
+  DOPE_ASSERT(initCount);
   if (--initCount) return true;
 #ifdef WINDOOF
   /* Clean up windows networking */
@@ -204,7 +204,7 @@ bool
 Socket::bind()
 {
   // host resolution
-  assert(server);
+  DOPE_ASSERT(server);
   haddr=INADDR_ANY;
   SocketAddress saddr(haddr,iaddr.second);
   if (::bind(handle, saddr.getSockAddr(), saddr.getSize()))

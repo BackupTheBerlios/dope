@@ -6,7 +6,7 @@
 
 URI::URI(const char *_uri)
 {
-  assert(_uri);
+  DOPE_ASSERT(_uri);
   std::string uri(_uri);
   // extract scheme part scheme:
   std::string scheme;

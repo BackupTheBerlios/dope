@@ -257,14 +257,14 @@ public:
   static void error(void *user_data, const char *e, ...)
   {
     xmlParserError(thisCast(user_data)->ctxt, e);
-    assert(e);
+    DOPE_ASSERT(e);
     thisCast(user_data)->throwLater(Exception(e));
   }
 
   static void fatalError(void *user_data, const char *e, ...)
   {
     xmlParserError(thisCast(user_data)->ctxt, e);
-    assert(e);
+    DOPE_ASSERT(e);
     thisCast(user_data)->throwLater(Exception(e));
   }
   
@@ -273,7 +273,7 @@ protected:
   {
     // todo perhaps add some type checking
     SAXWrapper<X> *me=DOPE_CAST(SAXWrapper<X> *,user_data);
-    assert(me);
+    DOPE_ASSERT(me);
     return me;
   }
 
@@ -305,13 +305,13 @@ protected:
 	 we assume that our input stream is the only one and current
 	 we assume that one character is one byte
       */
-      assert(ctxt->input);
-      assert(ctxt->inputNr==1);
-      assert(ctxt->input->base);
-      assert(ctxt->input->cur);
-      assert(ctxt->input->end);
-      assert(ctxt->input->end>=ctxt->input->cur);
-      assert(!stop);
+      DOPE_ASSERT(ctxt->input);
+      DOPE_ASSERT(ctxt->inputNr==1);
+      DOPE_ASSERT(ctxt->input->base);
+      DOPE_ASSERT(ctxt->input->cur);
+      DOPE_ASSERT(ctxt->input->end);
+      DOPE_ASSERT(ctxt->input->end>=ctxt->input->cur);
+      DOPE_ASSERT(!stop);
       // put back all characters not consumed
       char *cptr=(char *)ctxt->input->end;
       --cptr;
@@ -329,7 +329,7 @@ protected:
       if (!stop) {
 	// we think we have put back the characters => check this
 	// debug help
-	assert(ctxt->input->end>=ctxt->input->cur);
+	DOPE_ASSERT(ctxt->input->end>=ctxt->input->cur);
 	unsigned c=ctxt->input->end-ctxt->input->cur;
 	std::streamsize ts=20;
 	if (c<20) ts=c;
@@ -349,7 +349,7 @@ protected:
 	}
 	if (!stop) {
 	  p2[ts]=0;
-	  assert(!strcmp(p,p2));
+	  DOPE_ASSERT(!strcmp(p,p2));
 	  while (ts--)
 	    layer0.sputbackc(p[ts]);
 	  delete [] p;
@@ -426,12 +426,12 @@ protected:
   //! how many bytes are buffered in the parser we wrap ?
   int parserBuffered()
   {
-      assert(ctxt->input);
-      assert(ctxt->inputNr==1);
-      assert(ctxt->input->base);
-      assert(ctxt->input->cur);
-      assert(ctxt->input->end);
-      assert(ctxt->input->end>=ctxt->input->cur);
+      DOPE_ASSERT(ctxt->input);
+      DOPE_ASSERT(ctxt->inputNr==1);
+      DOPE_ASSERT(ctxt->input->base);
+      DOPE_ASSERT(ctxt->input->cur);
+      DOPE_ASSERT(ctxt->input->end);
+      DOPE_ASSERT(ctxt->input->end>=ctxt->input->cur);
       // put back all characters not consumed
       char *cptr=(char *)ctxt->input->end;
       return (cptr-((char *)ctxt->input->cur)+1);

@@ -114,13 +114,6 @@ dope_backtrace();
 */
 #define DOPE_MSG(dopeLevelP, dopeMsgP) do{std::cerr << dopeLevelP << DOPE_HERE << ": " << dopeMsgP << "(" << DOPE_ERRORSTR << ")\n";}while(0)
 
-/*
-  \def DOPE_CHECK(expr)
-  \brief DOPE_CHECK is like assert but takes also effect when NDEBUG is defined
-
-  it seems there is no assert which is not disabled by a \#define NDEBUG 
-
-*/
 inline int fatal(const char *file,int line,const char *func, const char *msg) 
 {
   std::cerr << "FATAL: " << file << ":" << line << ":" << func << ": " << msg << "(" << DOPE_ERRORSTR <<")\n";
@@ -135,10 +128,26 @@ inline int fatal(const char *file,int line,const char *func, const char *msg)
 */
 #define DOPE_STR(s) #s
 
+/*
+  \def DOPE_CHECK(expr)
+  \brief DOPE_CHECK is like assert but takes also effect when NDEBUG is defined
+
+  it seems there is no assert which is not disabled by a \#define NDEBUG 
+
+*/
 #define DOPE_CHECK(expr)							      \
   ((void) ((expr) ? 0 :							      \
 	   fatal(__FILE__, __LINE__, DOPE_FUNCTIONNAME, "assertion failed: " DOPE_STR(expr))))
 
+/*
+  \def DOPE_ASSERT(expr)
+  \brief DOPE_ASSERT is like assert but tries to print a stacktrace
+*/
+#ifdef NDEBUG
+#define DOPE_ASSERT(expr) assert(1)
+#else
+#define DOPE_ASSERT(expr) DOPE_CHECK(expr)
+#endif
 
 /*!
   \def DOPE_FATAL(msg)

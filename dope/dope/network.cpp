@@ -70,7 +70,7 @@ bool NetStreamBufServer::select(const TimeStamp *timeout){
     // client_sockets is a map => sorted 
     maxfd=client_sockets.rbegin()->first;
     // does the std require a map to be sorted ascending ?
-    assert(maxfd>=client_sockets.begin()->first);
+    DOPE_ASSERT(maxfd>=client_sockets.begin()->first);
   }
   
   while (::select (++maxfd, &read_fd_set, NULL, NULL, (timeout) ? (&ctimeout) : NULL) < 0)
@@ -100,7 +100,7 @@ bool NetStreamBufServer::select(const TimeStamp *timeout){
 	  }
 	else
 	  {
-	    assert(client_sockets.find(i)!=client_sockets.end());
+	    DOPE_ASSERT(client_sockets.find(i)!=client_sockets.end());
 	    try {
 	      ret=true;
 	      dataAvailable.emit(i,client_sockets[i]);

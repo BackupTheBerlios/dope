@@ -245,7 +245,7 @@ protected:
   }
   bool isConnected() {
     if (pptr.get()) {
-      assert(nptr.get());
+      DOPE_ASSERT(nptr.get());
       return true;
     }
     return false;
@@ -266,7 +266,7 @@ protected:
   template <typename X>
   URLEncodeStream &simpleHelper(X data, MemberName mname)
   {
-    assert(mname);
+    DOPE_ASSERT(mname);
     std::string l;
     if (!first) l="&";
     first=false;

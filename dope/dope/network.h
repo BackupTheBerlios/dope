@@ -241,12 +241,12 @@ protected:
     if (!haveSpace)
       {
 	// acquire new space - if current pos != end pos we have to copy the chars
-        assert(egptr()-eback()>=0);
+        DOPE_ASSERT(egptr()-eback()>=0);
 	int_type oldSize=egptr()-eback();
 	int_type pbSize=1000;
         int_type newSize=oldSize+pbSize;
 	char_type* newBuf=new char_type[newSize];
-	assert(eback()==gptr());
+	DOPE_ASSERT(eback()==gptr());
 	traits_type::copy(newBuf+pbSize,gptr(),oldSize);
 	freeBuf();
 	setg(newBuf,newBuf+pbSize,newBuf+newSize);
