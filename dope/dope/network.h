@@ -1,37 +1,3 @@
-#ifndef DOPE_NETWORK_H
-#define DOPE_NETWORK_H
-
-// define IPPORT_RESERVED and IPPORT_USERRESERVED
-// and internet addresses
-#include "dope.h"
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <netdb.h>
-#include <string>
-#include <iostream>
-#include <streambuf>
-#include <list>
-#include <algorithm>
-#include <sys/time.h>
-#include <sys/types.h>
-#include <unistd.h>
-#include <errno.h>
-#include <ios>
-
-#include <sigc++/signal_system.h>
-#include <map>
-#include <stdexcept>
-
-#include "dopeexcept.h"
-
-// uncomment this one if you don't want to use exceptions
-//#define LIB_NET_NO_EXCEPTIONS
-
-
 // ---------------------------------------------------------------------------
 // 'lib-netstream++' is a library that helps you to build networked 
 //  applications with c++ or to be a base to build further abstract
@@ -67,6 +33,38 @@
 //
 // ---------------------------------------------------------------------------
 
+#ifndef DOPE_NETWORK_H
+#define DOPE_NETWORK_H
+
+// define IPPORT_RESERVED and IPPORT_USERRESERVED
+// and internet addresses
+#include "dope.h"
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <netdb.h>
+#include <string>
+#include <iostream>
+#include <streambuf>
+#include <list>
+#include <algorithm>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <errno.h>
+#include <ios>
+
+#include <sigc++/signal_system.h>
+#include <map>
+#include <stdexcept>
+
+#include "dopeexcept.h"
+
+// uncomment this one if you don't want to use exceptions
+//#define LIB_NET_NO_EXCEPTIONS
 
 /** class representing a port
    * @author Jens Thiele <karme@unforgettable.com>

@@ -21,7 +21,7 @@
 /** \file dom.h
  *  \brief DOM wrapper class
  *
- *  \author
+ *  \author Jens Thiele
  */
 
 #ifndef DOPE_DOM_H
