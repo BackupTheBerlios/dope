@@ -6,6 +6,7 @@
 
 #define TYPE_NAME(x) TypeNameTrait<x>::name()
 
+//! traits of an objectfactory for type X
 template <class X>
 class ObjectFactoryTraits
 {
@@ -14,27 +15,31 @@ public:
   typedef typename SigC::Slot1<void, DOPE_SMARTPTR<X> > SlotT;
 };
 
-template <class Layer3, class TypeID=TypeNameType >
+//! generic object factory - the base class for the specialized factories
+template <class Layer2, class TypeID=TypeNameType >
 class GenericFactory
 {
 public:
+  //! return the TypeID of the class for which this factory produces objects
   virtual TypeID getObjectTypename()=0;
-  virtual void read(Layer3 &p)=0;
+  //! read exactly one object and emit a signal
+  virtual void read(Layer2 &p)=0;
   virtual ~GenericFactory(){}
 };
 
-template <class X, class Layer3, class TypeID=TypeNameType >
-class ObjectFactory : public GenericFactory<Layer3, TypeID>
+//! specialized object factory for one class type
+template <class X, class Layer2, class TypeID=TypeNameType >
+class ObjectFactory : public GenericFactory<Layer2, TypeID>
 {
 public:
   TypeID getObjectTypename() 
   {
     return TYPE_NAME(X);
   }
-  void read(Layer3 &layer3)
+  void read(Layer2 &layer2)
   {
     DOPE_SMARTPTR<X> xptr(new X());
-    layer3.simple(*xptr,NULL);
+    layer2.simple(*xptr,NULL);
     signal.emit(xptr);
   }
   typename ObjectFactoryTraits<X>::SignalT signal;

@@ -12,6 +12,7 @@
 
 #define TYPE_NAME(x) TypeNameTrait<x>::name()
 
+//! stream wrapper giving a libsigc++ like interface
 template <typename L2>
 class SignalOutAdapter
 {
@@ -31,6 +32,7 @@ protected:
   Layer2 &layer2;
 };
 
+//! stream wrapper producing objects from a stream emiting them as signal
 template <typename L2>
 class SignalInAdapter
 {
@@ -40,7 +42,7 @@ public:
   SignalInAdapter(Layer2 &_layer2) : layer2(_layer2), ignoreUnknown(false)
   {}
   
-
+  //! process pending objects in stream and emit signals
   void read()
   {
     TypeNameType tname;
@@ -72,28 +74,38 @@ public:
     return nr->signal;
   }
   
-    template <typename X>
-    void connect(SigC::Slot1<void, DOPE_SMARTPTR<X> > s) //ObjectFactoryTraits<X>::SlotT s)
-    {
-      try {
-	addFactory(TypeNameTrait<X>()).connect(s);
-      } catch (std::string error) {
-	DOPE_WARN(error);
-	typedef ObjectFactory<X,Layer2> ObjectFactory_t;
-	ObjectFactory_t* r = dynamic_cast<ObjectFactory_t *>(factories[TYPE_NAME(X)].get());
-	if (!r) {
-	  throw std::string("Wanted to connect a slot for object of type \"")+std::string(TYPE_NAME(X))+"\" to signal of type \""+factories[TYPE_NAME(X)]->getObjectTypename()+"\"";
-	}
-	r->signal.connect(s);
-      }
-    }
+  //! connect slot to signals of objects of type X
+  /*!
+    \note the new object is passed by a smartptr - per default dope uses boost::shared_ptr
 
-    void setIgnoreUnknown(bool i) 
-    {
-      ignoreUnknown=i;
+    \todo throw a specific exception and document it
+  */
+  template <typename X>
+  void connect(SigC::Slot1<void, DOPE_SMARTPTR<X> > s) //ObjectFactoryTraits<X>::SlotT s)
+  {
+    try {
+      addFactory(TypeNameTrait<X>()).connect(s);
+    } catch (std::string error) {
+      DOPE_WARN(error);
+      typedef ObjectFactory<X,Layer2> ObjectFactory_t;
+      ObjectFactory_t* r = dynamic_cast<ObjectFactory_t *>(factories[TYPE_NAME(X)].get());
+      if (!r) {
+	throw std::string("Wanted to connect a slot for object of type \"")+std::string(TYPE_NAME(X))+"\" to signal of type \""+factories[TYPE_NAME(X)]->getObjectTypename()+"\"";
+      }
+      r->signal.connect(s);
     }
-    
-  protected:
+  }
+  
+  //! set if we should ignore unknown incoming objects
+  /*!
+    \note if you don't ignore unkown objects - an exception is thrown if an unkown object arrives
+  */
+  void setIgnoreUnknown(bool i) 
+  {
+    ignoreUnknown=i;
+  }
+  
+protected:
   Layer2 &layer2;
   //! should I ignore unknown objects ?
   bool ignoreUnknown;

@@ -11,7 +11,6 @@
   output is buffered and counted and sent with a sync
   => afterwards the stream can't send any data
 */
-
 template <typename _Layer0>
 class HTTProtocol : public std::basic_streambuf<typename _Layer0::char_type, typename _Layer0::traits_type>
 {

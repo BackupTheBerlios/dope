@@ -12,6 +12,11 @@
 #define TYPE_NAME(TYPE) TypeNameTrait<typename boost::remove_const<TYPE>::type >::name()
 
 //! Layer 2 "xml" output stream (mini "xml")
+/*!
+  we do not build a dom we write similar to how a sax parser reads
+  \note this is by no means a fullfeatured xml output but it is a good choice if you
+  have can't afford the memory to build a DOM first. (s.a. XMLDOMOutStream)
+*/
 template <typename Layer0>
 class XMLOutStream
 {

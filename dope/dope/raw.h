@@ -7,6 +7,10 @@
 #include "adapter2to1.h"
 #include "dopeexcept.h"
 
+//! simple raw layer 1 input stream
+/*!
+  \note this protocol is platform dependant
+ */
 template <typename Layer0>
 class L1RawInStream
 {
@@ -32,6 +36,7 @@ public:
   }
 };
 
+//! helper to get the initialization order right
 template <typename L0>
 struct RawInStreamBase
 {
@@ -43,6 +48,7 @@ struct RawInStreamBase
   Layer2InAdapter<L1RawInStream<L0> > l2;
 };
 
+//! layer2 raw input stream using the Layer2InAdapter
 template <typename L0>
 struct RawInStream : public RawInStreamBase<L0>, public Layer2InAdapter<L1RawInStream<L0> >
 {
@@ -51,7 +57,10 @@ struct RawInStream : public RawInStreamBase<L0>, public Layer2InAdapter<L1RawInS
   }
 };
 
-
+//! simple raw layer 1 output stream
+/*!
+  \note this protocol is platform dependant
+ */
 template <typename Layer0>
 class L1RawOutStream
 {
@@ -81,6 +90,7 @@ public:
   }
 };
 
+//! helper to get the initialization order right
 template <typename L0>
 struct RawOutStreamBase
 {
@@ -92,6 +102,7 @@ struct RawOutStreamBase
   Layer2OutAdapter<L1RawOutStream<L0> > l2;
 };
 
+//! layer2 raw output stream using the Layer2OutAdapter
 template <typename L0>
 struct RawOutStream : public RawOutStreamBase<L0>, public Layer2OutAdapter<L1RawOutStream<L0> >
 {

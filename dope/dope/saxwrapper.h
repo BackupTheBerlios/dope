@@ -11,7 +11,7 @@
 
 
 //! wrap xml parser with sax interface
-/* in the moment only tested with libxml2 (a.k.a. libgnome-xml) 
+/* in the moment only implemented for libxml2 (a.k.a. libgnome-xml) 
 
    requirements to template parameter X: (concept)
    1. must have a membertype Layer0 (corresponding to the layer0 Concept => the basic_streambuf concept
@@ -22,8 +22,9 @@
    4.2 X::startElement(const char*, const char **)
    4.3 X::endElement(const char*)
    4.4 X::characters(const char* ,int)
-   todo:
-   we should store our exceptions and don't use X to do this => requires X to be "exception safe"
+
+   \todo review the exception stuff
+   \todo memory "leaks" of libxml if we don't deinitialize after the last usage
 */
 template <typename X>
 class SAXWrapper
@@ -35,7 +36,8 @@ protected:
   typename X::Layer0 &layer0;
 
   // callback struct
-  // could be made const static (but perhaps in the future someone wants to change the callbacks during parsing)
+  // could be made const static 
+  // (but perhaps in the future someone wants to change the callbacks during parsing)
   xmlSAXHandler handler;
   xmlParserCtxtPtr ctxt;
   int currentDepth;
@@ -97,10 +99,14 @@ public:
     : x(_x), layer0(_layer0), ctxt(NULL), currentDepth(0), stop(false)
   {
 #if 0
-    // todo i know havve a second stream which uses libxml => xmlMemSetup must be split out of the sax wrapper
+    // todo i now have a second stream which uses libxml 
+    // => xmlMemSetup must be split out of the sax wrapper
     // tell libxml to use our memory functions
     if (!xmlInited) {
-      xmlMemSetup(&SAXWrapper<X>::m_free,&SAXWrapper<X>::m_malloc,&SAXWrapper<X>::m_realloc,&SAXWrapper<X>::m_strdup);
+      xmlMemSetup(&SAXWrapper<X>::m_free,
+		  &SAXWrapper<X>::m_malloc,
+		  &SAXWrapper<X>::m_realloc,
+		  &SAXWrapper<X>::m_strdup);
     }
 #endif
     

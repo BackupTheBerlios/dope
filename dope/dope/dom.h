@@ -33,8 +33,10 @@
 #include <string>
 #include "dope.h"
 
-//! DOM  
-/*! this implementation uses libxml a.k.a libgnome-xml */
+//! xml DOM-tree wrapper
+/*! 
+  this implementation uses libxml a.k.a libgnome-xml 
+*/
 class DOM {
 private:
   //! copy constructor not supported 

@@ -1,7 +1,6 @@
 #ifndef DOPE_DEBUG_H
 #define DOPE_DEBUG_H
 
-
 #include "streamtraits.h"
 #include "utils.h"
 #include "typenames.h"
@@ -11,6 +10,9 @@
 #define TYPE_NAME(type) TypeNameTrait<type>::name()
 
 //! Layer 2 output stream for debugging purposes
+/*!
+  produces output similar to a debugger
+*/
 class DebugOutStream
 {
 protected:
