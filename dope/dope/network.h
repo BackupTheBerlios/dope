@@ -223,9 +223,9 @@ protected:
 Socket sock;
 
 public:
-  typedef _CharT char_type;
-  typedef _Traits traits_type;
-  typedef typename traits_type::int_type int_type;
+  typedef std::basic_streambuf<_CharT, _Traits>::char_type char_type;
+  typedef std::basic_streambuf<_CharT, _Traits>::traits_type traits_type;
+  typedef std::basic_streambuf<_CharT, _Traits>::int_type int_type;
 
   BasicNetStreamBuf(const InternetAddress &in_address) 
     : sock(in_address,true)
@@ -250,6 +250,8 @@ public:
   */
   bool select(const TimeStamp* timeout=NULL)
   {
+    if (in_avail()>0)
+      return true;
     bool ret=false;
     fd_set read_fd_set;
     FD_ZERO(&read_fd_set);
@@ -292,36 +294,60 @@ public:
 protected:
   int_type underflow()
   {
-    if (eback())
-      {
-	// why do I kill my putback buffer now ?
-	delete [] eback();
-	setg(NULL,NULL,NULL);
-      }
-    char_type c;
+    freeBuf();
+    int bsize=512;
+    char_type * newBuf=new char_type[bsize];
+    setg(newBuf,newBuf,newBuf+bsize);
     ssize_t res;
-    int retry=10;
-    while(retry) {
-      res=read(sock.get_handle(),(void *)&c,sizeof(c));
-      if (res==sizeof(c))
-	return traits_type::to_int_type(c);
-      if (res>0)
-	// we got more chars than we requested
-	DOPE_FATAL("Should not happen");
-      if (res<0) {
-	if ((errno==EINTR)||(errno==EAGAIN))
-	  {
-	    --retry;
-	    continue;
-	  }
-	// todo
-	DOPE_FATAL("todo");
+    ssize_t toread=sizeof(char_type)*bsize;
+    res=read(sock.get_handle(),(void *)gptr(),toread);
+    if (res>0) {
+      if (res!=toread) {
+	DOPE_CHECK(toread>res);
+	setg(eback(),gptr(),gptr()+res);
       }
-      assert(res==0);
-      return  traits_type::eof();
+      int_type r=traits_type::to_int_type(*gptr());
+      setg(eback(),gptr()+1,egptr());
+      return r;
     }
+    // else
+    freeBuf();
+    return traits_type::eof();
   }
 
+  /*
+  std::streamsize 
+  xsgetn(char_type* s, std::streamsize n)
+  {
+    std::streamsize __ret = 0;
+    while (__ret < n)
+      {
+	size_t __buf_len = in_avail();
+	if (__buf_len > 0)
+	    {
+	      // consume chars in buffer
+	      size_t __remaining = n - __ret;
+	      size_t __len = std::min(__buf_len, __remaining);
+	      traits_type::copy(s, gptr(), __len);
+	      __ret += __len;
+	      s += __len;
+	      setg(eback(),gptr()+__len,egptr());
+	      _M_in_cur_move(__len);
+	    }
+	  if (__ret < n)
+	    {
+	      // read from net
+	      size_t remaining = n - __ret;
+	      int got=read(sock.get_handle(),(void *)s,remaining);
+	      if (got>0) {
+		return __ret+got;
+	      }
+	      return __ret;
+	    }
+	}
+      return __ret;
+      }*/
+  
   //! 
   /*! 
     \todo - why did i do this ?
@@ -379,18 +405,6 @@ protected:
     return c;
   }
 
-  /* todo implement it - default just calls uflow - if _M_in_end - _M_in_cur < s
-     int_type xsgetn(char_type* b, streamsize s)
-     {
-     }
-  
-     int sync() 
-     {
-     return 0;
-     }
-  */
-  
-
   void init()
   {
     _M_mode = std::ios_base::in | std::ios_base::out; // sockets are always read/write ?
@@ -401,7 +415,10 @@ protected:
   void freeBuf()
   {
     if (eback())
-      delete [] eback();
+      {
+	delete [] eback();
+	setg(NULL,NULL,NULL);
+      }
   }
 };
 
