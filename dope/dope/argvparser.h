@@ -29,6 +29,7 @@
 #include "streamtraits.h"
 #include "utils.h"
 #include "xmlsaxinstream.h"
+#include "xmldomoutstream.h"
 #include <iomanip>
 #include <fstream>
 
@@ -48,7 +49,8 @@ public:
   ArgvParserDescription(L0 &_l0) : l0(_l0), o(&l0)
   {
     o << "-h       --help          print help and exit\n"
-      << "-FSTRING --file=STRING   read configuration from file\n";
+      << "-FSTRING --file=STRING   read configuration from file\n"
+      << "-D       --dump          dump configration file after parsing the arguments\n";
   }
   ~ArgvParserDescription(){}
 
@@ -124,7 +126,7 @@ protected:
   - catch StringConversion exceptions and print help message on error
   - perhaps make composites as --composite.foo=10 ?
 */
-template <typename L0=std::streambuf, typename L2=XMLSAXInStream<std::streambuf> >
+template <typename L0=std::streambuf, typename L2IN=XMLSAXInStream<L0>, typename L2OUT=XMLDOMOutStream<L0> >
 class ArgvParserT
 {
 protected:
@@ -133,10 +135,13 @@ protected:
   void init()
   {
     m_gotHelpArg=false;
+    m_dumpConfig=false;
     for (int a=1;a<m_argc;++a) {
       std::string carg(m_argv[a]);
       if ((carg=="-h")||(carg=="--help"))
 	m_gotHelpArg=true;
+      else if ((carg=="-D")||(carg=="--dump"))
+	m_dumpConfig=true;
       else if (begins(carg,"-F")) {
 	if (carg.size()<3) m_gotHelpArg=true;
 	else m_configFile=carg.substr(2);
@@ -204,7 +209,7 @@ DOPE_INLINE ArgvParserT &simple(T &data, MemberName mname) \
 	std::ifstream file(m_configFile.c_str());
 	if (!file.good()) throw FileNotFound(m_configFile);
 	DOPE_CHECK(file.good());
-	L2 in(*file.rdbuf());
+	L2IN in(*file.rdbuf());
 	in.simple(data,mname);
       }
     else
@@ -213,14 +218,25 @@ DOPE_INLINE ArgvParserT &simple(T &data, MemberName mname) \
 	::composite(*this,data);
 	--m_depth;
       }
+    if (m_dumpConfig) {
+      // dump config
+      L2OUT d(l0);
+      d.simple(data,mname);
+    }
     return *this;
   }
 
+  //! should prgram exit
+  bool shouldExit() const
+  {
+    return gotHelpArg()||m_dumpConfig;
+  }
+protected:
   bool gotHelpArg() const
   {
     return m_gotHelpArg;
   }
-protected:
+
   //! get a parameter value pair from the command line
   bool getArg(const std::string name, std::string &res, const char *type) 
   {
@@ -284,6 +300,7 @@ protected:
   char **m_argv;
   int m_depth;
   bool m_gotHelpArg;
+  bool m_dumpConfig;
   std::string m_configFile;
 };
 typedef ArgvParserT<> ArgvParser;
