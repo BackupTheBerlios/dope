@@ -1,3 +1,4 @@
+- check for needed std c++ features and the bug which caused me to switch to gcc3
 - ein diff protocol waere genial
 - add (generic) package oriented protocols (package vs. stream)
   package oriented:
