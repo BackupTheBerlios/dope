@@ -324,26 +324,38 @@ protected:
 	  --cptr;
 	}
 
-      // debug help
-      assert(ctxt->input->end>=ctxt->input->cur);
-      unsigned c=ctxt->input->end-ctxt->input->cur;
-      std::streamsize ts=20;
-      if (c<20) ts=c;
-      // compare the fist ts bytes - if they really have been put back
-      char *p=new char[ts+1];
-      char* p2=new char[ts+1];
-      memcpy(p,(char *)ctxt->input->end-c,ts);
-      p[ts]=0;
-      DOPE_CHECK(layer0.sgetn(p2,ts)==ts);
-      p2[ts]=0;
-      assert(!strcmp(p,p2));
-      while (ts--)
-	layer0.sputbackc(p[ts]);
-      delete [] p;
-      delete [] p2;
-      // debug help end
-      
-      stopParser();
+      if (!stop) {
+	// we think we have put back the characters => check this
+	// debug help
+	assert(ctxt->input->end>=ctxt->input->cur);
+	unsigned c=ctxt->input->end-ctxt->input->cur;
+	std::streamsize ts=20;
+	if (c<20) ts=c;
+	// compare the fist ts bytes - if they really have been put back
+	char *p=new char[ts+1];
+	char* p2=new char[ts+1];
+	memcpy(p,(char *)ctxt->input->end-c,ts);
+	p[ts]=0;
+	std::streamsize got=0;
+	while (got<ts) {
+	  std::streamsize gotnow=layer0.sgetn(p2,ts);
+	  if (!gotnow) {
+	    throwLater(Exception(std::string(__PRETTY_FUNCTION__)+"failed to read back characters i did put back => something wrong with your stream implementation"));
+	    break;
+	  }
+	  got+=gotnow;
+	}
+	if (!stop) {
+	  p2[ts]=0;
+	  assert(!strcmp(p,p2));
+	  while (ts--)
+	    layer0.sputbackc(p[ts]);
+	  delete [] p;
+	  delete [] p2;
+	  // debug help end
+	  stopParser();
+	}
+      }
     }
     x.endElement(DOPE_CAST(const char *,name));
   }

@@ -27,6 +27,7 @@
 
 #include <iostream>
 #include "uri.h"
+#include "streamtraits.h"
 
 //! mini http stream - designed for xmlrpc
 /*! 
@@ -42,47 +43,68 @@ protected:
   typedef _Layer0 Layer0;
   Layer0 &layer0;
   bool flushed;
-  
+  bool gotheader;
+  unsigned contentLength;
 public:
   typedef typename Layer0::char_type char_type;
   typedef typename Layer0::traits_type traits_type;
   typedef typename Layer0::int_type int_type;
 
-  HTTProtocol(Layer0 &_layer0, const char *uri) : layer0(_layer0), flushed(false)
+  HTTProtocol(Layer0 &_layer0, const char *uri) 
+    : layer0(_layer0), flushed(false), gotheader(false), contentLength(0)
   {
-    _M_mode=std::ios_base::in|std::ios_base::out;
-    _M_buf_unified = false;
-    
     std::ostream o(&layer0);
     o << "POST "<<uri<<" HTTP/1.0\n";
     o << "User-Agent: DOPE\n";
     o << "Content-Type: application/x-www-form-urlencoded\n";
     o << "Content-Length: ";
-    /*
-    // we are only interested in finding the start of the document - which is marked by 3 empty lines
-    std::istream i(&layer0);
-    std::string l;
-    unsigned empty=0;
-    do {
-      getline(i,l);
-      if (l=="")
-	++empty;
-      else 
-	empty=0;
-    }while(empty<3);
-    */
+  }
+
+  int sync()
+  {
+    std::ostream o(&layer0);
+    // Content-Length ()
+    o << (pptr()-pbase()) << "\n\n";
+    flushed=true;
+    if (!pbase()) return 0;
+    std::streamsize towrite=pptr()-pbase();
+    std::streamsize written=layer0.sputn(pbase(),towrite);
+    int_type ret=(towrite==written) ? 0 : traits_type::eof();
+    delete [] pbase();
+    setp(NULL,NULL);
+    o.flush();
+    return ret;
+  }
+
+  std::streamsize showmanyc()
+  {
+    // we do not have any buffer => return how many characters are avvailable in our underlying stream
+    return layer0.in_avail();
   }
 
   int_type underflow()
   {
-    return layer0.sbumpc();
+    if (!gotheader)
+      readheader();
+    if (!contentLength)
+      return traits_type::eof();
+    --contentLength;
     // was sgetc but according to a book sgetc does not modify the gptr()
+    return layer0.sbumpc();
   }
 
   int_type uflow()
   {
-    int_type c = underflow();
-    return c;
+    return underflow();
+  }
+
+  int_type pbackfail(int_type c = traits_type::eof())
+  {
+    int_type r=layer0.sputbackc(c);
+    if (r==traits_type::eof())
+      return r;
+    ++contentLength;
+    return r;
   }
   
   //! we are called if the buffer is full
@@ -91,32 +113,43 @@ public:
   {
     if (flushed)
       return traits_type::eof();
-    int_type oldSize=_M_out_end-_M_out_beg;
+    int_type oldSize=epptr()-pbase();
     int_type add=1000;
     int_type newSize=oldSize+add;
     char_type* newBuf=new char_type[newSize];
-    traits_type::copy(newBuf,_M_out_beg,oldSize);
-    if (_M_out_beg)
-      delete [] _M_out_beg;
-    _M_out_beg=newBuf;
-    _M_out_cur=newBuf+oldSize;
-    _M_out_end=newBuf+newSize;
-    *(_M_out_cur++)=traits_type::to_char_type(i);
+    traits_type::copy(newBuf,pbase(),oldSize);
+    if (pbase())
+      delete [] pbase();
+    setp(newBuf,newBuf+newSize);
+    // pptr()=newBuf+oldSize;
+    pbump(oldSize);
+    *pptr()=traits_type::to_char_type(i);
+    pbump(1);
     return i;
   }
-
-  int sync()
+protected:
+  void readheader()
   {
-    assert(_M_out_beg); // todo
-    std::ostream o(&layer0);
-    o << (_M_out_cur-_M_out_beg) << "\n\n";
-    flushed=true;
-    // todo what should sync return ? - how to report errors ?
-    int ret=layer0.sputn(_M_out_beg,_M_out_cur-_M_out_beg);
-    delete [] _M_out_beg;
-    _M_out_beg=_M_out_cur=_M_out_end=NULL;
-    o.flush();
-    return 0; // todo
+    // we are only interested in finding the start of the document - which is marked by 3 empty lines
+    std::istream i(&layer0);
+    std::string l;
+    while (getline(i,l)) {
+      std::cerr << l.size() << ": ->" << l << "<-" << std::endl;
+      std::string h("Content-Length: ");
+      if ((l.size()>h.size())&&begins(l,h)) {
+	stringToAny(l.substr(h.size()),contentLength);
+	std::cerr << "Got Content-Length: "<<contentLength << std::endl;
+      }
+      if (l.empty()) {
+	std::cerr << "Found empty line\n";
+	break;
+      }
+      if (l=="\r") {
+	std::cerr << "Found CR\n";
+	break;
+      }
+    }
+    gotheader=true;
   }
 };
 
@@ -134,47 +167,55 @@ public:
   {
   }  
 
-  /*
-  int_type sputc(char_type c)
+  int sync()
   {
-    assert(0);
-    }*/
+    if (!isConnected())
+      return traits_type::eof();
+    return pptr->pubsync();
+  }
 
-  /*
-  std::streamsize 
-  sputn(const char_type* __s, std::streamsize __n)
+  std::streamsize showmanyc()
+  {
+    if (!isConnected())
+      return 0;
+    return pptr->in_avail();
+  }
+
+
+  int_type underflow()
+  {
+    if (!isConnected())
+      return traits_type::eof();
+    return pptr->sbumpc();
+  }
+
+  //! it seems we have to overwrite uflow if we don't use a buffer
+  int_type uflow()
+  {
+    return underflow();
+  }
+
+  //! put back one character
+  /*!
+    \todo what should I do if I am called with eof ?
+  */
+  int_type pbackfail(int_type c  = traits_type::eof())
   { 
-    assert(0);
-    }*/
+    if (!isConnected())
+      return traits_type::eof();
+    return pptr->sputbackc(c);
+  }
 
   int_type overflow(int_type i = traits_type::eof())
   {
-    // todo - eof should close ?
+    if (i==traits_type::eof()) {
+      disconnect();
+      return i;
+    }
     char_type c(traits_type::to_char_type(i));
     connect()->sputc(c);
     return i;
   }
-
-  int_type underflow()
-  {
-    int_type i=connect()->sbumpc();
-    if (i==traits_type::eof())
-      disconnect();
-    return i;
-  }
-
-  int_type uflow()
-  {
-    int_type c = underflow();
-    return c;
-  }
-
-  int sync()
-  {
-    int r=connect()->pubsync();
-    return r;
-  }
-  
 protected:
   typedef HTTProtocol<BasicNetStreamBuf<char_type, traits_type> > P;
   typedef DOPE_SMARTPTR<P> PPtr;
@@ -187,11 +228,8 @@ protected:
   
   PPtr &connect()
   {
-    if (pptr.get())
-      {
-	assert(nptr.get());
-	return pptr;
-      }
+    if (isConnected())
+      return pptr;
     nptr=NPtr(new N(uri.getAddress()));
     pptr=PPtr(new P(*(nptr.get()),uri.getPath().c_str()));
     return pptr;
@@ -201,9 +239,148 @@ protected:
     pptr=PPtr();
     nptr=NPtr();
   }
-  
+  bool isConnected() {
+    if (pptr.get()) {
+      assert(nptr.get());
+      return true;
+    }
+    return false;
+  }
 };
 
 typedef BasicHTTPStreamBuf<char> HTTPStreamBuf;
+
+
+template <typename Layer0>
+class URLEncodeStream
+{
+protected:
+  Layer0 &l0;
+  std::list<std::string> scope;
+  bool first;
+  
+  template <typename X>
+  URLEncodeStream &simpleHelper(X data, MemberName mname)
+  {
+    assert(mname);
+    std::string l;
+    if (!first) l="&";
+    first=false;
+    std::list<std::string>::iterator it(scope.begin());
+    while (it!=scope.end()) {
+      l+=(*it)+'.';
+      ++it;
+    }
+    l+=(URI::urlEncode(mname)+"="+URI::urlEncode(anyToString(data)));
+    l0.sputn(l.c_str(),l.size());
+    return *this;
+  }
+  
+public:
+  URLEncodeStream(Layer0 &_l0) : l0(_l0), first(true)
+  {}
+
+  typedef Layer2OutStreamTraits Traits;
+
+  void flush()
+  {
+    l0.pubsync();
+  }
+
+#define DOPE_SIMPLE(type) \
+DOPE_INLINE URLEncodeStream &simple(type data, MemberName mname) \
+  { \
+    return simpleHelper(data,mname); \
+  }
+
+  DOPE_SIMPLE(bool);
+  DOPE_SIMPLE(char);
+  DOPE_SIMPLE(signed char);
+  DOPE_SIMPLE(unsigned char);
+  DOPE_SIMPLE(short);
+  DOPE_SIMPLE(unsigned short);
+  DOPE_SIMPLE(int);
+  DOPE_SIMPLE(unsigned int);
+  DOPE_SIMPLE(long);
+  DOPE_SIMPLE(unsigned long);
+  DOPE_SIMPLE(float);
+  DOPE_SIMPLE(double);
+  DOPE_SIMPLE(DOPE_CONSTOUT std::string &);
+  DOPE_SIMPLE(const char*);
+
+#undef DOPE_SIMPLE
+
+  //! simple for all types using the global composite function
+  template <class T>
+  DOPE_INLINE URLEncodeStream &simple(DOPE_CONSTOUT T& data, MemberName mname) {
+    if (mname) scope.push_back(URI::urlEncode(mname));
+    ::composite(*this, data);
+    if (mname) scope.pop_back();
+    return *this;
+  }
+
+
+  // map methods not named simple
+
+  //! extension
+  template <typename T>
+  URLEncodeStream &ext(const T& data)
+  {
+    ::composite(*this,data);
+    return *this;
+  }
+
+  //! dynamic C string
+  DOPE_INLINE URLEncodeStream &dynCString(const char* data, MemberName mname) 
+  {
+    return simple(data,mname);
+  }
+  //! fixed C string
+  DOPE_INLINE URLEncodeStream &fixedCString(const char* data, size_t max, MemberName mname) 
+  {
+    return simple(data,mname);
+  }
+  //! dynamic C vector (array)
+  template <class T>
+  DOPE_INLINE URLEncodeStream& dynCVector(DOPE_CONSTOUT T data[], size_t size, MemberName mname)
+  {
+    return printCVector(data,data+size,mname);
+  }
+  
+  //! C vector of fixed size
+  template <class T>
+  DOPE_INLINE URLEncodeStream& fixedCVector(DOPE_CONSTOUT T data[], size_t size, MemberName mname)
+  {
+    return printCVector(data,data+size,mname);
+  }
+  
+  //! types conforming to the STL container concept
+  template <class C>
+  DOPE_INLINE URLEncodeStream& container(C &data)
+  {
+    return printContainer(data.begin(),data.end());
+  }
+protected:
+  template <typename I>
+  URLEncodeStream &printCVector(I begin, I end, MemberName mname)
+  {
+    printContainer(begin,end);
+    return *this;
+  }
+  
+  template <typename I>
+  URLEncodeStream& printContainer(I begin, I end)
+  {
+    size_t j=0;
+    for (I i=begin; i!=end;++i,++j)
+      {
+	simple(*i,NULL);
+      }
+    return *this;
+
+  }
+};
+
+
 
 #endif

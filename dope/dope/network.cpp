@@ -191,7 +191,7 @@ bool Socket::connect_socket(){
       sockaddr_in *sa=(sockaddr_in *)internet_address.get_socket_address();
       std::string ipstring;
       for (int i=0;i<4;++i)
-	ipstring+=anyToString(int(((char *)(&(sa->sin_addr)))[i]))+".";
+	ipstring+=anyToString(unsigned(((char *)(&(sa->sin_addr)))[i]))+".";
       SOCKET_ERROR(std::string("Can't connect to ")+ipstring);
     }
   return true;

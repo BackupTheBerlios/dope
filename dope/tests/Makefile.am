@@ -8,7 +8,8 @@ automatictests = \
 	test-dom \
 	test-raw \
 	test-signal \
-	test-xml
+	test-xml \
+	test-streambuf
 
 manualtests = \
 	test-debug \
@@ -34,6 +35,7 @@ test_xml_SOURCES = test-xml.cpp $(common)
 test_xmlrpc_SOURCES = test-xmlrpc.cpp $(common)
 test_argvparser_SOURCES = test-argvparser.cpp $(common)
 test_httppost_SOURCES = test-httppost.cpp
+test_streambuf_SOURCES = test-streambuf.cpp
 TESTS = $(automatictests)
 
 

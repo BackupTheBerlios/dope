@@ -388,7 +388,10 @@ protected:
     return 0;
   }
 
-  int_type sync()
+  /*!
+    \return 0 or EOF
+  */
+  int sync()
   {
     return overflow();
   }

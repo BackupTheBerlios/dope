@@ -301,16 +301,6 @@ protected:
       return "1";
     return "";
   }
-  bool begins(const std::string &s, const std::string &b)
-  {
-    // this was return s.compare(b,0,b.size()); 
-    // perhaps my book is wrong it seems it should be compare(0,b.size(),b) ?
-    if (s.size()<b.size())
-      return false;
-    for (std::string::size_type i=0;i<b.size();++i)
-      if (s[i]!=b[i]) return false;
-    return true;
-  }
   
   int m_argc;
   char **m_argv;
