@@ -58,6 +58,7 @@
 // need fd_set
 
 #define __USE_W32_SOCKETS
+// define NOMINMAX - otherwise min and max are defined as macros !
 #define NOMINMAX
 #include <windows.h>
 #undef NOMINMAX

@@ -438,6 +438,7 @@
 #       endif
 #       ifndef NOMINMAX
           // avoid spurious NOMINMAX redefinition warning
+          // we define NOMINMAX because otherwise windows.h defines min and max as macros
 #         define NOMINMAX
 #       endif
 #     endif
