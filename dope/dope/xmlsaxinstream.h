@@ -198,7 +198,7 @@ protected:
     typename C::value_type x;
 
   public:
-    ContainerElem(S &_s, C &_c) : ContainerElemBase(_s), c(_c)
+    ContainerElem(typename S &_s, typename C &_c) : ContainerElemBase(_s), c(_c)
     {
     }
     virtual ~ContainerElem()
