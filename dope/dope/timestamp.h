@@ -35,7 +35,12 @@ public:
   TimeStamp(int sec, int usec);
   //! set from seconds
   TimeStamp(float sec);
+  //! copy other stamp
+  TimeStamp(const TimeStamp &o);
+
+  ~TimeStamp();
   
+    
   //! set to current time
   void now();
   
@@ -78,6 +83,7 @@ public:
   }
 protected:
   void init();
+  void deinit();
   
   //! seconds
   int m_sec;

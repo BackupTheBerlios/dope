@@ -16,33 +16,59 @@
 #include <windows.h>
 #define WINDOOF 1
 
-static int intitialized=0;
+static int initialized=0;
 
 #endif
 
 TimeStamp::TimeStamp() 
   : m_sec(0), m_usec(0) 
-{}
+{
+  init();
+}
 
 TimeStamp::TimeStamp(int sec, int usec)
   : m_sec(sec), m_usec(usec) 
-{}
+{
+  init();
+}
 
 TimeStamp::TimeStamp(float sec)
 {
   m_sec=int(sec);
   sec-=float(m_sec);
   m_usec=int(sec*1000000);
+  init();
+}
+
+TimeStamp::TimeStamp(const TimeStamp &o)
+  : m_sec(o.m_sec), m_usec(o.m_usec)
+{
+  init();
+}
+
+TimeStamp::~TimeStamp()
+{
+  deinit();
 }
 
 void
 TimeStamp::init()
 {
 #ifdef WINDOOF
-  if (initialized)
+  if (initialized++)
     return;
-  initialized=1;
   timeBeginPeriod(1);
+#endif
+}
+
+void
+TimeStamp::deinit()
+{
+#ifdef WINDOOF
+  DOPE_CHECK(initialized);
+  if (--initialized)
+    return;
+  timeEndPeriod(1);
 #endif
 }
 
