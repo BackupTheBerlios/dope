@@ -23,8 +23,9 @@ libdopeinclude_HEADERS = \
 	argvparser.h \
 	timestamp.h \
 	network.h \
-	socket.h
-
+	socket.h \
+	bswap.h	\
+	nbostream.h
 
 lib_LTLIBRARIES = libdope.la
 libdope_la_SOURCES = $(libdopeinclude_HEADERS) $(noinstheaders) \

@@ -16,7 +16,7 @@
       <LI>DOPE++ does not try to be portable to non-standard C++ compilers - at least I will not add any ugly code for some specific compiler (main development uses <a href="http://gcc.gnu.org/">GCC</a> >=3)</LI>
       <LI>DOPE++ uses additional information about class names and member names</LI>
       <LI>DOPE++ uses std::streambuf as underlying byte stream</LI>
-      <LI>Additional I/O formats: <a href="http://www.w3.org/TR/REC-xml">XML</a>, raw (platform dependant), command line parser</LI>
+      <LI>Additional I/O formats: <a href="http://www.w3.org/TR/REC-xml">XML</a>, raw (platform dependant), command line parser, nbo (raw network byte order stream)</LI>
       <LI>I think <a href="http://xtl.sourceforge.net/">XTL</a> weights performance higher than DOPE++. DOPE++ is intended to be a bridge between the fast world of C++ and the slow interpreter world. (I intend to also write some "streams" which allow to pass data directly to interpreters (JAVA, Scheme, Python). And of course <a href="http://www.w3.org/TR/REC-xml">XML</a> based protocols like <a href="http://www.xmlrpc.com/">XML-RPC</a> and <a href="http://www.w3.org/2000/xp/Group/">SOAP</a> are slow by concept</LI>
     </UL>
     I do NOT claim that DOPE++ is better than <a href="http://xtl.sourceforge.net/">XTL</a>:
@@ -28,7 +28,7 @@
     <h2><a name="requirements">Dependencies/Requirements</a></h2>
     <h3>Build dependencies if you got the tar-ball</h3>
     <UL>
-      <LI>recent C++ compiler and std C++ library (f.e. <a href="http://gcc.gnu.org/">GCC</a> >=3) (tested with: 3.0.3,3.0.4,3.1.0)</LI>
+      <LI>recent C++ compiler and std C++ library (f.e. <a href="http://gcc.gnu.org/">GCC</a> >=3) (tested with: 3.0.3,3.0.4,3.1.0,3.2.0)</LI>
       <LI><a href="http://libsigc.sourceforge.net/">libsigc++</a> (I use 1.0.4) Attention: you must compile all C++ libraries with compilers having compatible ABIs. F.e. gcc 2.95.x and gcc 3.x will not work together</LI>
       <LI><a href="http://www.libxml.org">libxml-dev a.k.a. gnome-xml >=2?</a> (I use 2.4.12)</LI>
       <LI>UNIX sockets</LI>
@@ -170,6 +170,7 @@ you can think of it as a rewrite of <a href="http://xtl.sourceforge.net/">XTL</a
     <UL>
       <LI>dropped the support for const output streams because it does not fit into the one method approach</LI>
       <LI>member-names always must be suplied (not optionally as extension or another layer on top)</LI>
+      <LI>decided not to operate on fixed sized integers => the user has to take care (either you choose to always use fixed size intergers - or you must be aware that on different platforms your intergers (long) might have different sizes => you will get trouble with network byte-order files/streams. Of course you will have trouble with raw streams if you have different byte-orders => use nbo stream) </LI>
     </UL>
     <hr>
     <address><a href="mailto:jens.thiele@student.uni-tuebinhen.de">Jens Thiele</a></address>

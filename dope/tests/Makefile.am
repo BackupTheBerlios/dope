@@ -7,6 +7,7 @@ LDADD = $(DOPELIB) @TEST_LDADD@
 automatictests = \
 	test-dom \
 	test-raw \
+	test-nbo \
 	test-signal \
 	test-xml \
 	test-streambuf \
@@ -29,6 +30,7 @@ common = test-common.h
 test_debug_SOURCES = test-debug.cpp $(common)
 test_dom_SOURCES = test-dom.cpp $(common)
 test_raw_SOURCES = test-raw.cpp $(common)
+test_nbo_SOURCES = test-nbo.cpp $(common)
 test_rpc_SOURCES = test-rpc.cpp $(common)
 test_saxwrapper_SOURCES = test-saxwrapper.cpp $(common)
 test_signal_SOURCES = test-signal.cpp $(common)

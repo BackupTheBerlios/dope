@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2002 Jens Thiele <jens.thiele@student.uni-tuebingen.de>
+ * Copyright (C) 2003 Jens Thiele <karme@berlios.de>
  * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,85 +17,87 @@
  */
 
 /*!
-   \file raw.h
-   \brief raw layer1 streams
-   \author Jens Thiele
+  \file dope/l1nboinstream.h
+  \brief network byte order (raw) streams
+  \author Jens Thiele
 */
 
-#ifndef DOPE_RAWINSTREAM_H
-#define DOPE_RAWINSTREAM_H
+#ifndef L1NBOINSTREAM_H
+#define L1NBOINSTREAM_H
 
 #include "dope.h"
 #include "adapter2to1.h"
 #include "dopeexcept.h"
+#include "bswap.h"
 
-//! simple raw layer 1 input stream
-/*!
-  \note this protocol is platform dependant:
-  -byte-order 
-  -size of data types
+/*! network byte order (raw) layer1 stream */
+//! simple network byte order (raw) layer 1 input stream
+/*
+  \note you havve to take care with the size of data types
 */
 template <typename Layer0>
-class L1RawInStream
+class L1NBOInStream
 {
 protected:
   Layer0 &layer0;
 public:
-  L1RawInStream(Layer0 &_layer0) : layer0(_layer0)
+  L1NBOInStream(Layer0 &_layer0) : layer0(_layer0)
   {}
-  
   template <typename Data>
-  DOPE_INLINE L1RawInStream & in(Data &data)
+  DOPE_INLINE L1NBOInStream & in(Data &data)
   {
     std::streamsize s=sizeof(Data);
     if (layer0.sgetn((char *)&data,s)!=s)
       throw ReadError(std::string(__PRETTY_FUNCTION__));
+#if (__BYTE_ORDER == __BIG_ENDIAN)
+    data=bswap(data);
+#endif
     return *this;
   }
-  DOPE_INLINE L1RawInStream & in(char *data, std::streamsize size)
+
+  DOPE_INLINE L1NBOInStream & in(char *data, std::streamsize size)
   {
     if (layer0.sgetn(data,size)!=size)
       throw ReadError(std::string(__PRETTY_FUNCTION__));
     return *this;
   }
+protected:
 };
 
 //! helper to get the initialization order right
 template <typename L0>
-struct RawInStreamBase
+struct NBOInStreamBase
 {
-  RawInStreamBase(L0 &_l0) : l0(_l0), l1(l0), l2(l1)
+  NBOInStreamBase(L0 &_l0) : l0(_l0), l1(l0), l2(l1)
   {}
 
   L0 &l0;
-  L1RawInStream<L0> l1;
-  Layer2InAdapter<L1RawInStream<L0> > l2;
+  L1NBOInStream<L0> l1;
+  Layer2InAdapter<L1NBOInStream<L0> > l2;
 };
 
 //! layer2 raw input stream using the Layer2InAdapter
 template <typename L0>
-struct RawInStream : public RawInStreamBase<L0>, public Layer2InAdapter<L1RawInStream<L0> >
+struct NBOInStream : public NBOInStreamBase<L0>, public Layer2InAdapter<L1NBOInStream<L0> >
 {
-  RawInStream(L0 &_l0) : RawInStreamBase<L0>(_l0), Layer2InAdapter<L1RawInStream<L0> > (l2)
+  NBOInStream(L0 &_l0) : NBOInStreamBase<L0>(_l0), Layer2InAdapter<L1NBOInStream<L0> > (l2)
   {
   }
 };
 
 //! simple raw layer 1 output stream
 /*!
-  \note this protocol is platform dependant:
-  -byte-order 
-  -size of data types
- */
+  \note you have to take care with the size of data types
+*/
 template <typename Layer0>
-class L1RawOutStream
+class L1NBOOutStream
 {
 private:
   Layer0 &layer0;
 public:
-  typedef L1RawOutStream<Layer0> type;
+  typedef L1NBOOutStream<Layer0> type;
 
-  L1RawOutStream(Layer0 &_layer0) : layer0(_layer0)
+  L1NBOOutStream(Layer0 &_layer0) : layer0(_layer0)
   {}
   
   void flush()
@@ -104,12 +106,15 @@ public:
   }
   
   template <typename Data>
-  DOPE_INLINE L1RawOutStream &out(Data data)
+  DOPE_INLINE L1NBOOutStream &out(Data data)
   {
+#if (__BYTE_ORDER == __BIG_ENDIAN)
+    data=bswap(data);
+#endif
     layer0.sputn((char *)&data,sizeof(Data));
     return *this;
   }
-  DOPE_INLINE L1RawOutStream &out(const char * const data, size_t size)
+  DOPE_INLINE L1NBOOutStream &out(const char * const data, size_t size)
   {
     layer0.sputn(data,size);
     return *this;
@@ -118,21 +123,21 @@ public:
 
 //! helper to get the initialization order right
 template <typename L0>
-struct RawOutStreamBase
+struct NBOOutStreamBase
 {
-  RawOutStreamBase(L0 &_l0) : l0(_l0), l1(l0), l2(l1)
+  NBOOutStreamBase(L0 &_l0) : l0(_l0), l1(l0), l2(l1)
   {}
 
   L0 &l0;
-  L1RawOutStream<L0> l1;
-  Layer2OutAdapter<L1RawOutStream<L0> > l2;
+  L1NBOOutStream<L0> l1;
+  Layer2OutAdapter<L1NBOOutStream<L0> > l2;
 };
 
 //! layer2 raw output stream using the Layer2OutAdapter
 template <typename L0>
-struct RawOutStream : public RawOutStreamBase<L0>, public Layer2OutAdapter<L1RawOutStream<L0> >
+struct NBOOutStream : public NBOOutStreamBase<L0>, public Layer2OutAdapter<L1NBOOutStream<L0> >
 {
-  RawOutStream(L0 &_l0) : RawOutStreamBase<L0>(_l0), Layer2OutAdapter<L1RawOutStream<L0> >(l2)
+  NBOOutStream(L0 &_l0) : NBOOutStreamBase<L0>(_l0), Layer2OutAdapter<L1NBOOutStream<L0> >(l2)
   {
   }
 };
