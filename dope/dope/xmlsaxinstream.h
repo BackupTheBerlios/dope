@@ -204,7 +204,7 @@ protected:
       by William Robinson (just adding typename => explicit typename does not work with g++ 3.2
       => we keep the warning until this stream is rewritten completely anyway
      */
-    ContainerElem(S& _s, C& _c) 
+    ContainerElem(typename ContainerElemBase::S& _s, C& _c) 
       : ContainerElemBase(_s), c(_c)
     {
     }
