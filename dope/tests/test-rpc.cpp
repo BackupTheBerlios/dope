@@ -95,7 +95,7 @@ public:
   
   void handleFoo(DOPE_SMARTPTR<foo> fooPtr)
   {
-    assert(fooPtr.get());
+    DOPE_ASSERT(fooPtr.get());
     ++msgs;
     std::cout << "saved foo from network to foo.net\n";
     writeFoo(*fooPtr.get(),"foo.net");
@@ -116,20 +116,20 @@ public:
   void handleNewConnection(NetStreamBufServer::ID id, DOPE_SMARTPTR<NetStreamBuf> streamPtr)
   {
     std::cerr << "New connection ("<<id<<"\n";
-    assert(streamPtr.get());
+    DOPE_ASSERT(streamPtr.get());
     connections[id]=DOPE_SMARTPTR<Connection>(new Connection(streamPtr));
   }
 
   void handleDataAvailable(NetStreamBufServer::ID id, DOPE_SMARTPTR<NetStreamBuf>)
   {
-    assert(connections.find(id)!=connections.end());
+    DOPE_ASSERT(connections.find(id)!=connections.end());
     connections[id]->read();
   }
 
   void handleConnectionClosed(NetStreamBufServer::ID id, DOPE_SMARTPTR<NetStreamBuf>)
   {
     Connections::iterator it(connections.find(id));
-    assert(it!=connections.end());
+    DOPE_ASSERT(it!=connections.end());
     std::cout << "Connection "<<id<<" closed\n";
     connections.erase(it);
   }

@@ -19,7 +19,7 @@ public:
     if (!atts)
       return;
     for (int i=0;atts[i]!=NULL;i+=2){
-      assert(atts[i+1]!=NULL);
+      DOPE_ASSERT(atts[i+1]!=NULL);
       std::cerr << "Attribute: " << atts[i] << " Value: \""<<atts[i+1]<<"\""<<std::endl;
     }
   }

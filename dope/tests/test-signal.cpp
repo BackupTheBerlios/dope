@@ -62,7 +62,7 @@ public:
   }
   void handleFoo(DOPE_SMARTPTR<foo> fooPtr)
   {
-    assert(fooPtr.get());
+    DOPE_ASSERT(fooPtr.get());
     fptr=fooPtr;
   }
 };

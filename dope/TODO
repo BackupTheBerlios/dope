@@ -1,3 +1,15 @@
+perhaps find better terms:
+processor
+process
+instead of composite/simple
+allow different composite functions/different views of the object
+allow different type to name mappings
+const correctness - would require seperate in and out methods/functions ?
+perhaps do not use a function - perhaps function object instead
+clear concepts !!
+perhaps reintroduce the layer without member name information
+
+
 GENERAL:
 - split up into independent headers/modules
   (perhaps this library should consist of headers only)

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2002 Jens Thiele <jens.thiele@student.uni-tuebingen.de>
+ * Copyright (C) 2002,2003 Jens Thiele <karme@berlios.de>
  * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -136,15 +136,15 @@ inline int fatal(const char *file,int line,const char *func, const char *msg)
 
 */
 #define DOPE_CHECK(expr)							      \
-  ((void) ((expr) ? 0 :							      \
-	   fatal(__FILE__, __LINE__, DOPE_FUNCTIONNAME, "assertion failed: " DOPE_STR(expr))))
+  (static_cast<void> ((expr) ? 0 :							      \
+	   (fatal(__FILE__, __LINE__, DOPE_FUNCTIONNAME, "assertion failed: " DOPE_STR(expr)))))
 
 /*
   \def DOPE_ASSERT(expr)
   \brief DOPE_ASSERT is like assert but tries to print a stacktrace
 */
 #ifdef NDEBUG
-#define DOPE_ASSERT(expr) assert(1)
+#define DOPE_ASSERT(expr) (static_cast<void>(0))
 #else
 #define DOPE_ASSERT(expr) DOPE_CHECK(expr)
 #endif
@@ -176,4 +176,5 @@ inline int fatal(const char *file,int line,const char *func, const char *msg)
 #define DOPE_BIG_ENDIAN 4321
 
 #endif // DOPE_DOPE_H
+
 

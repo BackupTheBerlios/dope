@@ -1,8 +1,13 @@
+DOPE++ (=Distributed Object Programing Environment for C++) is a C++ Template
+library for pickling / programing in heterogenous network environments. 
+NOTE: this is work in progress - alpha (perhaps pre-alpha) and there is 
+no stable API yet.
+
 The documentation is in the doc directory. 
 For the license see doc/COPYING
 
 libdope++ (distributed object programing environment)
-Copyright (C) 2002 Jens Thiele
+Copyright (C) 2002, 2003 Jens Thiele
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

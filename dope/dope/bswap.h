@@ -27,7 +27,7 @@
  * Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
  * MA 02111-1307, USA
  *
- * $Id: bswap.h,v 1.4 2003/05/09 15:38:13 karme Exp $
+ * $Id: bswap.h,v 1.5 2003/08/22 14:46:34 karme Exp $
  */
 
 #ifndef DOPE_BSWAP_H
@@ -37,6 +37,7 @@ typedef long long longlong;
 typedef unsigned long long unsignedlonglong;
 
 // Don't use byteswap.h on Alpha machines because its buggy
+// todo could someone verify this ?
 #if defined(__linux__) && !(defined(__alpha) || defined(__alpha__))
 #	include <byteswap.h>
 #else
@@ -61,6 +62,7 @@ inline unsignedlonglong bswap_64(unsignedlonglong b) {
 }
 #endif
 
+// todo our assumptions about type sizes won't hold true on all platforms
 #define _DOPE_BSWAP(T,S) inline T& bswap(T &x){x=bswap_##S(x);return x;}
 _DOPE_BSWAP(short,16)
 _DOPE_BSWAP(unsigned short,16)
