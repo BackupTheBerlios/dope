@@ -17,7 +17,7 @@ This library is similar to <a href="http://xtl.sourceforge.net/">XTL</a>. Perhap
 <LI>DOPE++ uses additional information about class names and member names</LI>
 <LI>DOPE++ uses std::streambuf as underlying byte stream</LI>
 <LI>Additional I/O formats: <a href="http://www.w3.org/TR/REC-xml">XML</a>, raw (platform dependant), command line parser</LI>
-<LI>I think <a href="http://xtl.sourceforge.net/">XTL</a> weights performance higher than DOPE++. DOPE++ is intended to be a bridge between the fast world of C++ and the slow interpreter world. (I intend to also write some "streams" which allow to pass data directly to interpreters (JAVA,Scheme, Python). And of course <a href="http://www.w3.org/TR/REC-xml">XML</a> based protocols like <a href="http://www.xmlrpc.com/">XML-RPC</a> and <a href="http://www.w3.org/2000/xp/Group/">SOAP</a> are slow by concept</LI>
+<LI>I think <a href="http://xtl.sourceforge.net/">XTL</a> weights performance higher than DOPE++. DOPE++ is intended to be a bridge between the fast world of C++ and the slow interpreter world. (I intend to also write some "streams" which allow to pass data directly to interpreters (JAVA, Scheme, Python). And of course <a href="http://www.w3.org/TR/REC-xml">XML</a> based protocols like <a href="http://www.xmlrpc.com/">XML-RPC</a> and <a href="http://www.w3.org/2000/xp/Group/">SOAP</a> are slow by concept</LI>
 </UL>
 I do NOT claim that DOPE++ is better than <a href="http://xtl.sourceforge.net/">XTL</a>:
 <UL>
@@ -29,9 +29,9 @@ Of course I hope it will get better than <a href="http://xtl.sourceforge.net/">X
 <h3>Build dependencies if you got the tar-ball</h3>
 <UL>
 <LI>recent C++ compiler and std C++ library (f.e. <a href="http://gcc.gnu.org/">GCC</a> >=3) (I use 3.0.3,3.0.4,3.1.0)</LI>
-<LI><a href="http://libsigc.sourceforge.net/">libsigc++</a> (I use 1.0.4) Attention: you must compile all C++ libraries with compilers having compatible ABIs. F.e. gcc 2.95.2 and gcc 3.x will not work together</LI>
+<LI><a href="http://libsigc.sourceforge.net/">libsigc++</a> (I use 1.0.4) Attention: you must compile all C++ libraries with compilers having compatible ABIs. F.e. gcc 2.95.x and gcc 3.x will not work together</LI>
 <LI><a href="http://www.libxml.org">libxml-dev a.k.a. gnome-xml >=2?</a> (I use 2.4.12)</LI>
-<LI><a href="http://www.boost.org">boost</a> (I use 1.21.2?)</LI>
+<LI><a href="http://www.boost.org">boost</a> (I use 1.21.2?) - only the headers are used</LI>
 <LI>UNIX sockets</LI>
 </UL>
 <h3>if you checked out from CVS</h3>
@@ -41,6 +41,19 @@ Of course I hope it will get better than <a href="http://xtl.sourceforge.net/">X
 <LI><a href="http://www.gnu.org/software/libtool/libtool.html">libtool</a> (I use 1.4.2)</LI>
 <LI><a href="http://www.doxygen.org">doxygen</a> (I use 1.2.11.1) to build the <a href="http://dope.berlios.de/doxygen/html/index.html">API docs</a></LI>
 </UL>
+<h3>Compilation</h3>
+<pre>
+#exec bash
+# only needed if you checked out from cvs
+# ./bootstrap.sh
+#perhaps set some environment variables 
+#export CXX=g++-3.0
+#export ACLOCAL_FLAGS="-I config/m4"
+#export CXXFLAGS="-Wall -ansi -pedantic -Wno-long-long"
+./configure
+make
+make install
+</pre>
 <h2>License/Copyright</h2>
 <a href="COPYING">GPL</a> Copyright (C) 2002 Jens Thiele &lt;jens.thiele@student.uni-tuebingen.de&gt;
 <h2>Links</h2>
@@ -153,7 +166,7 @@ you can think of it as a rewrite of <a href="http://xtl.sourceforge.net/">XTL</a
     <address><a href="mailto:jens.thiele@student.uni-tuebinhen.de">Jens Thiele</a></address>
 <!-- Created: Mon Aug  6 15:12:02 CEST 2001 -->
 <!-- hhmts start -->
-Last modified: Thu Jul 18 20:15:34 CEST 2002
+Last modified: Mon Aug 12 17:55:53 CEST 2002
 <!-- hhmts end -->
   <p>
     <a href="http://validator.w3.org/check/referer"><img border="0"

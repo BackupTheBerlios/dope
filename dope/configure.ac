@@ -33,7 +33,17 @@ AC_PROG_CXXCPP
 
 
 dnl build options
-AC_ARG_ENABLE(ilibdep, [  --enable-inter-libdep            enable inter-library dependencies [default=no]], , enable_interlibdep=no)
+AC_ARG_ENABLE([ilibdep],
+	AC_HELP_STRING([--enable-ilibdep],
+		[enable libtool inter-library dependencies @<:@default=no@:>@]),
+		[],
+		[enable_ilibdep=no])
+
+AC_ARG_ENABLE([karmehack],
+	AC_HELP_STRING([--enable-karmehack],
+		[enable libtool problem workaround @<:@default=no@:>@]),
+		[],
+		[enable_karmehack=no])
 
 dnl checks for libraries
 
@@ -57,20 +67,42 @@ AC_CHECK_FUNCS(gettimeofday inet_pton select strerror)
 AC_FUNC_SELECT_ARGTYPES
 
 dnl variable substitutions
-DOPE_LDADD="$XML_LIBS $SIGC_LIBS"
+dnl note order is important because of libtool
+DOPE_LDADD="$SIGC_LIBS $XML_LIBS"
+TEST_LDADD=$DOPE_LDADD
+DOPE_LIBS=$DOPE_LDADD
+
+if test "x$enable_karmehack" = "xno"; then
+	dnl libtool libraries if possible
+	DOPE_LTLIBS=$DOPE_LDADD
+else
+	echo use hack to get the right sigc lib
+	lib=`$SIGC_CONFIG --libs-dirs|sed 's/-L//'`
+    	if test x$lib != x; then
+		SIGC_LALIB=$lib/lib`$SIGC_CONFIG $sigc_config_args --libs-names|sed -n 's/-l\(sig\w*\).*/\1/p'`.la
+    	else
+    		SIGC_LALIB=$SIGC_LIBS
+    	fi
+    	echo SIGC_LALIB=$SIGC_LALIB
+	DOPE_LTLIBS="$SIGC_LALIB $XML_LIBS"
+	TEST_LDADD=$DOPE_LTLIBS
+fi
+
 echo "libdope depends upon: $DOPE_LDADD"
-if test "x$enable_interlibdep" = "xno"; then
-     TEST_LDADD="$DOPE_LDADD"
-     DOPE_LDADD=""
+if test "x$enable_ilibdep" = "xno"; then
      echo "Inter-library dependencies tracking via libtool is disabled -> use dope-config instead"
+     DOPE_LDADD=""
+else
+     TEST_LDADD=""
 fi
 
 DOPE_CFLAGS="$SIGC_CFLAGS $XML_CFLAGS"
 echo DOPE_CFLAGS = $DOPE_CFLAGS
-AC_SUBST(DOPE_LDADD)
-AC_SUBST(TEST_LDADD)
-AC_SUBST(DOPE_CFLAGS)
 
+AC_SUBST(DOPE_CFLAGS)
+AC_SUBST(DOPE_LIBS)
+AC_SUBST(DOPE_LTLIBS)
+AC_SUBST(TEST_LDADD)
 
 dnl output files
 AC_CONFIG_FILES([Makefile doc/Makefile doc/Doxyfile config/Makefile config/m4/Makefile scripts/Makefile scripts/dope-config dope/Makefile dope/dope.h tests/Makefile])

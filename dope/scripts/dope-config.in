@@ -72,6 +72,10 @@ while test $# -gt 0; do
     --libs-names)
       af_echo_libs_l=yes
       ;;
+    --ltlibs)
+      af_echo_ltlibs=yes
+      af_echo_libs_l=yes
+      ;;
     --prefix=*)
       prefix=$af_optarg
       af_prefix_set=yes
@@ -130,6 +134,10 @@ if test "X$af_echo_libs_L" = "Xyes" || test "X$af_echo_libs_l" = "Xyes"; then
     af_all_flags="$af_all_flags $af_libs"
 fi
 
+if test "X$af_echo_ltlibs" = "Xyes"; then
+    af_all_flags="$af_ltlibs"
+fi
+
 if test -z "$af_all_flags" || test "X$af_all_flags" = "X "; then
     exit 1
 fi
@@ -150,6 +158,8 @@ for i in $af_all_flags; do
             *) af_lib_L_flags="$af_lib_L_flags $i" ;; # add it to output
             esac 
         fi;;
+    # a libtool library
+    /*.la) af_rev_libs="$i $af_rev_libs" ;;
     *)
         case " $af_other_flags " in
         *\ $i\ *) ;;                                  # already there
@@ -211,10 +221,8 @@ if test "@libdir@" != /usr/lib ; then
   libs="-L@libdir@"
 fi
 af_cflags="$af_cflags -I@includedir@/@PACKAGE@-@VERSION@ @DOPE_CFLAGS@"
-af_libs="$libs -ldope @TEST_LDADD@ $af_libs"
-
-
-
+af_libs="$libs -ldope @DOPE_LIBS@ $af_libs"
+af_ltlibs="$prefix/lib/libdope.la @DOPE_LTLIBS@"
 
 print_result
 

@@ -132,4 +132,22 @@ inline bool begins(const std::string &s, const std::string &b)
   return true;
 }
 
+//! split string
+inline bool split(const std::string &s, std::string &first, std::string &second, char c)
+{
+  std::string::size_type p=s.find_first_of(c);
+  if (p!=std::string::npos)
+    {
+      first=s.substr(0,p);
+      if (p+1<s.size())
+	second=s.substr(p+1);
+      else
+	second.clear();
+      return true;
+    }
+  //    else
+  first=s;
+  return false;
+}
+
 #endif
