@@ -78,10 +78,35 @@ if test "x$found_socket" = "x"; then
 		]
 	)
 fi
+dnl check if we have libwinmm - and use it (see above why this is bad)
+AC_MSG_CHECKING([for timeGetTime in -lwinmm])
+AC_LANG([C++])
+LIBS_BACKUP="$LIBS"
+LIBS="$LIBS -lwinmm"
+AC_TRY_LINK([
+	#include <windows.h>
+	],
+	[
+		#ifndef WIN32
+			thisfunctiondoesnotexist();
+		#endif
+		unsigned long n=timeGetTime();
+	],
+	[AC_MSG_RESULT([yes])],
+	[
+		AC_MSG_RESULT([no])
+	        LIBS="$LIBS_BACKUP"
+	]
+)
+
 
 AC_LANG([C])
 AM_PATH_XML2(2.4.0, , [AC_MSG_ERROR([libxml required])])
 AM_PATH_SIGC(1.0.0, , [AC_MSG_ERROR([libsigc++ required])])
+
+
+dnl check for c headers
+AC_CHECK_HEADERS([execinfo.h])
 
 dnl checks for c++ header files
 dnl AC_LANG([C++])
