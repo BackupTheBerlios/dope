@@ -81,34 +81,45 @@ extern int dope_minor_version;
 extern int dope_major_version;
 
 
+#ifdef __GNUC__
+#define DOPE_FUNCTIONNAME __PRETTY_FUNCTION__
+#else
+#define DOPE_FUNCTIONNAME __func__
+#endif
+
 /*
   \def DOPE_CHECK(expr)
   \brief DOPE_CHECK is like assert but takes also effect when NDEBUG is defined
 
   it seems there is no assert which is not disabled by a \#define NDEBUG 
 
-  \todo PRETTY_FUNCTION is gcc specific - what about FILE and LINE ?
 */
 #ifndef NDEBUG
 #include <cassert>
 #define DOPE_CHECK(expr) assert(expr);
 #else
+inline int fatal(const char *file,int line,const char *func, const char *msg) 
+{
+  std::cerr << "FATAL: " << file << ":" << line << ":" << func << ": " << msg << "(errno="<<errno<<":"<<strerror(errno)<<"\n";
+  std::terminate();
+  return 0;
+}
 # define DOPE_CHECK(expr)							      \
   ((void) ((expr) ? 0 :							      \
-	   (DOPE_FATAL("assertion failed"__STRING(expr)))))
+	   fatal(__FILE__, __LINE__, DOPE_FUNCTIONNAME, "assertion failed: "__STRING(expr))))
 #endif // NDEBUG
 
 /*!
   \def DOPE_FATAL(msg)
   \brief fatal error - exit with a short message
 */
-#define DOPE_FATAL(msg) {std::cerr << "FATAL: " << __FILE__ << ":" << __LINE__ << ":" << __PRETTY_FUNCTION__ << ": " << msg << "(errno="<<errno<<":"<<strerror(errno)<<"\n";std::terminate();}
+#define DOPE_FATAL(msg) {std::cerr << "FATAL: " << __FILE__ << ":" << __LINE__ << ":" << DOPE_FUNCTIONNAME << ": " << msg << "(errno="<<errno<<":"<<strerror(errno)<<"\n";std::terminate();}
 
 /*! 
   \def WARN(msg)
   \brief print a warning message
 */
-#define DOPE_WARN(msg) {std::cerr << "WARNING: " << __FILE__ << ":" << __LINE__ << ":" << __PRETTY_FUNCTION__ << ": " << msg << "(errno="<<errno<<":"<<strerror(errno)<<"\n";}
+#define DOPE_WARN(msg) {std::cerr << "WARNING: " << __FILE__ << ":" << __LINE__ << ":" << DOPE_FUNCTIONNAME << ": " << msg << "(errno="<<errno<<":"<<strerror(errno)<<"\n";}
 
 #endif // DOPE_DOPE_H
 
