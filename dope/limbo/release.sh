@@ -4,7 +4,7 @@
 BUILDDIR=/tmp
 PREFIX=/tmp/usr
 export CXX=g++-3.2
-export CXXFLAGS="-Wall -ansi -pedantic -Wno-long-long -Os"
+export CXXFLAGS="-Wall -ansi -pedantic -Wno-long-long -Os -DNDEBUG"
 PACKAGE=dope
 #end of configuration
 
