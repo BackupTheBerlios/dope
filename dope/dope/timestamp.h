@@ -30,10 +30,9 @@ class TimeStamp
 {
 public:
   // default constructor - time is set to 0
-  TimeStamp() : m_sec(0), m_usec(0) {}
+  TimeStamp();
   //! set time
-  TimeStamp(int sec, int usec) : m_sec(sec), m_usec(usec) 
-  {}
+  TimeStamp(int sec, int usec);
   //! set from seconds
   TimeStamp(float sec);
   
@@ -78,6 +77,8 @@ public:
     layer2.simple(m_sec,"sec").simple(m_usec,"usec");
   }
 protected:
+  void init();
+  
   //! seconds
   int m_sec;
   //! microseconds

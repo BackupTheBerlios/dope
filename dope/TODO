@@ -1,4 +1,10 @@
 GENERAL:
+- on pentium systems use the pentium time register for timestamp
+  nope - use gettimeofday 
+  take a look at glibc source
+  take a look at fftw source
+  
+- tcp naggle
 - how to backup macros ?
 - use namespace
 - all global macros start with DOPE_ ?

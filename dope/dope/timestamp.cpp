@@ -14,8 +14,19 @@
 
 #define __USE_W32_SOCKETS
 #include <windows.h>
-#define WINDOOF
+#define WINDOOF 1
+
+static int intitialized=0;
+
 #endif
+
+TimeStamp::TimeStamp() 
+  : m_sec(0), m_usec(0) 
+{}
+
+TimeStamp::TimeStamp(int sec, int usec)
+  : m_sec(sec), m_usec(usec) 
+{}
 
 TimeStamp::TimeStamp(float sec)
 {
@@ -23,6 +34,18 @@ TimeStamp::TimeStamp(float sec)
   sec-=float(m_sec);
   m_usec=int(sec*1000000);
 }
+
+void
+TimeStamp::init()
+{
+#ifdef WINDOOF
+  if (initialized)
+    return;
+  initialized=1;
+  timeBeginPeriod(1);
+#endif
+}
+
 
 void TimeStamp::now()
 {
@@ -36,7 +59,8 @@ void TimeStamp::now()
   // todo GetTickCount has bad resoultion
   // either use the pentium time register or
   // do it like SDL does
-  unsigned long n=GetTickCount();
+  //  unsigned long n=GetTickCount();
+  unsigned long n=timeGetTime();
   m_sec=n/1000;
   n-=m_sec*1000;
   m_usec=n*1000;
