@@ -54,15 +54,14 @@ cd build
 mkdir -p arch-native
 cd arch-native
 if test -e $DIR; then
-	echo Warning $DIR directory already exists - abort or I will remove it
+	echo Warning $DIR directory already exists - assuming we already build and installed
 	read
-	rm -rf $DIR
+else
+    mkdir $DIR
+    cd $DIR
+    $BUILDDIR/$DIR/configure --disable-shared --prefix=$PREFIX
+    make install
 fi
-mkdir $DIR
-cd $DIR
-
-$BUILDDIR/$DIR/configure --disable-shared --prefix=$PREFIX
-make install
 
 #cross compile
 if test -e $SETUPCROSS; then
@@ -71,14 +70,14 @@ if test -e $SETUPCROSS; then
     mkdir -p arch-cross
     cd arch-cross
     if test -e $DIR; then
-	echo Warning $DIR directory already exists - abort or I will remove it
+	echo Warning $DIR directory already exists - assuming we already build and installed
 	read
-	rm -rf $DIR
+    else
+	mkdir $DIR
+	cd $DIR
+	$BUILDDIR/$DIR/configure $CROSS_CONFIGURE_OPTIONS $DOPE_CROSS_CONFIGURE_OPTIONS --prefix=$PREFIX/cross
+	make install
     fi
-    mkdir $DIR
-    cd $DIR
-    $BUILDDIR/$DIR/configure $CROSS_CONFIGURE_OPTIONS $DOPE_CROSS_CONFIGURE_OPTIONS --prefix=$PREFIX/cross
-    make install
 else
     echo cross compiler config script not found
 fi
