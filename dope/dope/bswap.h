@@ -27,7 +27,7 @@
  * Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
  * MA 02111-1307, USA
  *
- * $Id: bswap.h,v 1.3 2003/05/07 08:24:45 karme Exp $
+ * $Id: bswap.h,v 1.4 2003/05/09 15:38:13 karme Exp $
  */
 
 #ifndef DOPE_BSWAP_H
@@ -41,7 +41,7 @@ typedef unsigned long long unsignedlonglong;
 #	include <byteswap.h>
 #else
 inline unsigned short bswap_16(unsigned short b) {
-	return ((b&0xff00)>>8)|((b&0x00ff)>>8);
+  return ((b&0xff00)>>8)|((b&0x00ff)<<8);
 }
 
 inline unsigned int bswap_32(unsigned int b) {
