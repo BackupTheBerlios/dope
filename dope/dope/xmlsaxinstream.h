@@ -385,6 +385,8 @@ DOPE_INLINE XMLSAXInStream &simple(type &data, MemberName mname) \
   DOPE_SIMPLE(unsigned int);
   DOPE_SIMPLE(long);
   DOPE_SIMPLE(unsigned long);
+  DOPE_SIMPLE(long long);
+  DOPE_SIMPLE(unsigned long long);
   DOPE_SIMPLE(float);
   DOPE_SIMPLE(double);
   DOPE_SIMPLE(std::string);

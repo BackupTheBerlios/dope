@@ -30,13 +30,9 @@
 #include "dopeexcept.h"
 #include "bswap.h"
 
-TODO: not yet ready
-
-
-/*! network byte order (raw) layer1 stream */
 //! simple network byte order (raw) layer 1 input stream
 /*
-  \note you havve to take care with the size of data types
+  \note longs are stored as long longs
 */
 template <typename Layer0>
 class L1NBOInStream
@@ -47,7 +43,7 @@ public:
   L1NBOInStream(Layer0 &_layer0) : layer0(_layer0)
   {}
 
-  DOPE_INLINE L1NBOInStream &in(bool &d)
+  L1NBOInStream &in(bool &d)
   {
     char c;
     in(c);
@@ -55,34 +51,36 @@ public:
     return *this;
   }
 
-  DOPE_INLINE L1NBOInStream &in(char &c)
+  L1NBOInStream &in(char &c)
   {
     if (layer0.sgetn(&c,sizeof(char))!=sizeof(char))
       throw ReadError(std::string(__PRETTY_FUNCTION__));
     return *this;
   }
 
-  DOPE_INLINE L1NBOInStream &in(signed char &c)
+  L1NBOInStream &in(signed char &c)
   {
-    in(layer0.sputc(c);return *this;
+    return in(static_cast<char>(c));
   }
 
-  DOPE_INLINE L1NBOInStream &in(unsigned char &c)
+  L1NBOInStream &in(unsigned char &c)
   {
-    layer0.sputc(c);return *this;
+    return in(static_cast<char>(c));
   }
 
 #if (__BYTE_ORDER == __LITTLE_ENDIAN)
 #define DOPE_IN(T) \
-L1NBOInStream &in(T d) {\
+L1NBOInStream &in(T &d) {\
+    if (layer0.sgetn((char *)&d,sizeof(T))!=sizeof(T)) \
+      throw ReadError(std::string(__PRETTY_FUNCTION__)); \
     bswap(d); \
-    layer0.sputn((char *)&d,sizeof(T)); \
     return *this; \
   }
 #else
 #define DOPE_IN(T) \
-L1NBOInStream &in(T d) {\
-    layer0.sputn((char *)&d,sizeof(T)); \
+L1NBOInStream &in(T &d) {\
+    if (layer0.sgetn((char *)&d,sizeof(T))!=sizeof(T)) \
+      throw ReadError(std::string(__PRETTY_FUNCTION__)); \
     return *this; \
   }
 #endif
@@ -95,22 +93,32 @@ L1NBOInStream &in(T d) {\
   DOPE_IN(long long unsigned);
 #undef DOPE_OUT
 
-/* TODO: long could be 32 or 64 bit
-  DOPE_IN(long);
-  DOPE_IN(unsigned long);
-*/
+  L1NBOInStream &in(long &d)
+  {
+    typedef long long LL;
+    LL ll;
+    in(ll);
+    d=ll;
+    if (ll!=LL(d)) DOPE_WARN("value does not fit into long");
+    return *this;
+  }
 
-  DOPE_INLINE L1NBOInStream &in(float d)
+  L1NBOInStream &in(unsigned long &d)
+  {
+    return in(static_cast<long>(d));
+  }
+  
+  L1NBOInStream &in(float &d)
   {
     return in(*reinterpret_cast<int *>(&d));
   }
 
-  DOPE_INLINE L1NBOInStream &in(double d)
+  L1NBOInStream &in(double &d)
   {
     return in(*reinterpret_cast<long long *>(&d));
   }
 
-  DOPE_INLINE L1NBOInStream & in(char *data, std::streamsize size)
+  L1NBOInStream & in(char *data, std::streamsize size)
   {
     if (layer0.sgetn(data,size)!=size)
       throw ReadError(std::string(__PRETTY_FUNCTION__));
@@ -160,22 +168,22 @@ public:
     layer0.pubsync();
   }
 
-  DOPE_INLINE L1NBOOutStream &out(bool d)
+  L1NBOOutStream &out(bool d)
   {
     return out(char(d?1:0));
   }
 
-  DOPE_INLINE L1NBOOutStream &out(char c)
+  L1NBOOutStream &out(char c)
   {
     layer0.sputc(c);return *this;
   }
 
-  DOPE_INLINE L1NBOOutStream &out(signed char c)
+  L1NBOOutStream &out(signed char c)
   {
     layer0.sputc(c);return *this;
   }
 
-  DOPE_INLINE L1NBOOutStream &out(unsigned char c)
+  L1NBOOutStream &out(unsigned char c)
   {
     layer0.sputc(c);return *this;
   }
@@ -203,22 +211,27 @@ L1NBOOutStream &out(T d) {\
   DOPE_OUT(long long unsigned);
 #undef DOPE_OUT
 
-/* TODO: long could be 32 or 64 bit
-  DOPE_OUT(long);
-  DOPE_OUT(unsigned long);
-*/
+  L1NBOOutStream &out(long d)
+  {
+    return out(static_cast<long long>(d));
+  }
 
-  DOPE_INLINE L1NBOOutStream &out(float d)
+  L1NBOOutStream &out(unsigned long d)
+  {
+    return out(static_cast<long>(d));
+  }
+
+  L1NBOOutStream &out(float d)
   {
     return out(*reinterpret_cast<int *>(&d));
   }
 
-  DOPE_INLINE L1NBOOutStream &out(double d)
+  L1NBOOutStream &out(double d)
   {
     return out(*reinterpret_cast<long long *>(&d));
   }
 
-  DOPE_INLINE L1NBOOutStream &out(const char * const data, size_t size)
+  L1NBOOutStream &out(const char * const data, size_t size)
   {
     layer0.sputn(data,size);
     return *this;

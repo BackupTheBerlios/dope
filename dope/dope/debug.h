@@ -70,6 +70,8 @@ DOPE_INLINE DebugOutStream &simple(T data, MemberName mname) \
   DOPE_SIMPLE(unsigned int);
   DOPE_SIMPLE(long);
   DOPE_SIMPLE(unsigned long);
+  DOPE_SIMPLE(long long);
+  DOPE_SIMPLE(unsigned long long);
   DOPE_SIMPLE(float);
   DOPE_SIMPLE(double);
   DOPE_SIMPLE(DOPE_CONSTOUT std::string &);

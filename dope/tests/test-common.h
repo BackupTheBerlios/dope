@@ -32,11 +32,14 @@ public:
   //! set some values
   void setSome()
   {
-    i=0x04030201;
     b=false;
     c='A';
     sc=-10;
     uc=200;
+    us=ss=0x0201;
+    ui=si=0x04030201;
+    ul=sl=ui;
+    ull=sll=0x0807060504030201ULL;
     cppstr="hello world !&<\">;:-";
     p.first='Z';
     p.second=true;
@@ -69,11 +72,13 @@ public:
   //! destroy member values (set other values)
   void litter()
   {
-    i=-1;
     b=true;
     c='L';
-    uc=10;
     sc=12;
+    uc=10;
+    us=ss=ui=si=ul=sl=-1;
+    ull=sll=ul;
+    
     p.first='L';
     fixedCVector[0]=666;
     fixedCVector[1]=666;
@@ -101,7 +106,11 @@ public:
   template <typename Layer2>
   inline void composite(Layer2 &layer2)
   {
-    layer2.SIMPLE(i).SIMPLE(b).SIMPLE(c).SIMPLE(sc).SIMPLE(uc)
+    layer2.SIMPLE(b).SIMPLE(c).SIMPLE(sc).SIMPLE(uc)
+      .SIMPLE(ss).SIMPLE(us)
+      .SIMPLE(si).SIMPLE(ui)
+      .SIMPLE(sl).SIMPLE(ul)
+      .SIMPLE(sll).SIMPLE(ull)
       .dynCVector(dynCVec1,dynCVec1Size,"dynCVec1")
       .dynCVector(dynCVec2,dynCVec2Size,"dynCVec2")
       .fixedCVector(fixedCVector,2,"fixedCVector")
@@ -109,12 +118,19 @@ public:
   }
 
   // some basic types
-  int i;
   bool b;
   char c;
   signed char sc;
   unsigned char uc;
-
+  short ss;
+  unsigned short us;
+  int si;
+  unsigned int ui;
+  long sl;
+  unsigned long ul;
+  long long sll;
+  unsigned long long ull;
+  
   // dynamic c vectors - created with new[] and destroyed with delete[]
   size_t dynCVec1Size;
   int* dynCVec1;

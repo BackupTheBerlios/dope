@@ -135,6 +135,8 @@ DOPE_TYPE(int);
 DOPE_TYPE(unsigned int);
 DOPE_TYPE(long);
 DOPE_TYPE(unsigned long);
+DOPE_TYPE(long long);
+DOPE_TYPE(unsigned long long);
 DOPE_TYPE(float);
 DOPE_TYPE(double);
 DOPE_TYPE(bool);
