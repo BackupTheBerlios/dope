@@ -284,6 +284,7 @@ protected:
   void endElement(const xmlChar *name)
   {
     if (!(--currentDepth)) {
+      //      std::cerr << "\nlast end element reached\n";
       // just read end tag of top node - put back characters not needed
 
       /* todo improve this
@@ -310,7 +311,7 @@ protected:
       // put back all characters not consumed
       char *cptr=(char *)ctxt->input->end;
       --cptr;
-      //      std::cerr << "Put "<< (cptr-((char *)ctxt->input->cur)+1) << "characters back\n";
+      //      std::cerr << "Put "<< (cptr-((char *)ctxt->input->cur)+1) << " characters back\n";
       while (cptr>=(char *)ctxt->input->cur)
 	{
 	  if (layer0.sputbackc(*cptr)==traits_type::eof())
@@ -321,28 +322,26 @@ protected:
 	  --cptr;
 	}
 
-      if (!stop) {
-	// debug help
-	assert(ctxt->input->end>=ctxt->input->cur);
-	unsigned c=ctxt->input->end-ctxt->input->cur;
-	std::streamsize ts=20;
-	if (c<20) ts=c;
-	// compare the fist ts bytes - if they really have been put back
-	char *p=new char[ts+1];
-	char* p2=new char[ts+1];
-	memcpy(p,(char *)ctxt->input->end-c,ts);
-	p[ts]=0;
-	DOPE_CHECK(layer0.sgetn(p2,ts)==ts);
-	p2[ts]=0;
-	assert(!strcmp(p,p2));
-	while (ts--)
-	  layer0.sputbackc(p[ts]);
-	delete [] p;
-	delete [] p2;
-	// debug help end
-	
-	stopParser();
-      }
+      // debug help
+      assert(ctxt->input->end>=ctxt->input->cur);
+      unsigned c=ctxt->input->end-ctxt->input->cur;
+      std::streamsize ts=20;
+      if (c<20) ts=c;
+      // compare the fist ts bytes - if they really have been put back
+      char *p=new char[ts+1];
+      char* p2=new char[ts+1];
+      memcpy(p,(char *)ctxt->input->end-c,ts);
+      p[ts]=0;
+      DOPE_CHECK(layer0.sgetn(p2,ts)==ts);
+      p2[ts]=0;
+      assert(!strcmp(p,p2));
+      while (ts--)
+	layer0.sputbackc(p[ts]);
+      delete [] p;
+      delete [] p2;
+      // debug help end
+      
+      stopParser();
     }
     x.endElement(DOPE_CAST(const char *,name));
   }
@@ -362,17 +361,28 @@ protected:
     int totry=retries;
     while(true) {
       r=layer0.sgetn(buffer,len);
-      if ((r>=0)||(totry<=0))
+      //      if ((r>0)||(parserBuffered()>80)||(totry<=0))
+      // also scheisse
+      // libxml ruft "unkontrolliert" immer wieder den readcallback auf
+      // (will immer eine minum anzahl vom zeichen im puffer -
+      //  und bricht mit fehlern ab wenn die anzahl nicht ausreicht um
+      //  einen attributnamen oder sonstiges einzulesen)
+      // und geht von einer mindestanzahl im libxml puffer aus
+      // sorgt aber nicht dafuer dass diese eingehalten wird
+      if ((r>0)||(totry<=0))
 	break;
       timeOut.sleep();
       --totry;
+      //      std::cerr << "\nlast element not yet reached => retry\n";
     }
     DOPE_CHECK(r<=len);
     /*
     if (r) {
-      std::cerr << "Read "<<r<<"bytes:\n";
+      std::cerr << "Read "<<r<<"bytes:\n{";
       for (int i=0;i<r;++i) std::cerr << buffer[i];
-      std::cerr << "\n--\n" << layer0.in_avail() << "remain in buffer\n";
+      std::cerr << "}\n" << layer0.in_avail() << " remain in buffer\n";
+    }else{
+      std::cerr << "\nReturned EOF\n";
       }*/
     return r;
   }
@@ -381,6 +391,7 @@ protected:
   /*! attention as side effect ctxt is freed */
   void stopParser()
   {
+    //    std::cerr << "\nParser stopped\n";
     stop=true;
     xmlStopParser(ctxt);
   }
@@ -395,6 +406,21 @@ protected:
     stopParser();
     x.setError(e);
   }
+
+  //! how many bytes are buffered in the parser we wrap ?
+  int parserBuffered()
+  {
+      assert(ctxt->input);
+      assert(ctxt->inputNr==1);
+      assert(ctxt->input->base);
+      assert(ctxt->input->cur);
+      assert(ctxt->input->end);
+      assert(ctxt->input->end>=ctxt->input->cur);
+      // put back all characters not consumed
+      char *cptr=(char *)ctxt->input->end;
+      return (cptr-((char *)ctxt->input->cur)+1);
+  }
+  
 };
 
 #ifndef NDEBUG
