@@ -20,17 +20,25 @@ TimeStamp::TimeStamp(float sec)
 
 void TimeStamp::now()
 {
-#ifdef HAVE_GETTIMEOFDAY
+#if defined(HAVE_GETTIMEOFDAY)
   timeval s;
   gettimeofday(&s,NULL);
   m_sec=s.tv_sec;
   m_usec=s.tv_usec;
-#elsif defined (__WIN32__) || defined(WIN32)
+#else
+#if defined (__WIN32__) || defined(WIN32)
+  // todo GetTickCount has bad resoultion
+  // either use the pentium time register or
+  // do it like SDL does
   unsigned long n=GetTickCount();
   m_sec=n/1000;
   n-=m_sec*1000;
   m_usec=n*1000;
+#else
+#error you must implement this
 #endif
+#endif
+
 }
 
 TimeStamp TimeStamp::operator-(const TimeStamp &o) const

@@ -1,8 +1,8 @@
 ich will dope mit mingw compilieren:
 - es geht schon halbwegs
-  zumindest test-rpc 
-  das problem bei test-rpc ist dass er nach dem dritten client connect
-  ständig vom select zurückkehrt
+  timestamp ist dreck GetTickCount ist viel zu ungenau
+  mach es so wie SDL
+
 
 - teste mal ob überhaupt ein prg. geht !!!
   bei ADIC taucht nämlich das problem mit main auf

@@ -132,8 +132,8 @@ Socket::Socket()
   globalInit();
 }
 
-
-int Socket::initCount=0;
+// this is no class member because of c++ static member initialization problems
+static int initCount=0;
 
 bool
 Socket::globalInit()

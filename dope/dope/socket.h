@@ -122,7 +122,6 @@ protected:
   InternetAddress iaddr;
   //! binary host address (ipv4)
   unsigned long int haddr;
-  static int initCount;
 };
 
 #endif
