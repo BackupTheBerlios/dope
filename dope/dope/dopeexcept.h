@@ -26,15 +26,39 @@
 #define DOPE_EXCEPT_H
 
 #include <stdexcept>
+#include <errno.h>
+#include <string.h>
 
 //! if for some reason a read fails completely - this exception is thrown
-class ReadError : public std::runtime_error
+struct ReadError : public std::runtime_error
 {
-public:
   ReadError(const std::string &e) : std::runtime_error(e)
   {
   }
 };
 
+//! resource not found
+struct ResourceNotFound : public std::runtime_error
+{
+  ResourceNotFound(const std::string &r,const std::string &error)
+    : std::runtime_error(std::string("Resource: \""+r+"\" not available: "+error))
+  {}
+};
+
+//! file not found
+struct FileNotFound : public ResourceNotFound
+{
+  FileNotFound(const std::string &fname) : ResourceNotFound(std::string("file:")+fname,strerror(errno))
+  {}
+};
+
+//! if converting a string to another type fails
+struct StringConversion : public std::runtime_error
+{
+  StringConversion(const std::string &s, const std::string &tname) 
+    : std::runtime_error(std::string("Can't convert \"")+s+"\" to "+tname)
+  {
+  }
+};
 
 #endif
