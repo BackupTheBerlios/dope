@@ -30,6 +30,7 @@
 #include <string>
 #include "dope.h"
 #include "dopeexcept.h"
+#include "timestamp.h"
 
 #define DOPE_CAST(NEWTYPE,VAR) ((NEWTYPE)VAR)
 
@@ -59,6 +60,8 @@ protected:
   
   X &x;
   typename X::Layer0 &layer0;
+  typedef typename X::Layer0::int_type int_type;
+  typedef typename X::Layer0::traits_type traits_type;
 
   // callback struct
   // could be made const static 
@@ -67,6 +70,8 @@ protected:
   xmlParserCtxtPtr ctxt;
   int currentDepth;
   bool stop;
+  TimeStamp timeOut;
+  int retries;
   
 #ifndef NDEBUG
   static bool xmlInited;
@@ -120,8 +125,9 @@ protected:
 #endif  
 
 public:
-  SAXWrapper(X &_x, typename X::Layer0 &_layer0) 
-    : x(_x), layer0(_layer0), ctxt(NULL), currentDepth(0), stop(false)
+  SAXWrapper(X &_x, typename X::Layer0 &_layer0, const TimeStamp &_timeOut=TimeStamp(0,0), int _retries=0) 
+    : x(_x), layer0(_layer0), ctxt(NULL), currentDepth(0), stop(false),
+      timeOut(_timeOut), retries(_retries)
   {
 #if 0
     // todo i now have a second stream which uses libxml 
@@ -300,13 +306,14 @@ protected:
       assert(ctxt->input->cur);
       assert(ctxt->input->end);
       assert(ctxt->input->end>=ctxt->input->cur);
-
+      assert(!stop);
       // put back all characters not consumed
       char *cptr=(char *)ctxt->input->end;
       --cptr;
+      //      std::cerr << "Put "<< (cptr-((char *)ctxt->input->cur)+1) << "characters back\n";
       while (cptr>=(char *)ctxt->input->cur)
 	{
-	  if (layer0.sputbackc(*cptr)==std::char_traits<char>::eof())
+	  if (layer0.sputbackc(*cptr)==traits_type::eof())
 	    {
 	      throwLater(Exception(std::string(__PRETTY_FUNCTION__)+"failed to put back character into stream - this means you have to wrap the underlying stream with a stream which is capable to putback any number of characters"));
 	      break;
@@ -318,14 +325,14 @@ protected:
 	// debug help
 	assert(ctxt->input->end>=ctxt->input->cur);
 	unsigned c=ctxt->input->end-ctxt->input->cur;
-	unsigned ts=20;
+	std::streamsize ts=20;
 	if (c<20) ts=c;
 	// compare the fist ts bytes - if they really have been put back
 	char *p=new char[ts+1];
 	char* p2=new char[ts+1];
 	memcpy(p,(char *)ctxt->input->end-c,ts);
 	p[ts]=0;
-	layer0.sgetn(p2,ts);
+	DOPE_CHECK(layer0.sgetn(p2,ts)==ts);
 	p2[ts]=0;
 	assert(!strcmp(p,p2));
 	while (ts--)
@@ -336,7 +343,6 @@ protected:
 	
 	stopParser();
       }
-      
     }
     x.endElement(DOPE_CAST(const char *,name));
   }
@@ -346,26 +352,28 @@ protected:
   {
     if (stop)
       return 0;
-    int r=layer0.sgetn(buffer,len);
-    // todo
-    // how to detect eof/errors ? - i think the streambuf should throw an exception but it doesn't
-    // if we read 0 bytes - we read one more and check for eof => we can detect eof
-    if (!r) {
-      typedef typename X::Layer0::int_type int_type;
-      typedef typename X::Layer0::traits_type traits_type;
-      int_type l0eof=traits_type::eof();
-      int_type got=layer0.sgetc();
-      if (got==l0eof)
-	{
-	  DOPE_WARN("eof");
-	}
-      else
-	{
-	  buffer[0]=traits_type::to_char_type(got);
-	  ++r;
-	}
+    std::streamsize r;
+    // why this ?
+    // the saxwrapper might work on a non-blocking socket/file 
+    // which reports no data available by eof through the
+    // std::streambuf interface - another solution would perhaps be to throw an exception
+    // but i was not sure if this would corrupt the streambuf state - and it would require
+    // to use exceptions for "normal" operation
+    int totry=retries;
+    while(true) {
+      r=layer0.sgetn(buffer,len);
+      if ((r>=0)||(totry<=0))
+	break;
+      timeOut.sleep();
+      --totry;
     }
-    std::cerr << "\n"<<r<<"\n";
+    DOPE_CHECK(r<=len);
+    /*
+    if (r) {
+      std::cerr << "Read "<<r<<"bytes:\n";
+      for (int i=0;i<r;++i) std::cerr << buffer[i];
+      std::cerr << "\n--\n" << layer0.in_avail() << "remain in buffer\n";
+      }*/
     return r;
   }
 
