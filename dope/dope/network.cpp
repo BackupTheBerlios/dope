@@ -212,9 +212,14 @@ bool NetStreamBufServer::init(){
 /** Block until input arrives on one or more active sockets.
    * create a new socket for a new connection
    */
-bool NetStreamBufServer::select(){
+bool NetStreamBufServer::select(const TimeStamp *timeout){
   fd_set read_fd_set = active_fd_set;
-  if (::select (FD_SETSIZE, &read_fd_set, NULL, NULL, NULL) < 0)
+  timeval ctimeout;
+  if (timeout) {
+    ctimeout.tv_sec=timeout->getSec();
+    ctimeout.tv_usec=timeout->getUSec();
+  }
+  if (::select (FD_SETSIZE, &read_fd_set, NULL, NULL, (timeout) ? (&ctimeout) : NULL) < 0)
     {
 #ifndef LIB_NET_NO_EXCEPTIONS
       throw std::logic_error(__PRETTY_FUNCTION__);

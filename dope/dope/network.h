@@ -62,6 +62,7 @@
 #include <stdexcept>
 
 #include "dopeexcept.h"
+#include "timestamp.h"
 
 // uncomment this one if you don't want to use exceptions
 //#define LIB_NET_NO_EXCEPTIONS
@@ -353,11 +354,16 @@ public:
   {}
 
   bool init();
-  /** Block until input arrives on one or more active sockets.
-   * create a new socket for a new connection
-   * On unrecoverable errors returns false / throws an exception
-   */
-  bool select();
+  //! test for input
+  /*!
+    \param timeout from man 2 select: upper bound on the amount of time elapsed
+    before select returns. It may be zero, causing  select  to
+    return  immediately.  If  timeout  is  NULL  (no timeout),
+    select can block indefinitely.
+
+    \return true on success false otherwise
+  */
+  bool select(const TimeStamp* timeout=NULL);
 
   NewConnectionSignal newConnection;
   DataAvailableSignal dataAvailable;
