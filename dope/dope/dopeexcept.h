@@ -61,4 +61,12 @@ struct StringConversion : public std::runtime_error
   }
 };
 
+struct SocketError : public std::runtime_error
+{
+  SocketError(const std::string &s) : std::runtime_error(s+": "+strerror(errno))
+  {
+  }
+};
+
+
 #endif

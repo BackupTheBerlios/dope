@@ -92,6 +92,12 @@ sockaddr *InternetAddress::get_socket_address(){
   return (sockaddr *)&sock_addr_in;
 }
 
+#ifndef LIB_NET_NO_EXCEPTIONS
+#define SOCKET_ERROR(msg) throw SocketError(msg)
+#else
+#define SOCKET_ERROR(msg) {DOPE_WARN(msg);return false;}
+#endif
+
 Socket::Socket(const InternetAddress &_internet_address, bool runInit) 
   : close_on_delete(true),socket_handle(-1),internet_address(_internet_address)
 {
@@ -118,10 +124,7 @@ bool Socket::init(){
   socket_handle = socket (PF_INET, SOCK_STREAM, 0);
   if (socket_handle < 0)
     {
-#ifndef LIB_NET_NO_EXCEPTIONS
-      throw "Socket::init: can't create socket";
-#endif
-      return false;
+      SOCKET_ERROR("Can't create socket");
     }
   if (!internet_address.get_accept_connections())
     return connect_socket();
@@ -145,8 +148,9 @@ bool Socket::reuse_socket(){
   int len=sizeof(reuser);
   if (setsockopt(socket_handle,SOL_SOCKET,SO_REUSEADDR,(void *)&reuser,len)<0) // (void *) cause of solaris
     {
+      // todo: perhaps this should not be "fatal"
 #ifndef LIB_NET_NO_EXCEPTIONS
-      throw "Socket::reuse_socket(): setsockopt SO_REUSEADDR failed";
+      throw SocketError("Socket::reuse_socket(): setsockopt SO_REUSEADDR failed");
 #endif
       return false;
     }
@@ -159,10 +163,7 @@ bool Socket::bind_socket(){
       if (close(socket_handle)<0)
 	DOPE_WARN("close failed");
       socket_handle=-1;
-#ifndef LIB_NET_NO_EXCEPTIONS
-      throw "Socket::bind_socket: can't bind socket";
-#endif
-      return false;
+      SOCKET_ERROR("Can't bind socket");
     }
   return true;
 }
@@ -172,10 +173,7 @@ bool Socket::listen_socket(){
       if (close(socket_handle)<0)
 	DOPE_WARN("close failed");
       socket_handle=-1;
-#ifndef LIB_NET_NO_EXCEPTIONS
-      throw "Socket::listen_socket: can't listen on socket";
-#endif
-      return false;
+      SOCKET_ERROR("can't listen on socket");
     }
   return true;
 }
@@ -189,11 +187,7 @@ bool Socket::connect_socket(){
       std::string ipstring;
       for (int i=0;i<4;++i)
 	ipstring+=anyToString(int(((char *)(&(sa->sin_addr)))[i]))+".";
-      std::cerr << "Can't connect to: "<<ipstring<<std::endl;
-#ifndef LIB_NET_NO_EXCEPTIONS
-      throw "Socket::connect_socket: can't connect";
-#endif
-      return false;
+      SOCKET_ERROR(std::string("Can't connect to ")+ipstring);
     }
   return true;
 }
@@ -258,11 +252,7 @@ bool NetStreamBufServer::select(const TimeStamp *timeout){
 		if ((errno!=EINTR)&&(errno!=EWOULDBLOCK)) 
 		  {
 		    // unrecoverable error
-#ifndef LIB_NET_NO_EXCEPTIONS
-		    throw "NetStreamBufServer::wait_for_any_traffic: can't accept connection";
-#endif
-		    DOPE_FATAL("accept");
-		    return false;
+		    SOCKET_ERROR("can't accept connection");
 		  }
 		// recoverable error but no new connection
 	      }
