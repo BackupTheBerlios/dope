@@ -1,3 +1,6 @@
+floats and doubles can be "nan" = not a number
+but stringToAny will fail in this case 
+
 habe das problem einigermassen geloesst
 ist aber pfusch - und man braucht ein rel. aktuelle libxml
 kann ich aber nen workaround machen
@@ -135,6 +138,7 @@ dann muﬂ xslt integriert werden
   but const_cast<int &>(a)=3; => no compiler error but runtime error
   i replaced the const_cast with static_cast => now compiler reports warnings
   => I will not forget it
+  (take a look at different -O levels and constness)
   the main problem is perhaps std::map
 
   my problem is I don't want to have the user to write the same method twice
