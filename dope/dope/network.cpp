@@ -79,7 +79,7 @@ bool HostAddress::set_from_name(const char *name){
       return false;
     }
   host_address=((struct in_addr *)(he_ptr->h_addr))->s_addr;
-  std::cout << "host address: "<<host_address<< std::endl;
+  //  std::cout << "host address: "<<host_address<< std::endl;
   return true;
 }
 in_addr HostAddress::get_host_address() const {
