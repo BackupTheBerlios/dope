@@ -1,22 +1,23 @@
-habe jetzt xsgetn implementiert
-das ist aber eiegtnlich dumm
+habe das problem einigermassen geloesst
+ist aber pfusch - und man braucht ein rel. aktuelle libxml
+kann ich aber nen workaround machen
+muss ich mir merken wenn ich eof reported habe
+leider denken die libxml menschen daß man das so nicht machen soll
+=> wird wohl nix mit libxml
+das beste ist wohl einen anderen xml parser zu benutzen oder eben
+einen kleinen sax parser zu schreiben
+oder eben doch das ganze wrappen (also bytes zaehlen) und dann
+pakete verschicken wo die groesse angegeben ist - was ich fuer
+ziemlich dumm halte
+naja
+auf jedenfall kann man beides machen
+und fuer adic werde ich eh nicht fuers protocol benutzen
+=> hat noch zeit
 
-besser ist ich muss den saxwarpper besser machen
-die idee muss sein versuche immer mindestens 1 byte zu lesen solange der enddtag noch nicht
-gefunden wurde
-also socket ist/kann non-block sein aber saxwrapper ist blocking bis zum endtag
-das problem dabei ist z.bsp eine xml datei die einfach keinen endtag hat
-oder eine vevrbindung die abbricht oder schmarrn schickt
-=> timeout einstellbar beim saxwrapper
-der saxwrapper hat (ohne exceptions) eben keine moeglichkeit zu unterscheiden zw. einem eof
-oder wenn grad noch keine daten auf dem socket verfuegbar sind
 
+das problem beim sax parser ist
+dass der grow aufgerufen wird obwohl noch bytes im puffer sind
 
-- implement xsgetn - this will solve the retry problem in the netstreambuf
-
-
-ich habe bei libxml versucht zu schauen wie ueberhaupt eof entdeckt wird
-anscheinend liesst er ja ein paar mal 0 bytes
 
 - the debug warn and check macros should all be one statement
 
