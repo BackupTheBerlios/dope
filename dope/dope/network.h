@@ -262,15 +262,11 @@ public:
       ctimeout.tv_sec=timeout->getSec();
       ctimeout.tv_usec=timeout->getUSec();
     }
-    int av=::select (fd+1, &read_fd_set, NULL, NULL, (timeout) ? (&ctimeout) : NULL);
-    if (av < 0)
-      {
-#ifndef LIB_NET_NO_EXCEPTIONS
-	throw std::logic_error(__PRETTY_FUNCTION__);
-#endif
-	DOPE_FATAL("select");
-	return false;
-      }
+    int av=0;
+    while ((av=::select (fd+1, &read_fd_set, NULL, NULL, (timeout) ? (&ctimeout) : NULL))<0) {
+      if (errno!=EINTR) 
+	DOPE_FATAL("select failed");
+    }
     return av>0;
   }
 

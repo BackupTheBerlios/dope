@@ -69,6 +69,8 @@ void TimeStamp::sleep() const
   timeval s;
   s.tv_sec=m_sec;
   s.tv_usec=m_usec;
-  select(0,0,0,0,&s); // todo may be interrupted by signals
+  // todo: on linux we could use the timeout paramter if select was interrupted by a signal
+  if ((select(0,0,0,0,&s)<0)&&(errno!=EINTR))
+    DOPE_FATAL("select failed");
 }
 

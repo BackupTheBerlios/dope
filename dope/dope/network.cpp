@@ -235,13 +235,10 @@ bool NetStreamBufServer::select(const TimeStamp *timeout){
     ctimeout.tv_sec=timeout->getSec();
     ctimeout.tv_usec=timeout->getUSec();
   }
-  if (::select (FD_SETSIZE, &read_fd_set, NULL, NULL, (timeout) ? (&ctimeout) : NULL) < 0)
+  while (::select (FD_SETSIZE, &read_fd_set, NULL, NULL, (timeout) ? (&ctimeout) : NULL) < 0)
     {
-#ifndef LIB_NET_NO_EXCEPTIONS
-      throw std::logic_error(__PRETTY_FUNCTION__);
-#endif
-      DOPE_FATAL("select");
-      return false;
+      if (errno!=EINTR)
+	DOPE_FATAL("select failed");
     }
   // which sockets have input pending ?
   for (int i = 0; i < FD_SETSIZE; ++i)
