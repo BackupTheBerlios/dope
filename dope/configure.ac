@@ -25,11 +25,12 @@ AC_CONFIG_AUX_DIR(config)
 AM_INIT_AUTOMAKE($PACKAGE, $VERSION)
 AM_CONFIG_HEADER(dope/dopeconfig.h)
 AC_PROG_MAKE_SET
+AC_PROG_LIBTOOL
 AC_PROG_CC
 AC_PROG_CPP
 AC_PROG_CXX
 AC_PROG_CXXCPP
-AM_PROG_LIBTOOL
+
 
 dnl build options
 AC_ARG_ENABLE(ilibdep, [  --enable-inter-libdep            enable inter-library dependencies [default=no]], , enable_interlibdep=no)
