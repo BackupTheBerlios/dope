@@ -1,3 +1,25 @@
+- implement xsgetn - this will solve the retry problem in the netstreambuf
+
+
+ich habe bei libxml versucht zu schauen wie ueberhaupt eof entdeckt wird
+anscheinend liesst er ja ein paar mal 0 bytes
+
+- the debug warn and check macros should all be one statement
+
+- read in non-blocking mode makes trouble with the xmlsaxinstream because the parser
+  does not handle it correctly
+  the problem is:
+  in non-blocking mode a read might return 0 bytes but the std c++ streams only have
+  the concept of eof => i do not a see possible solution yet because currently no data
+  is different from eof
+ 
+- what about the simple types - shouldn't they have fixed sizes (inttypes.h ?)
+  take a look at how XTL handles this - as I remember it didn't really ?
+- signed char != char != unsigned char 
+
+- replace c header includes with corresponding c++ header include 
+  (<unistd.h> -> <cunistd> ?)
+
 - TRANSLATE this file to English ;-)
 
 use boost concept checks
@@ -152,3 +174,4 @@ unfortunately it seems g++ (3.0.3) streambufs write also only 1 byte? - strace s
 that it will stay/is like this - i think it was only to stdout or something like that)
 
 i18n (localization)
+

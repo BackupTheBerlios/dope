@@ -26,7 +26,7 @@
 #define DOPE_MINIHTTP_H
 
 #include <iostream>
-#include <dope/uri.h>
+#include "uri.h"
 
 //! mini http stream - designed for xmlrpc
 /*! 
@@ -75,7 +75,8 @@ public:
 
   int_type underflow()
   {
-    return layer0.sgetc();
+    return layer0.sbumpc();
+    // was sgetc but according to a book sgetc does not modify the gptr()
   }
 
   int_type uflow()

@@ -1,5 +1,5 @@
 #include "timestamp.h"
-#include <sys/time.h>
+#include <sys/time.h> // timeval
 #include <unistd.h>
 
 

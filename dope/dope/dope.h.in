@@ -1,5 +1,32 @@
+/*
+ * Copyright (C) 2002 Jens Thiele <jens.thiele@student.uni-tuebingen.de>
+ * 
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+/*!
+   \file dope/dope.h.in
+   \brief 
+   \author Jens Thiele
+*/
+
 #ifndef DOPE_DOPE_H
 #define DOPE_DOPE_H
+
+#include <iostream>
+#include <exception>
 
 //! should we use inline
 #define DOPE_INLINE inline
@@ -57,12 +84,13 @@ extern int dope_major_version;
 /*
   \def DOPE_CHECK(expr)
   \brief DOPE_CHECK is like assert but takes also effect when NDEBUG is defined
-  \hideinitializer
+
   it seems there is no assert which is not disabled by a \#define NDEBUG 
+
+  \todo PRETTY_FUNCTION is gcc specific - what about FILE and LINE ?
 */
-#include <stdio.h>
 #ifndef NDEBUG
-#include <assert.h>
+#include <cassert>
 #define DOPE_CHECK(expr) assert(expr);
 #else
 # define DOPE_CHECK(expr)							      \
@@ -73,15 +101,14 @@ extern int dope_major_version;
 /*!
   \def DOPE_FATAL(msg)
   \brief fatal error - exit with a short message
-  \hideinitializer
 */
-#define DOPE_FATAL(msg) {std::cerr << "FATAL: " << __FILE__ << ":" << __LINE__ << ":" << __PRETTY_FUNCTION__ << msg << std::endl;exit(1);}
+#define DOPE_FATAL(msg) {std::cerr << "FATAL: " << __FILE__ << ":" << __LINE__ << ":" << __PRETTY_FUNCTION__ << ": " << msg << "(errno="<<errno<<":"<<strerror(errno)<<"\n";std::terminate();}
+
 /*! 
   \def WARN(msg)
   \brief print a warning message
-  \hideinitializer
 */
-#define DOPE_WARN(msg) {std::cerr << "WARN: " << __FILE__ << ":" << __LINE__ << msg;}
+#define DOPE_WARN(msg) {std::cerr << "WARNING: " << __FILE__ << ":" << __LINE__ << ":" << __PRETTY_FUNCTION__ << ": " << msg << "(errno="<<errno<<":"<<strerror(errno)<<"\n";}
 
 #endif // DOPE_DOPE_H
 

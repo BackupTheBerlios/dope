@@ -26,8 +26,8 @@
 #define DOPE_EXCEPT_H
 
 #include <stdexcept>
-#include <errno.h>
-#include <string.h>
+#include <cerrno>
+#include <cstring>
 
 //! if for some reason a read fails completely - this exception is thrown
 struct ReadError : public std::runtime_error

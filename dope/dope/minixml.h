@@ -93,6 +93,7 @@ DOPE_INLINE XMLOutStream &simple(type data, MemberName mname) \
 
   DOPE_SIMPLE(bool);
   DOPE_SIMPLE(char);
+  DOPE_SIMPLE(signed char);
   DOPE_SIMPLE(unsigned char);
   DOPE_SIMPLE(short);
   DOPE_SIMPLE(unsigned short);
@@ -265,7 +266,9 @@ protected:
       unIndent();
       o << column;
     }
-    o << "</" << tname << ">\n";
+    o << "</" << tname << ">";
+    if (format)
+      o << "\n";
     encodeAttributes=encodeStack.top();
     encodeStack.pop();
   }

@@ -25,7 +25,7 @@
 #ifndef DOPE_URI_H
 #define DOPE_URI_H
 
-#include <dope/network.h>
+#include "network.h"
 
 //!* uri class - not really general - focused on http scheme/ "generic URI"
 /*! 

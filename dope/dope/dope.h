@@ -85,10 +85,12 @@ extern int dope_major_version;
   \brief DOPE_CHECK is like assert but takes also effect when NDEBUG is defined
 
   it seems there is no assert which is not disabled by a \#define NDEBUG 
+
+  \todo PRETTY_FUNCTION is gcc specific - what about FILE and LINE ?
 */
-#include <stdio.h>
+#include <cstdio>
 #ifndef NDEBUG
-#include <assert.h>
+#include <cassert>
 #define DOPE_CHECK(expr) assert(expr);
 #else
 # define DOPE_CHECK(expr)							      \
@@ -100,12 +102,12 @@ extern int dope_major_version;
   \def DOPE_FATAL(msg)
   \brief fatal error - exit with a short message
 */
-#define DOPE_FATAL(msg) {std::cerr << "FATAL: " << __FILE__ << ":" << __LINE__ << ":" << __PRETTY_FUNCTION__ << ": " << msg << std::endl;exit(1);}
+#define DOPE_FATAL(msg) {std::cerr << "FATAL: " << __FILE__ << ":" << __LINE__ << ":" << __PRETTY_FUNCTION__ << ": " << msg << "(errno="<<errno<<":"<<strerror(errno)<<"\n";terminate();}
 /*! 
   \def DOPE_WARN(msg)
   \brief print a warning message
 */
-#define DOPE_WARN(msg) {std::cerr << "WARN: " << __FILE__ << ":" << __LINE__ << ":" << __PRETTY_FUNCTION__ << ": " << msg << std::endl;}
+#define DOPE_WARN(msg) {std::cerr << "WARNING: " << __FILE__ << ":" << __LINE__ << ":" << __PRETTY_FUNCTION__ << ": " << msg << "(errno="<<errno<<":"<<strerror(errno)<<"\n";}
 
 #endif // DOPE_DOPE_H
 

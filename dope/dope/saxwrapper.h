@@ -26,7 +26,8 @@
 #define DOPE_SAXWRAPPER_H
 
 #include <libxml/parser.h>
-#include <string.h>
+#include <cstring>
+#include <string>
 #include "dope.h"
 #include "dopeexcept.h"
 
@@ -349,6 +350,22 @@ protected:
     // todo
     // how to detect eof/errors ? - i think the streambuf should throw an exception but it doesn't
     // if we read 0 bytes - we read one more and check for eof => we can detect eof
+    if (!r) {
+      typedef typename X::Layer0::int_type int_type;
+      typedef typename X::Layer0::traits_type traits_type;
+      int_type l0eof=traits_type::eof();
+      int_type got=layer0.sgetc();
+      if (got==l0eof)
+	{
+	  DOPE_WARN("eof");
+	}
+      else
+	{
+	  buffer[0]=traits_type::to_char_type(got);
+	  ++r;
+	}
+    }
+    std::cerr << "\n"<<r<<"\n";
     return r;
   }
 
