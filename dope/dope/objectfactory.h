@@ -27,6 +27,7 @@
 
 #include "dope.h"
 #include <sigc++/signal_system.h>
+#include <boost/smart_ptr.hpp>
 
 #define TYPE_NAME(x) TypeNameTrait<x>::name()
 

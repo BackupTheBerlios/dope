@@ -31,6 +31,8 @@
 // for xmlString
 #include "xml.h"
 #include "streamtraits.h"
+#include <boost/type_traits.hpp> // boost::remove_const
+#include <boost/smart_ptr.hpp>
 
 #define TYPE_NAME(TYPE) TypeNameTrait<typename boost::remove_const<TYPE>::type >::name()
 

@@ -26,7 +26,7 @@
 #define DOPE_DOPE_H
 
 #include <iostream>
-#include <exception>
+#include <exception> // for std::terminate
 
 //! should we use inline
 #define DOPE_INLINE inline
@@ -49,24 +49,16 @@
   #define NDEBUG
 */
 
-#if @DOPE_USE_BOOST@
-
-// boost::remove_const
-#include <boost/type_traits.hpp>
-
 //! smart pointer type to use - reference implementation is boost::shared_ptr
 /*!
   this is a define because it is a template type
   => you can't use a typedef - or is there somethin like this:
   template <typename X>
   typedef foo<X> bar<X>;
+  dope should use a namespace and then import shared_ptr into its namespace
 */
-#include <boost/smart_ptr.hpp>
 #define DOPE_SMARTPTR boost::shared_ptr
 
-#else
-#error "you do not want to use boost => you have to replace boost::remove_const and boost::shared_ptr"
-#endif // @DOPE_USE_BOOST@
 
 typedef const char * MemberName;
 

@@ -29,9 +29,10 @@
 #include <stack>
 
 #include "streamtraits.h"
-#include "utils.h"
+#include "utils.h" // anyToString
 #include "typenames.h"
-#include "xml.h"
+#include "xml.h" // class XML
+#include <boost/type_traits.hpp> // boost::remove_const
 
 #define TYPE_NAME(TYPE) TypeNameTrait<typename boost::remove_const<TYPE>::type >::name()
 

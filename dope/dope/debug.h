@@ -25,10 +25,13 @@
 #ifndef DOPE_DEBUG_H
 #define DOPE_DEBUG_H
 
+#include <iterator>
+#include <boost/type_traits.hpp> // boost::remove_reference
+
 #include "streamtraits.h"
 #include "utils.h"
 #include "typenames.h"
-#include <iterator>
+
 
 #define TYPE_NAME(type) TypeNameTrait<type>::name()
 

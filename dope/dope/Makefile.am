@@ -1,4 +1,4 @@
-INCLUDES = @DOPE_CFLAGS@
+INCLUDES = @DOPE_CFLAGS@ -I$(top_srcdir)
 
 noinstheaders = 
 

@@ -30,6 +30,8 @@
 #include <libxml/xmlerror.h>
 #include <cstring>
 #include <string>
+#include <boost/smart_ptr.hpp>
+
 #include "dope.h"
 #include "dopeexcept.h"
 #include "timestamp.h"

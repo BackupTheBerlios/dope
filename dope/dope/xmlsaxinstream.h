@@ -28,6 +28,7 @@
 #include <iterator>
 #include <stdexcept>
 #include <stack>
+#include <boost/smart_ptr.hpp>
 
 #include "streamtraits.h"
 #include "utils.h"

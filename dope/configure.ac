@@ -84,10 +84,12 @@ AM_PATH_XML2(2.4.0, , [AC_MSG_ERROR([libxml required])])
 AM_PATH_SIGC(1.0.0, , [AC_MSG_ERROR([libsigc++ required])])
 
 dnl checks for c++ header files
-AC_LANG([C++])
-DOPE_USE_BOOST=0
-AC_CHECK_HEADER(boost/smart_ptr.hpp, DOPE_USE_BOOST=1 , [AC_MSG_ERROR([boost::shared_ptr required - either install boost or write a replacement])])
-AC_SUBST(DOPE_USE_BOOST)
+dnl AC_LANG([C++])
+
+dnl the needed parts of boost are now included in dope
+dnl DOPE_USE_BOOST=0
+dnl AC_CHECK_HEADER(boost/smart_ptr.hpp, DOPE_USE_BOOST=1 , [AC_MSG_ERROR([boost::shared_ptr required - either install boost or write a replacement])])
+dnl AC_SUBST(DOPE_USE_BOOST)
 
 dnl checks for library functions
 AC_LANG([C])
@@ -135,6 +137,6 @@ AC_SUBST(DOPE_LTLIBS)
 AC_SUBST(TEST_LDADD)
 
 dnl output files
-AC_CONFIG_FILES([Makefile doc/Makefile doc/Doxyfile config/Makefile config/m4/Makefile scripts/Makefile scripts/dope-config dope/Makefile dope/dope.h tests/Makefile])
+AC_CONFIG_FILES([Makefile doc/Makefile doc/Doxyfile config/Makefile config/m4/Makefile boost/Makefile boost/type_traits/Makefile scripts/Makefile scripts/dope-config dope/Makefile dope/dope.h tests/Makefile])
 AC_OUTPUT
 
