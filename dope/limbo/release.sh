@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #configuration
-BUILDDIR=/tmp
+BUILDDIR=/tmp/dope
 PREFIX=/tmp/usr
 export CXX=g++-3.2
 export CXXFLAGS="-Wall -ansi -pedantic -Wno-long-long -Os -DNDEBUG"
@@ -12,6 +12,12 @@ DOPE_CROSS_CONFIGURE_OPTIONS="--with-sigc-prefix=/home/jens/develop/cross --with
 
 set -e
 
+if test -e $BUILDDIR; then
+    echo Warning $BUILDDIR directory already exists
+    read
+else
+    mkdir -p $BUILDDIR
+fi
 cd $BUILDDIR
 
 #check that $PACKAGE directory does not already exist
