@@ -20,6 +20,7 @@
    \file xmlsaxinstream.h
    \brief layer2 xml input stream using the sax interface
    \author Jens Thiele
+   \note this needs a complete rewrite !!!
 */
 
 #ifndef DOPE_XMLINSTREAM_H
@@ -198,7 +199,13 @@ protected:
     typename C::value_type x;
 
   public:
-    ContainerElem(typename S &_s, typename C &_c) : ContainerElemBase(_s), c(_c)
+    /*
+      \note this produces a warning about implicit typenames - but unfortunately the fix proposed
+      by William Robinson (just adding typename => explicit typename does not work with g++ 3.2
+      => we keep the warning until this stream is rewritten completely anyway
+     */
+    ContainerElem(S& _s, C& _c) 
+      : ContainerElemBase(_s), c(_c)
     {
     }
     virtual ~ContainerElem()
