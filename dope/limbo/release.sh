@@ -13,7 +13,7 @@ DOPE_CROSS_CONFIGURE_OPTIONS="--with-sigc-prefix=/home/jens/develop/cross --with
 set -e
 
 if test -e $BUILDDIR; then
-    echo Warning `pwd`/$BUILDDIR directory already exists
+    echo Warning $BUILDDIR directory already exists
     read
 else
     mkdir -p $BUILDDIR
