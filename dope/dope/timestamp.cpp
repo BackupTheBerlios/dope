@@ -1,4 +1,10 @@
 #include "timestamp.h"
+
+#ifdef HAVE_CONFIG_H
+#include <dopeconfig.h>
+#endif
+
+
 #include <sys/time.h> // timeval
 #include <unistd.h>
 
