@@ -32,7 +32,7 @@ AC_PROG_CXXCPP
 AM_PROG_LIBTOOL
 
 dnl build options
-AC_ARG_ENABLE(ilibdep, [  --enable-inter-libdep            enable inter-library dependencies [default=yes]], , enable_interlibdep=no)
+AC_ARG_ENABLE(ilibdep, [  --enable-inter-libdep            enable inter-library dependencies [default=no]], , enable_interlibdep=no)
 
 dnl checks for libraries
 AM_PATH_XML2(2.4.0, , [AC_MSG_ERROR([libxml required])])
