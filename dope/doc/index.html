@@ -11,12 +11,19 @@
 DOPE (=Distributed Object Programing Environment for C++) is a C++ Template library for pickling / programing in heterogenous network environments.
 
 <h2>General Introduction</h2>
-Programing in heterogenous network environments in C++ always raises the problem of serialization/deseriallization (reading/writeing objects - other terms: marshalling, pickling - unfortunately I did not find any definitions of those terms - any hints?). FIXME - this intro is nearly the same as the one from <a href="http://xtl.sourceforge.net/">XTL</a> perhaps just refer to it. (Importance: many different protocols/hardware/software(programing languages))
-
+This library is similar to <a href="http://xtl.sourceforge.net/">XTL</a>. Perhaps you want to read about <a href="http://xtl.sourceforge.net/">XTL</a> first. Differences between <a href="http://xtl.sourceforge.net/">XTL</a> and DOPE++:
+<UL>
+<LI>DOPE++ does not try to be portable to non-standard C++ compilers - at least I will not add any ugly code for some specific compiler (main development uses <a href="http://gcc.gnu.org/">GCC</a> >=3)</LI>
+<LI>DOPE++ uses additional information about class names and member names</LI>
+<LI>DOPE++ uses std::streambuf as underlying byte stream</LI>
+<LI>Additional I/O formats: <a href="http://www.w3.org/TR/REC-xml">XML</a>, raw (platform dependant), command line parser</LI>
+<LI>I think <a href="http://xtl.sourceforge.net/">XTL</a> weights performance higher than DOPE++. DOPE++ is intended to be a bridge between the fast world of C++ and the slow interpreter world. (I intend to also write some "streams" which allow to pass data directly to interpreters (JAVA,Scheme, Python). And of course <a href="http://www.w3.org/TR/REC-xml">XML</a> based protocols like <a href="http://www.xmlrpc.com/">XML-RPC</a> and <a href="http://www.w3.org/2000/xp/Group/">SOAP</a> are slow by concept</LI>
+</UL>
+I do NOT claim that DOPE++ is better than <a href="http://xtl.sourceforge.net/">XTL</a>. In any case <a href="http://xtl.sourceforge.net/">XTL</a> is stable and DOPE++ is not. Of course I hope it will get better than <a href="http://xtl.sourceforge.net/">XTL</a> ;-). But perhaps there is no reason to switch to DOPE++ if you want portability now and don't need the class and member names.
 <a name="requirements"><h2>Dependencies/Requirements</h2></a>
 <h3>Build dependencies if you got the tar-ball</h3>
 <UL>
-<LI>recent C++ compiler and std C++ library (f.e. g++ >=3)</LI>
+<LI>recent C++ compiler and std C++ library (f.e. <a href="http://gcc.gnu.org/">GCC</a> >=3)</LI>
 <LI><a href="http://libsigc.sourceforge.net/">libsigc++</a></LI>
 <LI><a href="http://www.libxml.org">libxml-dev a.k.a. gnome-xml</a></LI>
 <LI><a href="http://www.boost.org">boost</a></LI>
@@ -24,10 +31,10 @@ Programing in heterogenous network environments in C++ always raises the problem
 </UL>
 <h3>if you checked out from CVS</h3>
 <UL>
-<LI>autoconf >= 2.5</LI>
-<LI>automake (I use 2.6.1)</LI>
-<LI>libtool (I use 1.4.2)</LI>
-<LI>doxygen to build the API docs</LI>
+<LI><a href="http://www.gnu.org/software/autoconf/autoconf.html">autoconf</a> >= 2.5</LI>
+<LI><a href="http://www.gnu.org/software/automake/">automake</a> (I use 2.6.1)</LI>
+<LI><a href="http://www.gnu.org/software/libtool/libtool.html">libtool</a> (I use 1.4.2)</LI>
+<LI><a href="http://www.doxygen.org">doxygen</a> to build the <a href="http://dope.berlios.de/doxygen/html/index.html">API docs</a></LI>
 </UL>
 <h2>License/Copyright</h2>
 <a href="COPYING">GPL</a> Copyright (C) 2002 Jens Thiele &lt;jens.thiele@student.uni-tuebingen.de&gt;
@@ -47,13 +54,11 @@ Programing in heterogenous network environments in C++ always raises the problem
 <TD>1</TD><TD>Strongly typed data stream (only builtin types)</TD><TD>layer0 mapper, raw stream</TD>
 </TR><TR>
 <TD>2</TD><TD>Strongly typed structured data stream (any number of types) with complete typeinfo available
-</TD><TD>layer1 mapper, xml/scheme, debug</TD>
+</TD><TD>layer1 mapper, <a href="http://www.w3.org/TR/REC-xml">XML</a>, debug</TD>
 </TR>
 </TABLE>
 BTW the naming convention stream is a bit restricted
-- you can do much more and use it as an class (forward) iterator (meta-classes)
-
-
+- you can do much more and use it as an class (forward) iterator (meta-classes), or for example as a command line parser
 <h2>Implementation and Design</h2>
 <h3>Review of concepts</h3>
 <h4>Concepts i tried</h4>
@@ -143,7 +148,7 @@ you can think of it as a rewrite of <a href="http://xtl.sourceforge.net/">XTL</a
     <address><a href="mailto:jens.thiele@student.uni-tuebinhen.de">Jens Thiele</a></address>
 <!-- Created: Mon Aug  6 15:12:02 CEST 2001 -->
 <!-- hhmts start -->
-Last modified: Sun Jul  7 11:55:00 CEST 2002
+Last modified: Sun Jul  7 12:56:33 CEST 2002
 <!-- hhmts end -->
   <p>
     <a href="http://validator.w3.org/check/referer"><img border="0"
