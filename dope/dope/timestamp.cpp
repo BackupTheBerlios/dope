@@ -34,6 +34,7 @@ TimeStamp::TimeStamp(int sec, int usec)
 
 TimeStamp::TimeStamp(float sec)
 {
+  // todo - either remove the float cons completely or do it right - man llrintf
   m_stamp=(sec*1000000);
   init();
 }
