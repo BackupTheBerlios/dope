@@ -6,8 +6,8 @@ AC_CONFIG_SRCDIR([dope/dope.cpp])
 dnl
 dnl Source packaging numbers
 DOPE_MAJOR_VERSION=0
-DOPE_MINOR_VERSION=0
-DOPE_MICRO_VERSION=9
+DOPE_MINOR_VERSION=1
+DOPE_MICRO_VERSION=0
 DOPE_VERSION=$DOPE_MAJOR_VERSION.$DOPE_MINOR_VERSION.$DOPE_MICRO_VERSION
 AC_DEFINE_UNQUOTED(DOPE_MAJOR_VERSION, $DOPE_MAJOR_VERSION, [major version])
 AC_DEFINE_UNQUOTED(DOPE_MINOR_VERSION, $DOPE_MINOR_VERSION, [minor version])
@@ -25,9 +25,10 @@ AC_CONFIG_AUX_DIR(config)
 AM_INIT_AUTOMAKE($PACKAGE, $VERSION)
 dnl the configuration file - this is architecture dependant - does not get installed
 dnl and must not be included from files getting installed
-dnl if it should be installed at some time then it should be installed in /usr/lib
-dnl and not in /usr/include (why? the fhs does not say this - hmm I always thought
-dnl /usr/include should only contain architecture independent ..)
+dnl the architecture dependant header is <dope/arch.h> (generated from arch.h.in)
+dnl and gets installed in /usr/lib and not in /usr/include 
+dnl (why? the fhs does not say this - hmm I always thought
+dnl /usr/include should only contain architecture independent headers)
 AM_CONFIG_HEADER(dope/dopeconfig.h)
 AC_PROG_MAKE_SET
 AC_PROG_LIBTOOL
