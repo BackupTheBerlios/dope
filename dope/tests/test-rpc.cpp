@@ -169,7 +169,7 @@ int main(int argc,char *argv[])
       std::cerr << error << std::endl;
     }
     std::cerr << "can't create server => create client"<< std::endl;
-    InternetAddress adr(HostAddress("quark"),10000);
+    InternetAddress adr(HostAddress("localhost"),10000);
     NetStreamBuf layer0(adr);
     OutProto l2(layer0);
     SignalOutAdapter<OutProto> s(l2);
