@@ -87,3 +87,9 @@ if test -e $SETUPCROSS; then
 else
     echo cross compiler config script not found
 fi
+
+#copy to upload dir if set
+if test ! -z "$UPLOADDIR"; then
+    mkdir -p $UPLOADDIR
+    cp $BUILDDIR/$PACKAGE/$DISTFILE $UPLOADDIR
+fi
