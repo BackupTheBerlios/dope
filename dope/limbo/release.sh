@@ -4,7 +4,7 @@
 BUILDDIR=/tmp/dope
 PREFIX=/tmp/usr
 export CXX=g++-3.2
-export CXXFLAGS="-Wall -ansi -pedantic -Wno-long-long -Os -DNDEBUG"
+export CXXFLAGS="-Wall -ansi -pedantic -Wno-long-long -Os"
 PACKAGE=dope
 SETUPCROSS=~/develop/cross/config
 DOPE_CROSS_CONFIGURE_OPTIONS="--with-sigc-prefix=/home/jens/develop/cross --with-xml-prefix=/home/jens/develop/cross --prefix=/home/jens/develop/cross --disable-shared"
