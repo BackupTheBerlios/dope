@@ -42,7 +42,7 @@
 /*! this one is a bit tricky
   since we use sax reading is done via callbacks
   => we are called and should set a specific class member
-  but we can't access members directly but we can forward iterate over the class members
+  but we can't access members directly we only can forward iterate over the class members
   => we iterate until we get a match - if it is a compound we push a mark on a stack
   now we return from our callback
   => we get called again with the members of the compound
@@ -50,13 +50,59 @@
   
   special cases: containers
 
-
   perhaps look at the problem from the other side
   we write with the help of sax into a class
   perhaps this would be a good idea for the whole library
   there is no read/write only a transform
   perhaps take a look again what i did earlier (xmlclassrw?) with extended runtime type info
+  but this raises following problem:
 
+  \bug because we call the composite function more than once a method to read like the one below
+  will fail and if the Mesh class in the example has a container it will even segfault:
+
+  template <typename Layer2>
+  void Foo::composite(Layer2 &layer2, True)
+  {
+    Mesh m;
+    layer2.simple(m,NULL);
+    setFromMesh(m);
+  }
+
+  => if you write your composite function you must ensure that it is statefull - it can be called more
+  than once setting only one/some members - i will call this "reentrant"
+  unfortunately you don't know when reading is finished => impossible to workaround
+  => you would have to use class members - and the one above would call setFromMesh more than
+  once and would call it with a incomplete mesh
+
+  The problem in short:
+  - what is a composite function allowed to do ?
+  - how much information can it request from the stream ?
+  - may a composite function be called more than once in the way this 
+    stream does it ? (should it be "reentrant" ?)
+    (there will be other "streams"/usages with the same problem: the data arrives in a different
+   order than we need it (in our case only the xml attributes => i could rewrite it without the need
+   for "reentrant" composite functions?)
+
+  This leads to those 2 opposite goals:
+  - the more ::composite functions should be allowed to do the less a stream can do
+  - the more a stream should do the less ::composite functions are allowed to do
+
+  \todo 
+  perhaps needs a complete rewrite - the requirement stated above make this stream useless.
+  Ideas for a complete rewrite:
+  xml tags do have a order (the same order as our members)
+  xml attributes do not have a order but usually you do not have many attributes per tag
+
+  Reading xml with sax could work like this:
+  1) user calls stream.simple(x,n);
+  2) if it is a composite stream tells the sax parser to get the next tag
+  3) stream compares tag with composite or looks for xml attribute which matches the simple type
+     if correct/found stream calls ::composite or sets the simple value otherwise step 2)
+     or throw exception (we should be tolerant - because the xml "DTD" might have been extended)
+  4) stream calls ::composite
+  5) composite does something and then calls stream.simple(member,membername) which is step 1)
+
+  Conclusion: this could work ? but I think i tried this already once and it didn't work ?
 */
 template <typename L>
 class XMLSAXInStream
@@ -277,8 +323,10 @@ public:
   template <typename X>
   XMLSAXInStream &simpleHelper(X &data, MemberName mname)
   {
+    // the searched member was found simple unwind the stack
     if (alreadyMatched())
       return *this;
+    // start parser if not yet running
     if (init(data,mname))
       return *this;
     if (currentDepth<selectedMemberStack.size())
@@ -619,17 +667,12 @@ protected:
   }
   
   /*
-  template <typename C>
-  DOPE_INLINE XMLSAXInStream& containerHelper(C &data, InStreamTag)
-  {
-    return readContainer(data.begin(),data.end());
-    }*/
-
-  template <typename I>
-  XMLSAXInStream& readContainer(I begin, I end)
-  {
+    template <typename I>
+    XMLSAXInStream& readContainer(I begin, I end)
+    {
     return *this;
-  }
+    }
+  */
 
   //! start parser if not yet running
   template <typename X>
