@@ -1,7 +1,7 @@
 dnl process this file with autoconf to produce a configure script
 AC_PREREQ(2.53)
 AC_INIT
-AC_CONFIG_SRCDIR([dope/dope.h])
+AC_CONFIG_SRCDIR([dope/dope.cpp])
 
 dnl
 dnl Source packaging numbers
