@@ -1,0 +1,18 @@
+DOPE RELEASE PROCESS
+This is still too much work:
+
+ 0. edit source code (compile and test)
+
+ 1. commit changes to cvs (commit messages should reflect changes)
+ 2. update doc/index.html (ChangeLog - this should be automated from cvs - perhaps use cvs2cl)
+
+ 3. build
+	- source package (make distcheck)
+	- compile linux binary static library
+	- cross-compile win32 binary static library
+ 4. test (if test fails goto 0)
+
+ 5. cvs tag
+ 6. upload packages to berlios
+	- changelog again !
+ 7. upload source code documentation
