@@ -1,3 +1,8 @@
+wollte das mit den exceptions richtig machen
+
+der debug out stream hat was komisches ausgegeben
+anstelle von X in a string
+
 habe nochmal das mit dem operator| probiert
 in experiments/pipe.cpp
 aber toll ist das wirklich nicht
@@ -158,3 +163,5 @@ performance problems with c++ streams
 my own streams do not implement sputn sgetn => read write with one byte - i will change this
 unfortunately it seems g++ (3.0.3) streambufs write also only 1 byte - strace shows this (can't believe
 that it will stay like this)
+
+i18n (localization)
