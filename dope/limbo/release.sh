@@ -13,7 +13,7 @@ DOPE_CROSS_CONFIGURE_OPTIONS="--with-sigc-prefix=/home/jens/develop/cross --with
 set -e
 
 if test -e $BUILDDIR; then
-    echo Warning $BUILDDIR directory already exists
+    echo Warning `pwd`/$BUILDDIR directory already exists
     read
 else
     mkdir -p $BUILDDIR
@@ -22,7 +22,7 @@ cd $BUILDDIR
 
 #check that $PACKAGE directory does not already exist
 if test -e $PACKAGE; then
-    echo Warning $PACKAGE directory already exists - assuming we already have a distribution tarball in there
+    echo Warning `pwd`/$PACKAGE directory already exists - assuming we already have a distribution tarball in there
     read
 else
     #get source
@@ -46,7 +46,7 @@ fi
 
 cd $BUILDDIR
 if test -e $DIR; then
-    echo Warning $DIR directory already exists - assuming we already unpacked distribution
+    echo Warning `pwd`/$DIR directory already exists - assuming we already unpacked distribution
     read
 else
     tar xzvf $PACKAGE/$DISTFILE
@@ -60,7 +60,7 @@ cd build
 mkdir -p arch-native
 cd arch-native
 if test -e $DIR; then
-	echo Warning $DIR directory already exists - assuming we already build and installed
+	echo Warning `pwd`/$DIR directory already exists - assuming we already build and installed
 	read
 else
     mkdir $DIR
@@ -76,7 +76,7 @@ if test -e $SETUPCROSS; then
     mkdir -p arch-cross
     cd arch-cross
     if test -e $DIR; then
-	echo Warning $DIR directory already exists - assuming we already build and installed
+	echo Warning `pwd`/$DIR directory already exists - assuming we already build and installed
 	read
     else
 	mkdir $DIR
