@@ -300,6 +300,9 @@ protected:
   unsigned currentDepth;
   bool qualifierMatched;
   int endElementsNeeded;
+  TimeStamp timeOut;
+  int retries;
+
   PseudoStack selectedMemberStack;
   Qualifier qualifier;
   DOPE_SMARTPTR<ReadError> errorPtr;
@@ -308,9 +311,9 @@ protected:
 
   
 public:
-  XMLSAXInStream(Layer0 &_layer0) 
+  XMLSAXInStream(Layer0 &_layer0, const TimeStamp &_timeOut=TimeStamp(0,0), int _retries=0) 
     : layer0(_layer0), saxWrapperPtr(NULL), readerPtr(NULL), memberNo(0), currentDepth(0),
-      qualifierMatched(false),endElementsNeeded(0)
+      qualifierMatched(false),endElementsNeeded(0), timeOut(_timeOut), retries(_retries)
   {
   }
 
@@ -691,7 +694,7 @@ protected:
 
   inline void startParser()
   {
-    saxWrapperPtr=new SAXWrapperT(*this,layer0);
+    saxWrapperPtr=new SAXWrapperT(*this,layer0,timeOut,retries);
     int res=saxWrapperPtr->parse();
     // parsing finished
     delete saxWrapperPtr;
