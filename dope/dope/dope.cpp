@@ -23,7 +23,7 @@ dope_backtrace()
   std::cerr << "Obtained "<<size<<" stack frames.\n";
   
   for (i = 0; i < size; i++)
-    std::cout << strings[i] << std::endl;
+    std::cerr << strings[i] << std::endl;
   
   free (strings);
 }
