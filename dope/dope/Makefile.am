@@ -19,7 +19,8 @@ libdopeinclude_HEADERS = \
 	dopestl.h saxwrapper.h xslstream.h \
 	dopesignal.h \
 	typenames.h streamtraits.h \
-	dope.h
+	dope.h \
+	argvparser.h
 
 lib_LTLIBRARIES = libdope.la
 libdope_la_SOURCES = $(libdopeinclude_HEADERS) $(noinstheaders) \

@@ -8,7 +8,8 @@
   or look at test-xmlrpc for xmlrpc a conform sample
   
   why ?  why use http ?
-  why require to count the bytes before sending them ?
+  why require to count the bytes before sending them ? (this means you either have to serialize
+  twice or have to store the data before sending it - which can be a lot of data)
 */
 
 #include "test-common.h"

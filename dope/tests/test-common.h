@@ -5,15 +5,18 @@
 
 // use stl types
 #include <dope/dopestl.h>
-// DOPE_DEF_SIMPLETYPE macro
+// DOPE_CLASS macro
 #include <dope/typenames.h>
 // anyToString
 #include <dope/utils.h>
 
+//! macro to prevent typing the membername twice
 #define SIMPLE(d) simple(d,#d)
 
-class foo;
-DOPE_DEF_SIMPLETYPE(foo)
+//! sample class to pickle
+/*!
+  this class should test all features
+*/
 class foo
 {
 private:
@@ -26,6 +29,7 @@ public:
   }
   
 #define VECSIZE 100
+  //! set some values
   void setSome()
   {
     i=7;
@@ -60,6 +64,7 @@ public:
   }
 #undef VECSIZE
 
+  //! destroy member values (set other values)
   void litter()
   {
     i=-1;
@@ -88,29 +93,45 @@ public:
       delete [] dynCVec2;
   }
 
+  //! this method lists all memberes that should be pickled
   template <typename Layer2>
   inline void composite(Layer2 &layer2)
   {
-    layer2.SIMPLE(i).SIMPLE(b).SIMPLE(c).dynCVector(dynCVec1,dynCVec1Size,"dynCVec1")
-      .dynCVector(dynCVec2,dynCVec2Size,"dynCVec2").fixedCVector(fixedCVector,2,"fixedCVector")
+    layer2.SIMPLE(i).SIMPLE(b).SIMPLE(c)
+      .dynCVector(dynCVec1,dynCVec1Size,"dynCVec1")
+      .dynCVector(dynCVec2,dynCVec2Size,"dynCVec2")
+      .fixedCVector(fixedCVector,2,"fixedCVector")
       .SIMPLE(cppstr).SIMPLE(il).SIMPLE(p).SIMPLE(cppcv).SIMPLE(m);
   }
 
+  // some basic types
   int i;
   bool b;
   char c;
+
+  // dynamic c vectors - created with new[] and destroyed with delete[]
   size_t dynCVec1Size;
   int* dynCVec1;
   size_t dynCVec2Size;
   std::pair<std::string, int>* dynCVec2;
+
+  //! fixed sized c vector
   int fixedCVector[2];
+
+  // STL classes and containers
   std::string cppstr;
   std::list<std::vector<int> > il;
   std::pair<char,bool> p;
   std::vector<char> cppcv;
   std::map<std::string,int> m;
 };
+//! register this type / its name
+DOPE_CLASS(foo);
 
+//! the pickle method in the global scope
+/*! 
+  in this case we simply call our member function
+*/
 template <typename Layer2>
 inline void composite(Layer2 &layer2, foo &f)
 {
@@ -118,6 +139,8 @@ inline void composite(Layer2 &layer2, foo &f)
 }
 
 /*
+this was a hack for const output streams
+
 template <typename Layer2>
 inline void composite(Layer2 &layer2, const foo &f)
 {
@@ -140,6 +163,11 @@ class Test
 public:
   int main(int argc,char **argv)
   {
+    if ((argc==2)&&((std::string(argv[1])=="-h")||(std::string(argv[1])=="--help")))
+      {
+	std::cout << "Usage: " << argv[0] << " [-v]\nThis is a test program. It returns 0 on success otherwise false.\nWith -v the stream is dumped to stdout - Warning: Some tests write binary data\n";
+	return 1;
+      }
     bool dump = ((argc==2)&&(std::string(argv[1])=="-v"));
     // we write to memory instead of a file
     std::stringbuf buf;

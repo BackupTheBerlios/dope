@@ -34,6 +34,7 @@
 #include "typenames.h"
 #include "saxwrapper.h"
 #include "dopeexcept.h"
+#include "xml.h"
 
 #define TYPE_NAME(type) TypeNameTrait<type>::name()
 
@@ -332,6 +333,7 @@ DOPE_INLINE XMLSAXInStream &simple(type &data, MemberName mname) \
   DOPE_SIMPLE(float);
   DOPE_SIMPLE(double);
   DOPE_SIMPLE(std::string);
+  // todo - is this correct ?
   DOPE_SIMPLE(const char*);
 
   //  DOPE_SIMPLE(char* &);

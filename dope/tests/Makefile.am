@@ -14,7 +14,8 @@ manualtests = \
 	test-debug \
 	test-rpc \
 	test-saxwrapper \
-	test-xmlrpc
+	test-xmlrpc \
+	test-argvparser
 
 check_PROGRAMS= \
 	$(automatictests) \
@@ -30,6 +31,7 @@ test_saxwrapper_SOURCES = test-saxwrapper.cpp $(common)
 test_signal_SOURCES = test-signal.cpp $(common)
 test_xml_SOURCES = test-xml.cpp $(common)
 test_xmlrpc_SOURCES = test-xmlrpc.cpp $(common)
+test_argvparser_SOURCES = test-argvparser.cpp $(common)
 
 TESTS = $(automatictests)
 

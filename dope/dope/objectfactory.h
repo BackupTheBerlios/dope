@@ -40,6 +40,9 @@ public:
 };
 
 //! generic object factory - the base class for the specialized factories
+/*!
+  factory producing objects from a stream
+*/
 template <class Layer2, class TypeID=TypeNameType >
 class GenericFactory
 {
