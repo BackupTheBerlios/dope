@@ -1,6 +1,9 @@
 #include "network.h"
 #include "utils.h"
 
+#include <unistd.h>
+#include <fcntl.h>
+
 // ---------------------------------------------------------------------------
 // 'lib-netstream++' is a library that helps you to build networked 
 //  applications with c++ or to be a base to build further abstract
@@ -200,6 +203,21 @@ Socket::~Socket(){
       DOPE_WARN("close failed");
 }
 
+//! set socket to blocking or non-blocking mode - default is blocking
+void 
+Socket::setBlocking(bool block)
+{
+  int desc=socket_handle;
+  // taken from info libc (gnu libc)
+  int oldflags = fcntl (desc, F_GETFL, 0);
+  // If reading the flags failed, return error indication now. 
+  DOPE_CHECK(oldflags!=-1);
+  // Set just the flag we want to set. 
+  if (!block) oldflags |= O_NONBLOCK;
+  else oldflags &= ~O_NONBLOCK;
+  // Store modified flag word in the descriptor. 
+  DOPE_CHECK(fcntl (desc, F_SETFL, oldflags)==0);
+}
 
 bool NetStreamBufServer::init(){
   FD_ZERO(&active_fd_set);
@@ -209,10 +227,8 @@ bool NetStreamBufServer::init(){
   return true;
 }
 
-/** Block until input arrives on one or more active sockets.
-   * create a new socket for a new connection
-   */
 bool NetStreamBufServer::select(const TimeStamp *timeout){
+  bool ret=false;
   fd_set read_fd_set = active_fd_set;
   timeval ctimeout;
   if (timeout) {
@@ -224,6 +240,7 @@ bool NetStreamBufServer::select(const TimeStamp *timeout){
 #ifndef LIB_NET_NO_EXCEPTIONS
       throw std::logic_error(__PRETTY_FUNCTION__);
 #endif
+      DOPE_FATAL("select");
       return false;
     }
   // which sockets have input pending ?
@@ -247,6 +264,7 @@ bool NetStreamBufServer::select(const TimeStamp *timeout){
 #ifndef LIB_NET_NO_EXCEPTIONS
 		    throw "NetStreamBufServer::wait_for_any_traffic: can't accept connection";
 #endif
+		    DOPE_FATAL("accept");
 		    return false;
 		  }
 		// recoverable error but no new connection
@@ -270,6 +288,7 @@ bool NetStreamBufServer::select(const TimeStamp *timeout){
 	  {
 	    assert(client_sockets.find(i)!=client_sockets.end());
 	    try {
+	      ret=true;
 	      dataAvailable.emit(i,client_sockets[i]);
 	    }catch(const ReadError &e) {
 	      DOPE_WARN("Warning read error occured: "<<e.what()<<" => close stream");
@@ -279,7 +298,7 @@ bool NetStreamBufServer::select(const TimeStamp *timeout){
 	    }
 	  }
       }
-  return true;
+  return ret;
 }
 
 
