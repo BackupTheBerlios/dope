@@ -1,6 +1,14 @@
 todo
 make it fit into dope
 
+perhaps this would better be called CDR ?
+common data representation is a mapping of corba IDL types
+to a low-level representation
+see also the corba spec
+15.2.1
+
+
+
 //! GIOP layer 1 stream
 /*! 
   based upon the GIOP XTL driver
@@ -31,7 +39,7 @@ make it fit into dope
  * Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
  * MA 02111-1307, USA
  *
- * $Id: giop.h,v 1.1 2002/05/27 18:12:03 karme Exp $
+ * $Id: giop.h,v 1.2 2003/03/20 11:59:28 karme Exp $
  */
 
 #ifndef __XTL_GIOP

@@ -22,6 +22,10 @@
 #define __USE_W32_SOCKETS
 #include <windows.h>
 
+// define to setsockopt value type:
+// win: int setsockopt(SOCKET,int,int,const char*,int);
+#define DOPE_SOCKOPTVALT char*
+
 #ifndef EWOULDBLOCK
 #define EWOULDBLOCK WSAEWOULDBLOCK
 #endif
@@ -30,8 +34,9 @@
 #define socklen_t int
 #endif
 
-#else
+#else /* ifdef WINDOOF */
 
+// not win => we assume unix like (posix)
 // "unix" includes
 // for htons
 #include <netinet/in.h>
@@ -55,6 +60,7 @@
 #include <netinet/tcp.h> // TCP_NODELAY
 
 #define closesocket	::close
+#define DOPE_SOCKOPTVALT void*
 
 #endif /* WIN32 */
 
@@ -190,8 +196,7 @@ Socket::reuse()
 {
   int reuser=1;
   int len=sizeof(reuser);
-  // (void *) cause of solaris
-  if (setsockopt(handle,SOL_SOCKET,SO_REUSEADDR,(void *)&reuser,len)<0) 
+  if (setsockopt(handle,SOL_SOCKET,SO_REUSEADDR,(DOPE_SOCKOPTVALT) &reuser,len)<0) 
     DOPE_WARN("reuse failed");
 };
 
@@ -294,7 +299,7 @@ Socket::setTcpNoDelay(bool on)
 {
   int flag = on;
   // (void *) cause of solaris
-  return !setsockopt(getHandle(), IPPROTO_TCP, TCP_NODELAY, (void *) &flag, sizeof(int));
+  return !setsockopt(getHandle(), IPPROTO_TCP, TCP_NODELAY, (DOPE_SOCKOPTVALT) &flag, sizeof(int));
 }
 
 int

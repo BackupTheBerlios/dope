@@ -33,7 +33,7 @@
 
 //! simple raw layer 1 input stream
 /*!
-  \note this protocol is platform dependant
+  \note this protocol is platform dependant (byte-order)
  */
 template <typename Layer0>
 class L1RawInStream

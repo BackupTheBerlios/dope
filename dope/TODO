@@ -1,4 +1,6 @@
 GENERAL:
+- remove any usage of <inttypes.h> and replace with <stdint.h> where possible
+
 - on pentium systems use the pentium time register for timestamp
   nope - use gettimeofday 
   take a look at glibc source
