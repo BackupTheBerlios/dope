@@ -109,9 +109,10 @@
 template <typename L>
 class XMLSAXInStream
 {
+public:
+  typedef L Layer0;
 protected:
   typedef std::string xmlString;
-  typedef L Layer0;
   typedef SAXWrapper<XMLSAXInStream<Layer0> > SAXWrapperT;
   typedef SAXWrapperT* SAXWrapperTPtr;
 
