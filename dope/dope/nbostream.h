@@ -63,12 +63,18 @@ public:
 
   L1NBOInStream &in(signed char &c)
   {
-    return in(static_cast<char>(c));
+    char _c;
+    in(_c);
+    c=_c;
+    return *this;
   }
 
   L1NBOInStream &in(unsigned char &c)
   {
-    return in(static_cast<char>(c));
+    char _c;
+    in(_c);
+    c=_c;
+    return *this;
   }
 
 #if (DOPE_BYTE_ORDER == DOPE_LITTLE_ENDIAN)
@@ -108,7 +114,10 @@ L1NBOInStream &in(T &d) {\
 
   L1NBOInStream &in(unsigned long &d)
   {
-    return in(static_cast<long>(d));
+    long _d;
+    in(_d);
+    d=_d;
+    return *this;
   }
   
   L1NBOInStream &in(float &d)
