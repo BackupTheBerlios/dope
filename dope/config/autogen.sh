@@ -116,7 +116,7 @@ do
       aclocal $aclocalinclude
       if grep "^AM_CONFIG_HEADER" configure.ac >/dev/null; then
 	echo "Running autoheader..."
-	autoheader -l config
+	autoheader
       fi
       echo "Running automake --gnu $am_opt ..."
       automake --add-missing --gnu $am_opt
