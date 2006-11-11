@@ -159,7 +159,7 @@ struct Inspector<Foo> : public InspectorBase
 */
 
 
-/* using preprocessor */
+/* using preprocessor - this once worked? should it work? probably not? */
 
 #define M(t,m) t m;
 #define STRUCTR(name,members) \
