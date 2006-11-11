@@ -135,9 +135,10 @@ inline int fatal(const char *file,int line,const char *func, const char *msg)
   it seems there is no assert which is not disabled by a \#define NDEBUG 
 
 */
-#define DOPE_CHECK(expr)							      \
-  (static_cast<void> ((expr) ? 0 :							      \
-	   (fatal(__FILE__, __LINE__, DOPE_FUNCTIONNAME, "assertion failed: " DOPE_STR(expr)))))
+#define DOPE_CHECK(expr)						\
+  (static_cast<void> ((expr) ? 0 :					\
+		      (fatal(__FILE__, __LINE__, DOPE_FUNCTIONNAME,	\
+			     "assertion failed: " DOPE_STR(expr)))))
 
 /*
   \def DOPE_ASSERT(expr)
